@@ -104,7 +104,7 @@ void read_file(char *filename, char *output_mode) {
 #ifdef FAB_MAIN
 int main(int argc, char *argv[]) {
     if(argc < 3 || strcmp(argv[1], "--help") == 0 || (!strcmp(argv[1], "bin") && !strcmp(argv[1], "hex"))) {
-        printf("%s filename output_mode[bin|hex]\n", argv[0]);
+        printf("USAGE %s filename output_mode[bin|hex]\n", argv[0]);
         exit(EXIT_FAILURE);
     }
 

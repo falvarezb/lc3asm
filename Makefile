@@ -10,7 +10,7 @@ LOG_DIR = logs
 OUTPUT_DIRS = ${BUILD_DIR} ${LOG_DIR} tools/${BUILD_DIR}
 
 CC = gcc
-CFLAGS = -g -Wall -Wno-missing-braces -Wextra -Wshadow -Wpedantic -std=c11
+CFLAGS = -g -Wall -Wno-missing-braces -Wextra -Wshadow -Wpedantic -std=c11 #-fprofile-arcs -ftest-coverage
 LDFLAGS = 
 SRCS_PROD := myfile.c
 OBJS_PROD := $(addprefix $(BUILD_DIR)/, $(patsubst %.c,%.o,$(SRCS_PROD)))
@@ -67,9 +67,9 @@ $(BUILD_DIR)/myfile: $(OBJS_PROD)
 #######################
 
 # run main method of lc3objdump.c
-# invoke with "make lc3objdump CPPFLAGS=-DFAB_MAIN"
-lc3objdump: $(TOOLS_BUILD_DIR)/lc3objdump
-	$(VALGRIND) ./$^
+# e.g. "make exec_lc3objdump CPPFLAGS=-DFAB_MAIN filename=../lc3practice/test.obj output_mode=hex"
+exec_lc3objdump: $(TOOLS_BUILD_DIR)/lc3objdump
+	$(VALGRIND) ./$^ $(filename) $(output_mode)
 
 $(TOOLS_BUILD_DIR)/lc3objdump: $(OBJS_TOOLS)
 	$(LINK.c) $^ -o $@ $(LDLIBS)
