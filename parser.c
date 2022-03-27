@@ -1,9 +1,5 @@
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdbool.h>
-#include <limits.h>
+#include "lc3common.h"
 
 /**
  * Notational conventions:
@@ -17,63 +13,9 @@
  *
  */
 
-void error_exit(const char *format, const char *text) {
-    printf(format, text);
-    exit(EXIT_FAILURE);
-}
 
-char *bin(unsigned int decimal) {
-    size_t i = CHAR_BIT * sizeof(int);
-    char *result = (char *)malloc(i);
-    if(result == NULL) {
-        error_exit("failure to allocate memory", "");
-    }
 
-    while(i--) {
-        *(result + i) = ((decimal >> i) & 1);
-    }
-    return result;
-}
 
-int is_register(char *token) {
-    if(strcmp(token, "R1") == 0) {
-        return 1;
-    }
-    else if(strcmp(token, "R2") == 0) {
-        return 2;
-    }
-    else if(strcmp(token, "R3") == 0) {
-        return 3;
-    }
-    else if(strcmp(token, "R4") == 0) {
-        return 4;
-    }
-    else if(strcmp(token, "R5") == 0) {
-        return 5;
-    }
-    else if(strcmp(token, "R6") == 0) {
-        return 6;
-    }
-    else if(strcmp(token, "R7") == 0) {
-        return 7;
-    }
-    return -1;
-}
-
-int is_imm5(char *token) {
-    int imm5 = 16;
-    char first_ch = *token;
-    if(first_ch == '#') { //decimal literal
-        imm5 = atoi(first_ch + 1);
-        return imm5 >= -16 && imm5 <= 15 ? imm5 : 16;
-    }
-    else if(first_ch == 'x') { //hex literal
-        imm5 = sscanf(first_ch + 1, "x");
-        return imm5 >= -16 && imm5 <= 15 ? imm5 : 16;
-    }
-    else
-        return imm5;
-}
 
 /**
  * @brief
@@ -88,10 +30,7 @@ int is_imm5(char *token) {
 char *parse_add(char *instr) {
 
     //READING INSTRUCTION TOKENS
-    int DR;
-    int SR1;
-    int SR2;
-    int imm5;
+    int DR, SR1, SR2, imm5;
     char *tokens[4];
     int i = 0;
     char *delimiters = " ,";
@@ -119,7 +58,7 @@ char *parse_add(char *instr) {
         error_exit("expected register but found %s", tokens[2]);
     }
 
-    if((SR2 = is_register(tokens[3])) == -1 || (imm5 = is_imm5(tokens[3]) == 16)) {
+    if((SR2 = is_register(tokens[3])) == -1 || (imm5 = is_imm5(tokens[3]) == NO_IMMEDIATE_VALUE)) {
         error_exit("expected register or imm5 but found %s", tokens[3]);
     }
 
