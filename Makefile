@@ -53,6 +53,14 @@ myfile: $(BUILD_DIR)/myfile
 $(BUILD_DIR)/myfile: $(OBJS_PROD)
 	$(LINK.c) $^ -o $@ $(LDLIBS)
 
+# run main method of lc3objdump.c
+# invoke with "make lc3objdump CPPFLAGS=-DFAB_MAIN"
+lc3objdump: $(BUILD_DIR)/lc3objdump
+	$(VALGRIND) ./$^
+
+$(BUILD_DIR)/lc3objdump: $(OBJS_PROD)
+	$(LINK.c) $^ -o $@ $(LDLIBS)
+
 
 # if an object ﬁle is needed, compile the corresponding .c ﬁle
 ${BUILD_DIR}/%.o: %.c
