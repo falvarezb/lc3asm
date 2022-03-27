@@ -26,14 +26,11 @@
 
 */
 
-
-
 #include <stdio.h>
 #include <limits.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
-#include "myfile.h"
 #define BUF_SIZE 2
 
 void error_exit(const char *format, const char *text) {
@@ -105,7 +102,7 @@ void read_file(char *filename, char* output_mode) {
 
 
 #ifdef FAB_MAIN
-int main(int argc, char const *argv[]) {
+int main(int argc, char *argv[]) {
     if (argc < 3 || strcmp(argv[1], "--help") == 0 || (!strcmp(argv[1], "bin") && !strcmp(argv[1], "hex"))) {
         printf("%s filename output_mode[bin|hex]\n", argv[0]);
         exit(EXIT_FAILURE);
@@ -114,3 +111,4 @@ int main(int argc, char const *argv[]) {
     read_file(argv[1], argv[2]);
 }
 #endif
+
