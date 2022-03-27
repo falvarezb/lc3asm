@@ -3,15 +3,15 @@
     Each LC3 word (16 bits) is printed in a different line in the specified format (binary or hexadecimal)
 
     Example:
-    
+
     franciscoalvarez@franciscos lc3asm % ./out/lc3objdump ../lc3practice/test.obj hex
-    30 00 
-    20 02 
-    22 04 
-    0e 01 
-    00 01 
-    14 01 
-    f0 25 
+    30 00
+    20 02
+    22 04
+    0e 01
+    00 01
+    14 01
+    f0 25
     30 0c
 
     franciscoalvarez@franciscos lc3asm % ./out/lc3objdump ../lc3practice/test.obj bin
@@ -45,7 +45,7 @@ int print_hex(unsigned char byte) {
 
 int print_bin(unsigned char byte) {
     int ret = 0;
-    int i = CHAR_BIT;    
+    int i = CHAR_BIT;
     while(i--) {
         int printf_ret = 0;
         if((printf_ret = printf("%d", ((byte >> i) & 1))) < 0) {
@@ -56,7 +56,7 @@ int print_bin(unsigned char byte) {
     return ret;
 }
 
-void read_file(char *filename, char* output_mode) {
+void read_file(char *filename, char *output_mode) {
 
     //***** VARIABLES INITIALISATION
     FILE *inputFile;
@@ -73,41 +73,41 @@ void read_file(char *filename, char* output_mode) {
     }
 
     inputFile = fopen(filename, "rb"); //open binary file in read-only mode
-    if (inputFile == NULL) {
-        error_exit("error %d while opening file %s", filename);                
+    if(inputFile == NULL) {
+        error_exit("error %d while opening file %s", filename);
     }
 
     //***** LOGIC TO READ FILE
     /* Read data until we encounter end of input or an error */
-    while ((numRead = fread(buf, 1, BUF_SIZE, inputFile)) > 0) {
-        if (numRead < BUF_SIZE && !feof(inputFile)) {            
-            error_exit("error %d while reading file '%s'", filename);            
+    while((numRead = fread(buf, 1, BUF_SIZE, inputFile)) > 0) {
+        if(numRead < BUF_SIZE && !feof(inputFile)) {
+            error_exit("error %d while reading file '%s'", filename);
         }
 
-        for (size_t i = 0; i < numRead; i++) {        
-            if (print_f(buf[i]) < 0 && ferror(stdout)) {
-                error_exit("error %d while writing '%s'", ""); 
-            }            
+        for(size_t i = 0; i < numRead; i++) {
+            if(print_f(buf[i]) < 0 && ferror(stdout)) {
+                error_exit("error %d while writing '%s'", "");
+            }
         }
         printf("\n");
     }
 
-    if (ferror(inputFile)) {        
-        error_exit("error %d while reading file '%s'", filename);        
+    if(ferror(inputFile)) {
+        error_exit("error %d while reading file '%s'", filename);
     }
 
-    if (fclose(inputFile) == EOF) perror("close input");
+    if(fclose(inputFile) == EOF) perror("close input");
     exit(EXIT_SUCCESS);
 }
 
 
 #ifdef FAB_MAIN
 int main(int argc, char *argv[]) {
-    if (argc < 3 || strcmp(argv[1], "--help") == 0 || (!strcmp(argv[1], "bin") && !strcmp(argv[1], "hex"))) {
+    if(argc < 3 || strcmp(argv[1], "--help") == 0 || (!strcmp(argv[1], "bin") && !strcmp(argv[1], "hex"))) {
         printf("%s filename output_mode[bin|hex]\n", argv[0]);
         exit(EXIT_FAILURE);
     }
-    
+
     read_file(argv[1], argv[2]);
 }
 #endif
