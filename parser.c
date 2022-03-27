@@ -2,22 +2,6 @@
 #include "lc3common.h"
 
 /**
- * Notational conventions:
- *
- * SR: SR1, SR2: Source Register; one of R0..R7 which specifies the register from which a source operand is obtained
- *
- * DR: Destination Register; one of R0..R7, which specifies which register the result of an instruction should be written to
- *
- * imm5: A 5-bit immediate value; bits [4:0] of an instruction when used as a literal (immediate) value.
- * Taken as a 5-bit, 2’s complement integer, it is sign-extended to 16 bits before it is used. Range: −16..15
- *
- */
-
-
-
-
-
-/**
  * @brief
  *
  * Assembler formats:
@@ -30,7 +14,8 @@
 char *parse_add(char *instr) {
 
     //READING INSTRUCTION TOKENS
-    int DR, SR1, SR2, imm5;
+    int DR, SR1, SR2;
+    int imm5 = NO_IMM5_VALUE;
     char *tokens[4];
     int i = 0;
     char *delimiters = " ,";
@@ -58,7 +43,7 @@ char *parse_add(char *instr) {
         error_exit("expected register but found %s", tokens[2]);
     }
 
-    if((SR2 = is_register(tokens[3])) == -1 || (imm5 = is_imm5(tokens[3]) == NO_IMMEDIATE_VALUE)) {
+    if((SR2 = is_register(tokens[3])) == -1 || (imm5 = is_imm5(tokens[3]) == NO_IMM5_VALUE)) {
         error_exit("expected register or imm5 but found %s", tokens[3]);
     }
 
@@ -78,7 +63,7 @@ char *parse_add(char *instr) {
     ret += SR1;
 
     //imm5
-    if(imm5 != 16) {
+    if(imm5 != NO_IMM5_VALUE) {
         ret += (1 << 4);
         ret += imm5;
     }
@@ -89,11 +74,6 @@ char *parse_add(char *instr) {
     return bin(ret);
 }
 
-
-char *parse_line(char *line) {
-
-    return "";
-}
 
 #ifdef FAB_MAIN
 int main(int argc, char const *argv[]) {

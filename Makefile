@@ -12,7 +12,7 @@ OUTPUT_DIRS = ${BUILD_DIR} ${LOG_DIR} tools/${BUILD_DIR}
 CC = gcc
 CFLAGS = -g -Wall -Wno-missing-braces -Wextra -Wshadow -Wpedantic -std=c11 #-fprofile-arcs -ftest-coverage
 LDFLAGS = 
-SRCS_PROD := myfile.c
+SRCS_PROD := parser.c
 OBJS_PROD := $(addprefix $(BUILD_DIR)/, $(patsubst %.c,%.o,$(SRCS_PROD)))
 SRCS_TOOLS := lc3objdump.c
 OBJS_TOOLS := $(addprefix $(TOOLS_BUILD_DIR)/, $(patsubst %.c,%.o,$(SRCS_TOOLS)))
@@ -27,13 +27,16 @@ LDLIBS =
 #endif
 
 
-.PHONY: all clean unittest myfile lc3objdump
+.PHONY: all clean compile unittest myfile lc3objdump
 
-all: clean unittest
+all: clean compile unittest
 
 
 $(OBJS_PROD): | ${OUTPUT_DIRS}
 $(OBJS_TOOLS): | ${OUTPUT_DIRS}
+
+
+compile: $(OBJS_PROD)	
 
 ####################### 
 #### tests  ###########
