@@ -58,7 +58,7 @@ $(BUILD_DIR)/myfile: $(OBJS_PROD)
 lc3objdump: $(BUILD_DIR)/lc3objdump
 	$(VALGRIND) ./$^
 
-$(BUILD_DIR)/lc3objdump: $(OBJS_PROD)
+$(BUILD_DIR)/lc3objdump: ${BUILD_DIR}/lc3objdump.o
 	$(LINK.c) $^ -o $@ $(LDLIBS)
 
 
