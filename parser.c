@@ -8,10 +8,10 @@
  * ADD DR,SR1,SR2
  * ADD DR,SR1,imm5
  *
- * @param instr ADD instruction
+ * @param asm_instr ADD instruction
  * @return uint16_t* 16 bits representation of the instruction
  */
-uint16_t *parse_add(char *instr) {
+uint16_t *parse_add(char *asm_instr) {
 
     //READING INSTRUCTION TOKENS
     int DR, SR1, SR2;
@@ -19,10 +19,10 @@ uint16_t *parse_add(char *instr) {
     char *tokens[4];
     int i = 0;
     char *delimiters = " ,";
-    char *pch = strtok(instr, delimiters);
+    char *pch = strtok(asm_instr, delimiters);
     while(pch != NULL) {
         if(i > 3) {
-            error_exit("unexpected token in instruction %s\n", instr);
+            error_exit("unexpected token in instruction %s\n", asm_instr);
         }
 
         tokens[i++] = pch;
@@ -49,29 +49,29 @@ uint16_t *parse_add(char *instr) {
 
 
     //CONVERTING TO BINARY REPRESENTATION
-    uint16_t *ret = (uint16_t*) malloc(sizeof(u_int16_t));
+    uint16_t *machine_instr = (uint16_t*) malloc(sizeof(u_int16_t));
 
     //ops code: 0001
-    *ret = 1 << 12;
+    *machine_instr = 1 << 12;
 
     //DR
     DR = DR << 9;
-    *ret += DR;
+    *machine_instr += DR;
 
     //SR1
     SR1 = SR1 << 6;
-    *ret += SR1;
+    *machine_instr += SR1;
 
     //imm5
     if(imm5 != NO_IMM5_VALUE) {
-        *ret += (1 << 5);
-        *ret += imm5;
+        *machine_instr += (1 << 5);
+        *machine_instr += imm5;
     }
     else {
-        *ret += SR2;
+        *machine_instr += SR2;
     }
 
-    return ret;
+    return machine_instr;
 }
 
 
