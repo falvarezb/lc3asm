@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${fileDirname}/out/${fileBasenameNoExtension}",
-            "args": [],
+            "args": ["../lc3practice/test.obj", "bin"],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],

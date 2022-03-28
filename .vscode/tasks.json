@@ -62,8 +62,10 @@
                 "-g",
                 "-Wall",    
                 "-Wno-missing-braces ",
-                "${workspaceFolder}/myfile_test.c",  
-                "${workspaceFolder}/myfile.c",             
+                "${workspaceFolder}/parser_test.c",  
+                "${workspaceFolder}/parser.c", 
+                "${workspaceFolder}/common.c",             
+                "${workspaceFolder}/lc3common.c",             
                 "-lcmocka",
                 "-o",
                 "${workspaceFolder}/out/test.out"

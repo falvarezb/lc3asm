@@ -3,10 +3,16 @@
 #include <setjmp.h>
 #include <cmocka.h>
 #include <stdbool.h>
-#include "myfile.h"
+#include "lc3.h"
+
 
 void test_add(void **state) {
-    assert_string_equal("hello world", hello_world());
+    char asm_instr[] = "ADD R0,R1,R2";
+    uint16_t *machine_instr = parse_add(asm_instr);
+    char *bytes = (char*)machine_instr;
+    //assert order is flipped because of little-endian arch
+    assert_int_equal(bytes[0], 66);
+    assert_int_equal(bytes[1], 16);
 }
 
 int main(int argc, char const *argv[]) {
