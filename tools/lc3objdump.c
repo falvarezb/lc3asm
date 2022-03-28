@@ -32,6 +32,10 @@
 #include <errno.h>
 #include <string.h>
 #define BUF_SIZE 2
+#define DEC_OUTPUT_MODE 0
+#define BIN_OUTPUT_MODE 1
+#define HEX_OUTPUT_MODE 2
+
 
 void error_exit(const char *format, const char *text) {
     printf(format, errno, text);
@@ -56,7 +60,11 @@ int print_bin(unsigned char byte) {
     return ret;
 }
 
-void read_file(char *filename, char *output_mode) {
+int print_dec(unsigned char byte) {
+    return printf("%.3d ", byte);
+}
+
+void read_file(char *filename, int output_mode) {
 
     //***** VARIABLES INITIALISATION
     FILE *inputFile;
@@ -65,11 +73,14 @@ void read_file(char *filename, char *output_mode) {
     unsigned char buf[BUF_SIZE];
 
     int (*print_f) (unsigned char);
-    if(strcmp(output_mode, "bin") == 0) {
+    if(output_mode == BIN_OUTPUT_MODE) {
         print_f = print_bin;
     }
-    else {
+    else if(output_mode == HEX_OUTPUT_MODE) {
         print_f = print_hex;
+    }
+    else {
+        print_f = print_dec;
     }
 
     inputFile = fopen(filename, "rb"); //open binary file in read-only mode
@@ -103,12 +114,22 @@ void read_file(char *filename, char *output_mode) {
 
 #ifdef FAB_MAIN
 int main(int argc, char *argv[]) {
-    if(argc < 3 || strcmp(argv[1], "--help") == 0 || (!strcmp(argv[1], "bin") && !strcmp(argv[1], "hex"))) {
-        printf("USAGE %s filename output_mode[bin|hex]\n", argv[0]);
+    if(argc < 2  || (argc >= 3 && (strcmp(argv[2], "bin") != 0 && strcmp(argv[2], "hex") != 0))) {
+        printf("USAGE %s filename [output_mode], output_mode=bin/hex\n", argv[0]);
         exit(EXIT_FAILURE);
     }
 
-    read_file(argv[1], argv[2]);
+    int output_mode = DEC_OUTPUT_MODE;
+    if(argc >= 3) {
+        if(strcmp(argv[2], "bin") == 0) {
+            output_mode = BIN_OUTPUT_MODE;
+        }
+        else {
+            output_mode = HEX_OUTPUT_MODE;
+        }
+    }
+
+    read_file(argv[1], output_mode);
 }
 #endif
 
