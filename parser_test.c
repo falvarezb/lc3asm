@@ -6,7 +6,7 @@
 #include "lc3.h"
 
 
-void test_add(void **state) {
+void test_add_register(void **state) {
     char asm_instr[] = "ADD R0,R1,R2";
     uint16_t *machine_instr = parse_add(asm_instr);
     char *bytes = (char*)machine_instr;
@@ -15,9 +15,29 @@ void test_add(void **state) {
     assert_int_equal(bytes[1], 16);
 }
 
+void test_add_imm5_decimal(void **state) {
+    char asm_instr[] = "ADD R0,R1,#13";
+    uint16_t *machine_instr = parse_add(asm_instr);
+    char *bytes = (char*)machine_instr;
+    //assert order is flipped because of little-endian arch
+    assert_int_equal(bytes[0], 109);
+    assert_int_equal(bytes[1], 16);
+}
+
+void test_add_imm5_hex(void **state) {
+    char asm_instr[] = "ADD R0,R1,xa";
+    uint16_t *machine_instr = parse_add(asm_instr);
+    char *bytes = (char*)machine_instr;
+    //assert order is flipped because of little-endian arch
+    assert_int_equal(bytes[0], 106);
+    assert_int_equal(bytes[1], 16);
+}
+
 int main(int argc, char const *argv[]) {
     const struct CMUnitTest tests[] = {
-        cmocka_unit_test(test_add)
+        cmocka_unit_test(test_add_register),
+        cmocka_unit_test(test_add_imm5_decimal),
+        cmocka_unit_test(test_add_imm5_hex)
         };
     return cmocka_run_group_tests(tests, NULL, NULL);
 }

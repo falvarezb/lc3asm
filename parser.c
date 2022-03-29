@@ -43,7 +43,7 @@ uint16_t *parse_add(char *asm_instr) {
         error_exit("expected register but found %s\n", tokens[2]);
     }
 
-    if((SR2 = is_register(tokens[3])) == -1 && (imm5 = is_imm5(tokens[3]) == NO_IMM5_VALUE)) {
+    if((SR2 = is_register(tokens[3])) == -1 && ((imm5 = is_imm5(tokens[3])) == NO_IMM5_VALUE)) {
         error_exit("expected register or imm5 but found %s\n", tokens[3]);
     }
 

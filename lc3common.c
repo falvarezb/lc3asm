@@ -36,7 +36,9 @@ int is_imm5(char *token) {
         return imm5 >= -16 && imm5 <= 15 ? imm5 : NO_IMM5_VALUE;
     }
     else if(first_ch == 'x') { //hex literal
-        imm5 = sscanf(token + 1, "x");
+        if(sscanf(token, "x", &imm5) < 1) {
+            error_exit("error while reading imm5 token %s", token);
+        }
         return imm5 >= -16 && imm5 <= 15 ? imm5 : NO_IMM5_VALUE;
     }
     else
