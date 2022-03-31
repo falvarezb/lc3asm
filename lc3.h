@@ -14,6 +14,6 @@
  *
  */
 
-uint16_t *parse_add(char *instr);
+uint16_t parse_add(char *instr);
 
 #endif
