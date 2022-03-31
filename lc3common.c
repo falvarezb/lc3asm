@@ -1,4 +1,5 @@
 #include "lc3common.h"
+#define LC3_WORD_SIZE 16 // bits
 
 /*
     Returns numeric value of the register or -1 if 'token' is not a register
@@ -41,23 +42,23 @@ int is_imm5(char *token, int *imm5) {
     if(first_ch == '#') { //decimal literal
         *imm5 = atoi(token + 1);
         if (*imm5 < -16 || *imm5 > 15) {
-            snprintf(errdesc, ERR_DESC_LENGTH, "value of operand imm5 %s is outside the range [-16,15]", token);
+            printerr("value of operand imm5 %s is outside the range [-16,15]", token);
             return 1;
         }
         return 0;
     }
     else if(first_ch == 'x') { //hex literal
         if(sscanf(token+1, "%x", imm5) < 1) {
-            snprintf(errdesc, ERR_DESC_LENGTH, "error while reading operand imm5 %s", token);        
+            printerr("error while reading operand imm5 %s", token);        
             return 1;
         }
         if (*imm5 < -16 || *imm5 > 15) {
-            snprintf(errdesc, ERR_DESC_LENGTH, "value of operand imm5 %s is outside the range [-16,15]", token);
+            printerr("value of operand imm5 %s is outside the range [-16,15]", token);
             return 1;
         }
         return 0;
     }
-    snprintf(errdesc, ERR_DESC_LENGTH, "operand imm5 %s must be decimal or hex", token);
+    printerr("operand imm5 %s must be decimal or hex", token);
     return 1;
 }
 

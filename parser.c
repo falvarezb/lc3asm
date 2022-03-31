@@ -22,7 +22,7 @@ uint16_t parse_add(char *asm_instr) {
     char *pch = strtok(asm_instr, delimiters);
     while(pch != NULL) {
         if(i > 3) {
-            snprintf(errdesc, ERR_DESC_LENGTH, "unexpected token in instruction %s\n", asm_instr);
+            printerr("unexpected token in instruction %s\n", asm_instr);
             return 0;
         }
 
@@ -33,17 +33,17 @@ uint16_t parse_add(char *asm_instr) {
     //PARSING TOKENS
     if(strcmp(tokens[0], "ADD")) {
         //this should not happen        
-        snprintf(errdesc, ERR_DESC_LENGTH, "expected ADD but found %s\n", tokens[0]);
+        printerr("expected ADD but found %s\n", tokens[0]);
         return 0;
     }
 
     if((DR = is_register(tokens[1])) == -1) {        
-        snprintf(errdesc, ERR_DESC_LENGTH, "expected register but found %s\n", tokens[1]);
+        printerr("expected register but found %s\n", tokens[1]);
         return 0;
     }
 
     if((SR1 = is_register(tokens[2])) == -1) {
-        snprintf(errdesc, ERR_DESC_LENGTH, "expected register but found %s\n", tokens[2]);
+        printerr("expected register but found %s\n", tokens[2]);
         return 0;        
     }
 

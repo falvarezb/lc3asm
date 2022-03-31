@@ -67,6 +67,7 @@
                 "${workspaceFolder}/common.c",             
                 "${workspaceFolder}/lc3common.c",             
                 "-lcmocka",
+                "-fno-common",
                 "-o",
                 "${workspaceFolder}/out/test.out"
             ],

@@ -10,8 +10,8 @@ LOG_DIR = logs
 OUTPUT_DIRS = ${BUILD_DIR} ${LOG_DIR} tools/${BUILD_DIR}
 
 CC = gcc
-CFLAGS = -g -Wall -Wno-missing-braces -Wextra -Wshadow -Wpedantic -std=c11 #-fprofile-arcs -ftest-coverage
-LDFLAGS = 
+CFLAGS = -g -Wall -Wno-missing-braces -Wextra -Wshadow -Wpedantic -std=c11 -fno-common #-fprofile-arcs -ftest-coverage
+LDFLAGS =
 SRCS_PROD := parser.c common.c lc3common.c
 OBJS_PROD := $(addprefix $(BUILD_DIR)/, $(patsubst %.c,%.o,$(SRCS_PROD)))
 SRCS_TOOLS := lc3objdump.c

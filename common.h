@@ -9,12 +9,10 @@
 #include <limits.h>
 #include <stdint.h>
 
-#define LC3_WORD_SIZE 16 // bits
-#define ERR_DESC_LENGTH 100
-char errdesc[ERR_DESC_LENGTH];
-
+extern char errdesc[];
 
 void error_exit(const char *format, const char *text);
 char *bin(unsigned int decimal);
+int printerr(char *s, const char *format);
 
 #endif
