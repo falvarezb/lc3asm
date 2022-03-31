@@ -15,7 +15,7 @@ uint16_t *parse_add(char *asm_instr) {
 
     //READING INSTRUCTION TOKENS
     int DR, SR1, SR2;
-    int imm5 = NO_IMM5_VALUE;
+    int *imm5;// = (int*)malloc(sizeof(int));
     char *tokens[4];
     int i = 0;
     char *delimiters = " ,";
@@ -29,7 +29,7 @@ uint16_t *parse_add(char *asm_instr) {
         pch = strtok(NULL, delimiters);
     }
 
-    //VALIDATING TOKENS
+    //PARSING TOKENS
     if(strcmp(tokens[0], "ADD")) {
         //this should not happen
         error_exit("expected ADD but found %s\n", tokens[0]);
@@ -43,9 +43,9 @@ uint16_t *parse_add(char *asm_instr) {
         error_exit("expected register but found %s\n", tokens[2]);
     }
 
-    if((SR2 = is_register(tokens[3])) == -1 && ((imm5 = is_imm5(tokens[3])) == NO_IMM5_VALUE)) {
-        error_exit("expected register or imm5 but found %s\n", tokens[3]);
-    }
+    // if((SR2 = is_register(tokens[3])) == -1 && is_imm5(tokens[3], imm5)) {
+    //     error_exit("expected register or imm5 but found %s\n", tokens[3]);
+    // }
 
 
     //CONVERTING TO BINARY REPRESENTATION
@@ -62,14 +62,25 @@ uint16_t *parse_add(char *asm_instr) {
     SR1 = SR1 << 6;
     *machine_instr += SR1;
 
-    //imm5
-    if(imm5 != NO_IMM5_VALUE) {
-        *machine_instr += (1 << 5);
-        *machine_instr += imm5;
-    }
-    else {
+    if((SR2 = is_register(tokens[3])) > -1){
         *machine_instr += SR2;
     }
+    else {
+        if(is_imm5(tokens[3], imm5)){
+            error_exit("error", "");
+        }
+        *machine_instr += (1 << 5);
+        *machine_instr += *imm5;
+    }
+
+    //imm5
+    // if(imm5) {
+    //     *machine_instr += (1 << 5);
+    //     *machine_instr += *imm5;
+    // }
+    // else {
+    //     *machine_instr += SR2;
+    // }
 
     return machine_instr;
 }

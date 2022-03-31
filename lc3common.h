@@ -6,8 +6,8 @@
 
 
 int is_register(char *token);
-int is_imm5(char *token);
-char *bin_word(unsigned int decimal);
+int is_imm5(char *token, int *imm5);
+char *bin_lc3word(unsigned int decimal);
 
 
 #endif

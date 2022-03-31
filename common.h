@@ -8,7 +8,10 @@
 #include <stdbool.h>
 #include <limits.h>
 #include <stdint.h>
+
 #define LC3_WORD_SIZE 16 // bits
+#define ERR_DESC_LENGTH 100
+char errdesc[ERR_DESC_LENGTH];
 
 
 void error_exit(const char *format, const char *text);
