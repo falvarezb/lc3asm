@@ -41,32 +41,32 @@ int is_imm5(char *token, int *imm5) {
     char first_ch = *token;
     if(first_ch == '#') { //decimal literal
         *imm5 = atoi(token + 1);
-        if (*imm5 < -16 || *imm5 > 15) {
-            printerr("value of operand imm5 %s is outside the range [-16,15]", token);
+        if(*imm5 < -16 || *imm5 > 15) {
+            printerr("value of operand imm5 %s is outside the range [-16,15]\n", token + 1);
             return 1;
         }
         return 0;
     }
     else if(first_ch == 'x') { //hex literal
-        if(sscanf(token+1, "%x", imm5) < 1) {
-            printerr("error while reading operand imm5 %s", token);        
+        if(sscanf(token + 1, "%x", imm5) < 1) {
+            printerr("error while reading operand imm5 %s\n", token);
             return 1;
         }
-        if (*imm5 < -16 || *imm5 > 15) {
-            printerr("value of operand imm5 %s is outside the range [-16,15]", token);
+        if(*imm5 < -16 || *imm5 > 15) {
+            printerr("value of operand imm5 %s is outside the range [-16,15]\n", token + 1);
             return 1;
         }
         return 0;
     }
-    printerr("operand imm5 %s must be decimal or hex", token);
+    printerr("operand imm5 %s must be decimal or hex\n", token);
     return 1;
 }
 
 /**
  * @brief Binary representation truncated to the size of a LC3 word
- * 
- * @param decimal 
- * @return char* 
+ *
+ * @param decimal
+ * @return char*
  */
 char *bin_lc3word(unsigned int decimal) {
     size_t i = CHAR_BIT * sizeof(int);

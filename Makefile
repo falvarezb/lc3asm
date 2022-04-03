@@ -46,10 +46,10 @@ compile: $(OBJS_PROD)
 # run unit tests defined in unittest.c
 unittest: $(BUILD_DIR)/parser_test
 	$(VALGRIND) ./$^	
-	gcov $(BUILD_DIR)/*.gcda
+	gcov $(BUILD_DIR)/*.gcda > /dev/null
 	mv *.c.gcov $(BUILD_DIR)/
-	lcov --directory $(BUILD_DIR) --capture --output-file $(BUILD_DIR)/app.info
-	genhtml -o $(BUILD_DIR) $(BUILD_DIR)/app.info
+	lcov --directory $(BUILD_DIR) --capture --output-file $(BUILD_DIR)/app.info > /dev/null
+	genhtml -o $(BUILD_DIR) $(BUILD_DIR)/app.info > /dev/null
 	open $(BUILD_DIR)/index.html
 
 $(BUILD_DIR)/parser_test: $(OBJS_PROD) ${BUILD_DIR}/parser_test.o

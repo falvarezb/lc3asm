@@ -22,7 +22,7 @@ uint16_t parse_add(char *asm_instr) {
     char *pch = strtok(asm_instr, delimiters);
     while(pch != NULL) {
         if(i > 3) {
-            printerr("unexpected token in instruction %s\n", asm_instr);
+            printerr("unexpected token in ADD instruction\n", asm_instr);
             return 0;
         }
 
