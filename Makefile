@@ -10,7 +10,7 @@ LOG_DIR = logs
 OUTPUT_DIRS = ${BUILD_DIR} ${LOG_DIR} tools/${BUILD_DIR}
 
 CC = gcc
-CFLAGS = -g -Wall -Wno-missing-braces -Wextra -Wshadow -Wpedantic -std=c11 -fno-common #-fprofile-arcs -ftest-coverage
+CFLAGS = -g -Wall -Wno-missing-braces -Wextra -Wshadow -Wpedantic -std=c11 -fno-common -fprofile-arcs -ftest-coverage
 LDFLAGS =
 SRCS_PROD := parser.c common.c lc3common.c
 OBJS_PROD := $(addprefix $(BUILD_DIR)/, $(patsubst %.c,%.o,$(SRCS_PROD)))
@@ -45,7 +45,12 @@ compile: $(OBJS_PROD)
 #### run unit tests using cmocka library  ######
 # run unit tests defined in unittest.c
 unittest: $(BUILD_DIR)/parser_test
-	$(VALGRIND) ./$^
+	$(VALGRIND) ./$^	
+	gcov $(BUILD_DIR)/*.gcda
+	mv *.c.gcov $(BUILD_DIR)/
+	lcov --directory $(BUILD_DIR) --capture --output-file $(BUILD_DIR)/app.info
+	genhtml -o $(BUILD_DIR) $(BUILD_DIR)/app.info
+	open $(BUILD_DIR)/index.html
 
 $(BUILD_DIR)/parser_test: $(OBJS_PROD) ${BUILD_DIR}/parser_test.o
 	$(LINK.c) $^ -o $@ $(LDLIBS) -lcmocka
@@ -95,4 +100,4 @@ ${OUTPUT_DIRS}:
 	mkdir $@
 
 clean:
-	${RM} -r ${LOG_DIR}/* ${BUILD_DIR}/* *.o ${TOOLS_BUILD_DIR}/* *.o 
+	${RM} -r ${LOG_DIR}/* ${BUILD_DIR}/* ${TOOLS_BUILD_DIR}/* *.o 

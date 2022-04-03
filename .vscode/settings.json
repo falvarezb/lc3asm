@@ -1,6 +1,7 @@
 {
     "gcovViewer.buildDirectories": [
-        "~/Projects/personal/lc3/lc3asm/tools/out"
+        "~/Projects/personal/lc3/lc3asm/tools/out",
+        "~/Projects/personal/lc3/lc3asm/out"
     ],
     "files.associations": {
         "stdbool.h": "c",

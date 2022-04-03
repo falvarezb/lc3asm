@@ -30,3 +30,13 @@ The following sections show how to use Makefile.
 
 `make myfile CPPFLAGS=-DFAB_MAIN`
 
+
+## Notes
+
+About use of compiler flag [-fno-common](https://stackoverflow.com/questions/66044467/why-does-global-variable-definition-in-c-header-file-work)
+
+
+Coverage
+
+brew install lcov
+
