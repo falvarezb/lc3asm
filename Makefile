@@ -1,5 +1,6 @@
-# Some references:
+# Some references used to create this make file:
 # https://docs.oracle.com/cd/E19504-01/802-5880/6i9k05dhg/index.html
+
 
 # object files and executables
 BUILD_DIR = out
@@ -10,7 +11,7 @@ LOG_DIR = logs
 OUTPUT_DIRS = ${BUILD_DIR} ${LOG_DIR} tools/${BUILD_DIR}
 
 CC = gcc
-CFLAGS = -g -Wall -Wno-missing-braces -Wextra -Wshadow -Wpedantic -std=c11 -fno-common -fprofile-arcs -ftest-coverage
+CFLAGS = -Og -Wall -Wno-missing-braces -Wextra -Wshadow -Wpedantic -std=c11 -fno-common -fprofile-arcs -ftest-coverage
 LDFLAGS =
 SRCS_PROD := parser.c common.c lc3common.c
 OBJS_PROD := $(addprefix $(BUILD_DIR)/, $(patsubst %.c,%.o,$(SRCS_PROD)))
