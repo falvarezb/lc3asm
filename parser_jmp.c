@@ -22,7 +22,7 @@ uint16_t parse_jmp(char *asm_instr) {
     char *pch = strtok(asm_instr, delimiters);
     while(pch != NULL) {
         if(i > num_tokens) {
-            printerr("unexpected token in JMP instruction\n", asm_instr);
+            printerr("unexpected token in %s instruction\n", instr_name);
             return 0;
         }
 
@@ -31,7 +31,7 @@ uint16_t parse_jmp(char *asm_instr) {
     }
 
     //PARSING TOKENS
-    if(strcmp(tokens[0], "JMP")) {
+    if(strcmp(tokens[0], instr_name)) {
         //this should not happen        
         printerr("expected JMP but found %s\n", tokens[0]);
         return 0;

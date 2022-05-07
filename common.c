@@ -20,8 +20,8 @@ void error_exit(const char *format, const char *text) {
  * @param format 
  * @return int return value of snprintf
  */
-int printerr(char *s, const char *format) {
-    return snprintf(errdesc, ERR_DESC_LENGTH, s, format);
+int printerr(char *format, const char *specifiers) {
+    return snprintf(errdesc, ERR_DESC_LENGTH, format, specifiers);
 }
 
 /**
