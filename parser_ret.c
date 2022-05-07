@@ -5,9 +5,9 @@
  * @brief
  *
  * Assembler formats:
- * NOT DR,SR
+ * RET
  *
- * @param asm_instr NOT instruction
+ * @param asm_instr RET instruction
  * @return uint16_t* 16 bits representation of the instruction or 0 in case of error
  */
 uint16_t parse_ret(char *asm_instr) {

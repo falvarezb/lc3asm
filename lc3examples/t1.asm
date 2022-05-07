@@ -2,7 +2,7 @@
 ;   template
 ;          
     .ORIG x3000
-    RET
+    JMP R6
     HALT
 
 

@@ -13,7 +13,7 @@ OUTPUT_DIRS = ${BUILD_DIR} ${LOG_DIR} tools/${BUILD_DIR}
 CC = gcc
 CFLAGS = -Og -Wall -Wno-missing-braces -Wextra -Wshadow -Wpedantic -std=c11 -fno-common -fprofile-arcs -ftest-coverage
 LDFLAGS =
-SRCS_PROD := common.c lc3common.c parser_add.c parser_and.c parser_not.c parser_ret.c
+SRCS_PROD := common.c lc3common.c parser_add.c parser_and.c parser_not.c parser_ret.c parser_jmp.c
 OBJS_PROD := $(addprefix $(BUILD_DIR)/, $(patsubst %.c,%.o,$(SRCS_PROD)))
 SRCS_TOOLS := lc3objdump.c
 OBJS_TOOLS := $(addprefix $(TOOLS_BUILD_DIR)/, $(patsubst %.c,%.o,$(SRCS_TOOLS)))
@@ -87,6 +87,18 @@ rettest: $(BUILD_DIR)/parser_ret_test
 	open $(BUILD_DIR)/index.html
 
 $(BUILD_DIR)/parser_ret_test: $(OBJS_PROD) ${BUILD_DIR}/parser_ret_test.o
+	$(LINK.c) $^ -o $@ $(LDLIBS) -lcmocka
+
+
+jmptest: $(BUILD_DIR)/parser_jmp_test
+	$(VALGRIND) ./$^	
+	gcov $(BUILD_DIR)/*.gcda > /dev/null
+	mv *.c.gcov $(BUILD_DIR)/
+	lcov --directory $(BUILD_DIR) --capture --output-file $(BUILD_DIR)/app.info > /dev/null
+	genhtml -o $(BUILD_DIR) $(BUILD_DIR)/app.info > /dev/null
+	open $(BUILD_DIR)/index.html
+
+$(BUILD_DIR)/parser_jmp_test: $(OBJS_PROD) ${BUILD_DIR}/parser_jmp_test.o
 	$(LINK.c) $^ -o $@ $(LDLIBS) -lcmocka
 
 
