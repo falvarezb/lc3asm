@@ -28,7 +28,7 @@ LDLIBS =
 #endif
 
 
-.PHONY: all clean compile unittest myfile lc3objdump
+.PHONY: all clean compile unittest myfile runobjdump
 
 all: clean compile unittest
 
@@ -75,9 +75,9 @@ $(BUILD_DIR)/myfile: $(OBJS_PROD)
 #### tools   ##########
 #######################
 
-# run main method of lc3objdump.c
-# e.g. "make exec_lc3objdump CPPFLAGS=-DFAB_MAIN filename=../lc3practice/test.obj output_mode=hex"
-exec_lc3objdump: $(TOOLS_BUILD_DIR)/lc3objdump
+# run lc3objdump.c
+# e.g. "make runobjdump CPPFLAGS=-DFAB_MAIN filename=./lc3examples/test.obj output_mode=hex"
+runobjdump: $(TOOLS_BUILD_DIR)/lc3objdump
 	$(VALGRIND) ./$^ $(filename) $(output_mode)
 
 $(TOOLS_BUILD_DIR)/lc3objdump: $(OBJS_TOOLS)

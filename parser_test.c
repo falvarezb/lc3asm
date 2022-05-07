@@ -5,8 +5,6 @@
 #include <stdbool.h>
 #include "lc3.h"
 
-//extern char *errdesc;
-
 void test_add_register(void **state) {
     char asm_instr[] = "ADD R0,R1,R2";
     uint16_t machine_instr = parse_add(asm_instr);
