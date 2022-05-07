@@ -8,6 +8,8 @@
         "string.h": "c",
         "stdint.h": "c",
         "errno.h": "c",
-        "common.h": "c"
+        "common.h": "c",
+        "lc3.h": "c",
+        "lc3common.h": "c"
     }
 }

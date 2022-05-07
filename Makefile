@@ -13,7 +13,7 @@ OUTPUT_DIRS = ${BUILD_DIR} ${LOG_DIR} tools/${BUILD_DIR}
 CC = gcc
 CFLAGS = -Og -Wall -Wno-missing-braces -Wextra -Wshadow -Wpedantic -std=c11 -fno-common -fprofile-arcs -ftest-coverage
 LDFLAGS =
-SRCS_PROD := parser.c common.c lc3common.c
+SRCS_PROD := common.c lc3common.c parser_add.c parser_and.c
 OBJS_PROD := $(addprefix $(BUILD_DIR)/, $(patsubst %.c,%.o,$(SRCS_PROD)))
 SRCS_TOOLS := lc3objdump.c
 OBJS_TOOLS := $(addprefix $(TOOLS_BUILD_DIR)/, $(patsubst %.c,%.o,$(SRCS_TOOLS)))
@@ -28,7 +28,7 @@ LDLIBS =
 #endif
 
 
-.PHONY: all clean compile unittest myfile runobjdump
+.PHONY: all clean compile unittest addtest myfile runobjdump
 
 all: clean compile unittest
 
@@ -44,8 +44,7 @@ compile: $(OBJS_PROD)
 #######################
 
 #### run unit tests using cmocka library  ######
-# run unit tests defined in unittest.c
-unittest: $(BUILD_DIR)/parser_test
+addtest: $(BUILD_DIR)/parser_add_test
 	$(VALGRIND) ./$^	
 	gcov $(BUILD_DIR)/*.gcda > /dev/null
 	mv *.c.gcov $(BUILD_DIR)/
@@ -53,7 +52,18 @@ unittest: $(BUILD_DIR)/parser_test
 	genhtml -o $(BUILD_DIR) $(BUILD_DIR)/app.info > /dev/null
 	open $(BUILD_DIR)/index.html
 
-$(BUILD_DIR)/parser_test: $(OBJS_PROD) ${BUILD_DIR}/parser_test.o
+$(BUILD_DIR)/parser_add_test: $(OBJS_PROD) ${BUILD_DIR}/parser_add_test.o
+	$(LINK.c) $^ -o $@ $(LDLIBS) -lcmocka
+
+andtest: $(BUILD_DIR)/parser_and_test
+	$(VALGRIND) ./$^	
+	gcov $(BUILD_DIR)/*.gcda > /dev/null
+	mv *.c.gcov $(BUILD_DIR)/
+	lcov --directory $(BUILD_DIR) --capture --output-file $(BUILD_DIR)/app.info > /dev/null
+	genhtml -o $(BUILD_DIR) $(BUILD_DIR)/app.info > /dev/null
+	open $(BUILD_DIR)/index.html
+
+$(BUILD_DIR)/parser_and_test: $(OBJS_PROD) ${BUILD_DIR}/parser_and_test.o
 	$(LINK.c) $^ -o $@ $(LDLIBS) -lcmocka
 
 
