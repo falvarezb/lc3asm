@@ -33,7 +33,7 @@ uint16_t parse_jmp(char *asm_instr) {
     //PARSING TOKENS
     if(strcmp(tokens[0], instr_name)) {
         //this should not happen        
-        printerr("expected JMP but found %s\n", tokens[0]);
+        printerr("expected %s but found %s\n", instr_name, tokens[0]);
         return 0;
     }
 

@@ -16,12 +16,16 @@ void error_exit(const char *format, const char *text) {
 /**
  * @brief Stores error description in global variable errdesc
  * 
- * @param s 
  * @param format 
- * @return int return value of snprintf
+ * @param ... format specifiers
+ * @return int return value of vsnprintf
  */
-int printerr(char *format, const char *specifiers) {
-    return snprintf(errdesc, ERR_DESC_LENGTH, format, specifiers);
+int printerr(char *format, ...) {
+    va_list ap;
+    va_start(ap, format);
+    int result = vsnprintf(errdesc, ERR_DESC_LENGTH, format, ap);
+    va_end(ap);
+    return result;
 }
 
 /**

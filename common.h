@@ -8,11 +8,12 @@
 #include <stdbool.h>
 #include <limits.h>
 #include <stdint.h>
+#include <stdarg.h>
 
 extern char errdesc[];
 
 void error_exit(const char *format, const char *text);
 char *bin(unsigned int decimal);
-int printerr(char *s, const char *format);
+int printerr(char *format, ...);
 
 #endif
