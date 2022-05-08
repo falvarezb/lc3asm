@@ -11,10 +11,12 @@ LOG_DIR = logs
 OUTPUT_DIRS = ${BUILD_DIR} ${LOG_DIR} tools/${BUILD_DIR}
 
 CC = gcc
-CFLAGS = -Og -Wall -Wno-missing-braces -Wextra -Wshadow -Wpedantic -std=c11 -fno-common -fprofile-arcs -ftest-coverage
+CFLAGS = -Og -Wall -Wno-missing-braces -Wextra -Wshadow -Wpedantic -std=c11 -fno-common --coverage -fprofile-exclude-files=.*test\.c
 LDFLAGS =
 SRCS_PROD := common.c lc3common.c parser_add.c parser_and.c parser_not.c parser_ret.c parser_jmp.c
 OBJS_PROD := $(addprefix $(BUILD_DIR)/, $(patsubst %.c,%.o,$(SRCS_PROD)))
+SRCS_TEST := test.c parser_add_test.c parser_and_test.c parser_not_test.c parser_ret_test.c parser_jmp_test.c 
+OBJS_TEST := $(addprefix $(BUILD_DIR)/, $(patsubst %.c,%.o,$(SRCS_TEST)))
 SRCS_TOOLS := lc3objdump.c
 OBJS_TOOLS := $(addprefix $(TOOLS_BUILD_DIR)/, $(patsubst %.c,%.o,$(SRCS_TOOLS)))
 LDLIBS = 
@@ -44,7 +46,7 @@ compile: $(OBJS_PROD)
 #######################
 
 #### run unit tests using cmocka library  ######
-addtest: $(BUILD_DIR)/parser_add_test
+test: $(BUILD_DIR)/test
 	$(VALGRIND) ./$^	
 	gcov $(BUILD_DIR)/*.gcda > /dev/null
 	mv *.c.gcov $(BUILD_DIR)/
@@ -52,53 +54,7 @@ addtest: $(BUILD_DIR)/parser_add_test
 	genhtml -o $(BUILD_DIR) $(BUILD_DIR)/app.info > /dev/null
 	open $(BUILD_DIR)/index.html
 
-$(BUILD_DIR)/parser_add_test: $(OBJS_PROD) ${BUILD_DIR}/parser_add_test.o
-	$(LINK.c) $^ -o $@ $(LDLIBS) -lcmocka
-
-andtest: $(BUILD_DIR)/parser_and_test
-	$(VALGRIND) ./$^	
-	gcov $(BUILD_DIR)/*.gcda > /dev/null
-	mv *.c.gcov $(BUILD_DIR)/
-	lcov --directory $(BUILD_DIR) --capture --output-file $(BUILD_DIR)/app.info > /dev/null
-	genhtml -o $(BUILD_DIR) $(BUILD_DIR)/app.info > /dev/null
-	open $(BUILD_DIR)/index.html
-
-$(BUILD_DIR)/parser_and_test: $(OBJS_PROD) ${BUILD_DIR}/parser_and_test.o
-	$(LINK.c) $^ -o $@ $(LDLIBS) -lcmocka
-
-nottest: $(BUILD_DIR)/parser_not_test
-	$(VALGRIND) ./$^	
-	gcov $(BUILD_DIR)/*.gcda > /dev/null
-	mv *.c.gcov $(BUILD_DIR)/
-	lcov --directory $(BUILD_DIR) --capture --output-file $(BUILD_DIR)/app.info > /dev/null
-	genhtml -o $(BUILD_DIR) $(BUILD_DIR)/app.info > /dev/null
-	open $(BUILD_DIR)/index.html
-
-$(BUILD_DIR)/parser_not_test: $(OBJS_PROD) ${BUILD_DIR}/parser_not_test.o
-	$(LINK.c) $^ -o $@ $(LDLIBS) -lcmocka
-
-
-rettest: $(BUILD_DIR)/parser_ret_test
-	$(VALGRIND) ./$^	
-	gcov $(BUILD_DIR)/*.gcda > /dev/null
-	mv *.c.gcov $(BUILD_DIR)/
-	lcov --directory $(BUILD_DIR) --capture --output-file $(BUILD_DIR)/app.info > /dev/null
-	genhtml -o $(BUILD_DIR) $(BUILD_DIR)/app.info > /dev/null
-	open $(BUILD_DIR)/index.html
-
-$(BUILD_DIR)/parser_ret_test: $(OBJS_PROD) ${BUILD_DIR}/parser_ret_test.o
-	$(LINK.c) $^ -o $@ $(LDLIBS) -lcmocka
-
-
-jmptest: $(BUILD_DIR)/parser_jmp_test
-	$(VALGRIND) ./$^	
-	gcov $(BUILD_DIR)/*.gcda > /dev/null
-	mv *.c.gcov $(BUILD_DIR)/
-	lcov --directory $(BUILD_DIR) --capture --output-file $(BUILD_DIR)/app.info > /dev/null
-	genhtml -o $(BUILD_DIR) $(BUILD_DIR)/app.info > /dev/null
-	open $(BUILD_DIR)/index.html
-
-$(BUILD_DIR)/parser_jmp_test: $(OBJS_PROD) ${BUILD_DIR}/parser_jmp_test.o
+$(BUILD_DIR)/test: $(OBJS_PROD) $(OBJS_TEST)
 	$(LINK.c) $^ -o $@ $(LDLIBS) -lcmocka
 
 
