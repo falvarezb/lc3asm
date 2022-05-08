@@ -14,18 +14,12 @@ uint16_t parse_not(char *asm_instr) {
 
     //READING INSTRUCTION TOKENS
     int DR, SR;
-    char *tokens[3];
-    int i = 0;
-    char *delimiters = " ,";
-    char *pch = strtok(asm_instr, delimiters);
-    while(pch != NULL) {
-        if(i > 2) {
-            printerr("unexpected token in NOT instruction\n", asm_instr);
-            return 0;
-        }
+    char *instr_name = "NOT";
+    int num_tokens = 3;
+    char **tokens;    
 
-        tokens[i++] = pch;
-        pch = strtok(NULL, delimiters);
+    if((tokens = instruction_tokens(asm_instr, instr_name, num_tokens)) == 0) {
+        return 0;
     }
 
     //PARSING TOKENS

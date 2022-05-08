@@ -16,18 +16,12 @@ uint16_t parse_add(char *asm_instr) {
     //READING INSTRUCTION TOKENS
     int DR, SR1, SR2;
     int *imm5 = (int*)malloc(sizeof(int));
-    char *tokens[4];
-    int i = 0;
-    char *delimiters = " ,";
-    char *pch = strtok(asm_instr, delimiters);
-    while(pch != NULL) {
-        if(i > 3) {
-            printerr("unexpected token in ADD instruction\n", asm_instr);
-            return 0;
-        }
+    char *instr_name = "ADD";
+    int num_tokens = 4;
+    char **tokens;    
 
-        tokens[i++] = pch;
-        pch = strtok(NULL, delimiters);
+    if((tokens = instruction_tokens(asm_instr, instr_name, num_tokens)) == 0) {
+        return 0;
     }
 
     //PARSING TOKENS

@@ -13,18 +13,12 @@
 uint16_t parse_ret(char *asm_instr) {
 
     //READING INSTRUCTION TOKENS    
-    char *tokens[1];
-    int i = 0;
-    char *delimiters = " ,";
-    char *pch = strtok(asm_instr, delimiters);
-    while(pch != NULL) {
-        if(i > 1) {
-            printerr("unexpected token in RET instruction\n", asm_instr);
-            return 0;
-        }
+    char *instr_name = "RET";
+    int num_tokens = 1;
+    char **tokens;    
 
-        tokens[i++] = pch;
-        pch = strtok(NULL, delimiters);
+    if((tokens = instruction_tokens(asm_instr, instr_name, num_tokens)) == 0) {
+        return 0;
     }
 
     //PARSING TOKENS

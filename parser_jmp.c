@@ -13,10 +13,10 @@
 uint16_t parse_jmp(char *asm_instr) {
 
     //READING INSTRUCTION TOKENS
+    int BaseR;
     char *instr_name = "JMP";
     int num_tokens = 2;
-    char **tokens;
-    int BaseR;
+    char **tokens;    
 
     if((tokens = instruction_tokens(asm_instr, instr_name, num_tokens)) == 0) {
         return 0;
