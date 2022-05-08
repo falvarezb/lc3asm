@@ -14,20 +14,12 @@ uint16_t parse_jmp(char *asm_instr) {
 
     //READING INSTRUCTION TOKENS
     char *instr_name = "JMP";
-    int BaseR;
     int num_tokens = 2;
-    char *tokens[num_tokens];
-    int i = 0;
-    char *delimiters = " ,";
-    char *pch = strtok(asm_instr, delimiters);
-    while(pch != NULL) {
-        if(i > num_tokens) {
-            printerr("unexpected token in %s instruction\n", instr_name);
-            return 0;
-        }
+    char **tokens;
+    int BaseR;
 
-        tokens[i++] = pch;
-        pch = strtok(NULL, delimiters);
+    if((tokens = instruction_tokens(asm_instr, instr_name, num_tokens)) == 0) {
+        return 0;
     }
 
     //PARSING TOKENS
@@ -37,7 +29,7 @@ uint16_t parse_jmp(char *asm_instr) {
         return 0;
     }
 
-    if((BaseR = is_register(tokens[1])) == -1) {        
+    if((BaseR = is_register(tokens[1])) == -1) {
         printerr("expected register but found %s\n", tokens[1]);
         return 0;
     }
@@ -47,7 +39,7 @@ uint16_t parse_jmp(char *asm_instr) {
     //ops code: 1100
     uint16_t machine_instr = 12 << 12;
 
-    //DR
+    //BaseR
     BaseR = BaseR << 6;
     machine_instr += BaseR;
 

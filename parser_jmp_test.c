@@ -24,7 +24,7 @@ void test_jmp_wrong_register_BaseR(void **state) {
 }
 
 void test_jmp_wrong_instruction(void **state) {
-    char asm_instr[] = "ADD R0,R1";
+    char asm_instr[] = "ADD R0";
     uint16_t machine_instr = parse_jmp(asm_instr);
 
     assert_int_equal(machine_instr, 0);
@@ -32,7 +32,7 @@ void test_jmp_wrong_instruction(void **state) {
 }
 
 void test_jmp_wrong_element_in_instruction(void **state) {
-    char asm_instr[] = "JMP R0,R1,R2,R3";
+    char asm_instr[] = "JMP R0,R1";
     uint16_t machine_instr = parse_jmp(asm_instr);
 
     assert_int_equal(machine_instr, 0);

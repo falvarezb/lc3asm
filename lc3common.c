@@ -62,13 +62,25 @@ int is_imm5(char *token, int *imm5) {
     return 1;
 }
 
-/**
- * @brief Binary representation truncated to the size of a LC3 word
- *
- * @param decimal
- * @return char*
- */
-char *bin_lc3word(unsigned int decimal) {
-    size_t i = CHAR_BIT * sizeof(int);
-    return bin(decimal) + (i - LC3_WORD_SIZE);
+
+char **instruction_tokens(char *asm_instr, char *instr_name, int num_tokens) {
+    char **tokens = (char **)malloc(num_tokens * sizeof(char *));
+    if(tokens == NULL) {
+        printerr("out of memory\n");
+        return 0;
+    }
+    int i = 0;
+    char *delimiters = " ,";
+    char *pch = strtok(asm_instr, delimiters);
+    while(pch != NULL) {
+        if(i > num_tokens-1) {
+            printerr("unexpected token in %s instruction\n", instr_name);
+            return 0;
+        }
+
+        tokens[i++] = pch;
+        pch = strtok(NULL, delimiters);
+    }
+    return tokens;
 }
+
