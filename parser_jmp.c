@@ -12,7 +12,7 @@
  */
 uint16_t parse_jmp(char *asm_instr) {
 
-    //READING INSTRUCTION TOKENS
+    //PARSING INSTRUCTION TOKENS
     int BaseR;
     char *instr_name = "JMP";
     int num_tokens = 2;
@@ -22,7 +22,7 @@ uint16_t parse_jmp(char *asm_instr) {
         return 0;
     }
 
-    //PARSING TOKENS
+    //VALIDATING TOKENS
     if(strcmp(tokens[0], instr_name)) {
         //this should not happen        
         printerr("expected %s but found %s\n", instr_name, tokens[0]);

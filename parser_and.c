@@ -13,7 +13,7 @@
  */
 uint16_t parse_and(char *asm_instr) {
 
-    //READING INSTRUCTION TOKENS
+    //PARSING INSTRUCTION TOKENS
     int DR, SR1, SR2;
     int *imm5 = (int*)malloc(sizeof(int));
     char *instr_name = "AND";
@@ -24,7 +24,7 @@ uint16_t parse_and(char *asm_instr) {
         return 0;
     }
 
-    //PARSING TOKENS
+    //VALIDATING TOKENS
     if(strcmp(tokens[0], "AND")) {
         //this should not happen        
         printerr("expected AND but found %s\n", tokens[0]);

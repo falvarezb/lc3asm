@@ -12,7 +12,7 @@
  */
 uint16_t parse_ret(char *asm_instr) {
 
-    //READING INSTRUCTION TOKENS    
+    //PARSING INSTRUCTION TOKENS    
     char *instr_name = "RET";
     int num_tokens = 1;
     char **tokens;    
@@ -21,7 +21,7 @@ uint16_t parse_ret(char *asm_instr) {
         return 0;
     }
 
-    //PARSING TOKENS
+    //VALDATING TOKENS
     if(strcmp(tokens[0], "RET")) {
         //this should not happen        
         printerr("expected RET but found %s\n", tokens[0]);
