@@ -57,7 +57,7 @@ $(BUILD_DIR)/test: $(OBJS_PROD) $(OBJS_TEST)
 jsrtest: $(BUILD_DIR)/jsrtest
 	$(VALGRIND) ./$^
 
-$(BUILD_DIR)/jsrtest: $(OBJS_PROD) parser_jsr_test.o
+$(BUILD_DIR)/jsrtest: $(OBJS_PROD) $(BUILD_DIR)/parser_jsr_test.o
 	$(LINK.c) $^ -o $@ $(LDLIBS) -lcmocka
 
 coverage_report: unittest
