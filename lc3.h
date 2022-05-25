@@ -19,5 +19,6 @@ uint16_t parse_and(char *instr);
 uint16_t parse_not(char *instr);
 uint16_t parse_ret(char *instr);
 uint16_t parse_jmp(char *instr);
+uint16_t parse_jsr(char *instr);
 
 #endif

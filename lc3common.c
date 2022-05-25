@@ -34,6 +34,9 @@ int is_register(char *token) {
 
 /*
     Parse the token representing the immediate operand and stores its numeric value in imm5
+    imm5 is a 5-bit value, range [-16,15]
+    imm5 can be expressed in decimal and hex notation
+
     Returns 0 if parsing is successful, else 1
     Error message is stored in errdesc
 */
@@ -60,6 +63,22 @@ int is_imm5(char *token, int *imm5) {
     }
     printerr("operand imm5 %s must be decimal or hex\n", token);
     return 1;
+}
+
+/*
+    Parse the token representing a memory location and stores its numeric value in label
+    PCoffset11 is a 11-bit value, range [-1024, 1023]    
+
+    Returns 0 if parsing is successful, else 1
+    Error message is stored in errdesc
+*/
+int is_PCoffset11(char *token, int *PCoffset11) {
+    *PCoffset11 = atoi(token);
+    if(*PCoffset11 < 0 || *PCoffset11 > 1023) {
+        printerr("value of PCoffset11 %s is outside the range [-1024, 1023]\n", token);
+        return 1;
+    }
+    return 0;
 }
 
 

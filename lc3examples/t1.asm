@@ -2,8 +2,12 @@
 ;   template
 ;          
     .ORIG x3000
-    JMP R6
+    JSR LABEL
+    ADD R0,R0,#1
     HALT
+
+LABEL
+    ADD R0,R1,R2
 
 
     .END

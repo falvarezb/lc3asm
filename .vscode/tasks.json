@@ -61,10 +61,9 @@
             "args": [
                 "-g",
                 "-Wall",    
-                "-Wno-missing-braces ",
-                "${workspaceFolder}/test.c",  
-                "${workspaceFolder}/parser_and_test.c",
-                "${workspaceFolder}/parser_and.c", 
+                "-Wno-missing-braces ",                  
+                "${workspaceFolder}/parser_jsr_test.c",
+                "${workspaceFolder}/parser_jsr.c", 
                 "${workspaceFolder}/common.c",             
                 "${workspaceFolder}/lc3common.c",             
                 "-lcmocka",
