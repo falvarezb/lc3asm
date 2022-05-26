@@ -66,7 +66,7 @@ int is_imm5(char *token, int *imm5) {
 }
 
 /*
-    Parse the token representing a memory location and stores its numeric value in label
+    Parse the token representing a memory location relative to the PC and stores its numeric value in PCoffset11
     PCoffset11 is a 11-bit value, range [-1024, 1023]    
 
     Returns 0 if parsing is successful, else 1
