@@ -101,7 +101,7 @@ char **instruction_tokens(char *asm_instr, char *instr_name, int num_tokens) {
     while(pch != NULL) {
         if(i > num_tokens - 1) {
             printerr("unexpected token in %s instruction\n", instr_name);
-            return 0;
+            return NULL;
         }
 
         tokens[i++] = pch;

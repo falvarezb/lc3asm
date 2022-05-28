@@ -20,7 +20,7 @@ uint16_t parse_add(char *asm_instr) {
     int num_tokens = 4;
     char **tokens;    
 
-    if((tokens = instruction_tokens(asm_instr, instr_name, num_tokens)) == 0) {
+    if((tokens = instruction_tokens(asm_instr, instr_name, num_tokens)) == NULL) {
         return 0;
     }
 
