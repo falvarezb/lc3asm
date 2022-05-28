@@ -54,7 +54,7 @@ void strtolong(char *str, long **num) {
     if(str == pEnd) {
         *num = NULL;
     }
-    else {        
+    else {
         **num = l;
     }
 

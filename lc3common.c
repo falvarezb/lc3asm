@@ -88,6 +88,10 @@ int is_PCoffset11(char *token, long *PCoffset11) {
     return 0;
 }
 
+uint16_t do_return(uint16_t ret, char **tokens) {
+    free(tokens);
+    return ret;
+}
 
 char **instruction_tokens(char *asm_instr, char *instr_name, int num_tokens) {
     char **tokens = (char **)malloc(num_tokens * sizeof(char *));

@@ -1,11 +1,6 @@
 
 #include "lc3.h"
 
-uint16_t do_return(uint16_t ret, char **tokens) {
-    free(tokens);
-    return ret;
-}
-
 /**
  * @brief
  *
