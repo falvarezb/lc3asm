@@ -18,21 +18,21 @@ uint16_t parse_ret(char *asm_instr) {
     char **tokens;    
 
     if((tokens = instruction_tokens(asm_instr, instr_name, num_tokens)) == NULL) {
-        return 0;
+        return do_return(0, tokens);
     }
 
     //VALDATING TOKENS
     if(strcmp(tokens[0], "RET")) {
         //this should not happen        
         printerr("expected RET but found %s\n", tokens[0]);
-        return 0;
+        return do_return(0, tokens);
     }
 
     //CONVERTING TO BINARY REPRESENTATION
 
     //instruction: 1100 000 111 000000
     uint16_t machine_instr = 49600;
-    return machine_instr;
+    return do_return(machine_instr, tokens);
 }
 
 

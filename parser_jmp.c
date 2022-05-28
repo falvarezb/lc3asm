@@ -19,19 +19,19 @@ uint16_t parse_jmp(char *asm_instr) {
     char **tokens;    
 
     if((tokens = instruction_tokens(asm_instr, instr_name, num_tokens)) == NULL) {
-        return 0;
+        return do_return(0, tokens);
     }
 
     //VALIDATING TOKENS
     if(strcmp(tokens[0], instr_name)) {
         //this should not happen        
         printerr("expected %s but found %s\n", instr_name, tokens[0]);
-        return 0;
+        return do_return(0, tokens);
     }
 
     if((BaseR = is_register(tokens[1])) == -1) {
         printerr("expected register but found %s\n", tokens[1]);
-        return 0;
+        return do_return(0, tokens);
     }
 
     //CONVERTING TO BINARY REPRESENTATION
@@ -43,7 +43,7 @@ uint16_t parse_jmp(char *asm_instr) {
     BaseR = BaseR << 6;
     machine_instr += BaseR;
 
-    return machine_instr;
+    return do_return(machine_instr, tokens);
 }
 
 

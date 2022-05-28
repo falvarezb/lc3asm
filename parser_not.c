@@ -19,24 +19,24 @@ uint16_t parse_not(char *asm_instr) {
     char **tokens;    
 
     if((tokens = instruction_tokens(asm_instr, instr_name, num_tokens)) == NULL) {
-        return 0;
+        return do_return(0, tokens);
     }
 
     //VALIDATING TOKENS
     if(strcmp(tokens[0], "NOT")) {
         //this should not happen        
         printerr("expected NOT but found %s\n", tokens[0]);
-        return 0;
+        return do_return(0, tokens);
     }
 
     if((DR = is_register(tokens[1])) == -1) {        
         printerr("expected register but found %s\n", tokens[1]);
-        return 0;
+        return do_return(0, tokens);
     }
 
     if((SR = is_register(tokens[2])) == -1) {
         printerr("expected register but found %s\n", tokens[2]);
-        return 0;        
+        return do_return(0, tokens);       
     }
 
 
@@ -56,7 +56,7 @@ uint16_t parse_not(char *asm_instr) {
     //last 6 bits = 111111
     machine_instr += 63;
 
-    return machine_instr;
+    return do_return(machine_instr, tokens);
 }
 
 

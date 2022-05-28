@@ -21,24 +21,24 @@ uint16_t parse_add(char *asm_instr) {
     char **tokens;    
 
     if((tokens = instruction_tokens(asm_instr, instr_name, num_tokens)) == NULL) {
-        return 0;
+        return do_return(0, tokens);
     }
 
     //VALIDATING TOKENS
     if(strcmp(tokens[0], "ADD")) {
         //this should not happen        
         printerr("expected ADD but found %s\n", tokens[0]);
-        return 0;
+        return do_return(0, tokens);
     }
 
     if((DR = is_register(tokens[1])) == -1) {        
         printerr("expected register but found %s\n", tokens[1]);
-        return 0;
+        return do_return(0, tokens);
     }
 
     if((SR1 = is_register(tokens[2])) == -1) {
         printerr("expected register but found %s\n", tokens[2]);
-        return 0;        
+        return do_return(0, tokens);       
     }
 
 
@@ -60,13 +60,13 @@ uint16_t parse_add(char *asm_instr) {
     }
     else {
         if(is_imm5(tokens[3], &imm5)){
-            return 0;
+            return do_return(0, tokens);
         }
         machine_instr += (1 << 5);
         machine_instr += imm5;
     }
 
-    return machine_instr;
+    return do_return(machine_instr, tokens);    
 }
 
 
