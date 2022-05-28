@@ -15,7 +15,7 @@ uint16_t parse_add(char *asm_instr) {
 
     //PARSING INSTRUCTION TOKENS
     int DR, SR1, SR2;
-    int *imm5 = (int*)malloc(sizeof(int));
+    int imm5;
     char *instr_name = "ADD";
     int num_tokens = 4;
     char **tokens;    
@@ -59,11 +59,11 @@ uint16_t parse_add(char *asm_instr) {
         machine_instr += SR2;
     }
     else {
-        if(is_imm5(tokens[3], imm5)){
+        if(is_imm5(tokens[3], &imm5)){
             return 0;
         }
         machine_instr += (1 << 5);
-        machine_instr += *imm5;
+        machine_instr += imm5;
     }
 
     return machine_instr;
