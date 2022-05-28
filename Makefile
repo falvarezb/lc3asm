@@ -30,7 +30,7 @@ LDLIBS =
 #endif
 
 
-.PHONY: all clean compile unittest addtest myfile runobjdump
+.PHONY: all clean compile compiletest unittest addtest myfile runobjdump
 
 unittest: test jsrtest
 
@@ -41,7 +41,8 @@ $(OBJS_PROD): | ${OUTPUT_DIRS}
 $(OBJS_TOOLS): | ${OUTPUT_DIRS}
 
 
-compile: $(OBJS_PROD)	
+compile: $(OBJS_PROD)
+compiletest: $(OBJS_PROD) $(OBJS_TEST)
 
 ####################### 
 #### tests  ###########
