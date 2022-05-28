@@ -1,6 +1,11 @@
 
 #include "lc3.h"
 
+uint16_t do_return(uint16_t ret, char **tokens) {
+    free(tokens);
+    return ret;
+}
+
 /**
  * @brief
  *
@@ -19,18 +24,18 @@ uint16_t parse_jsr(char *asm_instr) {
     char **tokens;    
 
     if((tokens = instruction_tokens(asm_instr, instr_name, num_tokens)) == NULL) {
-        return 0;
+        return do_return(0, tokens);
     }
 
     //VALIDATING TOKENS
     if(strcmp(tokens[0], instr_name)) {
         //this should not happen        
         printerr("expected %s but found %s\n", instr_name, tokens[0]);
-        return 0;
+        return do_return(0, tokens);
     }
 
     if((is_PCoffset11(tokens[1], &LABEL))) {        
-        return 0;
+        return do_return(0, tokens);
     }
 
     //CONVERTING TO BINARY REPRESENTATION
@@ -44,7 +49,7 @@ uint16_t parse_jsr(char *asm_instr) {
     //LABEL
     machine_instr += (LABEL);
 
-    return machine_instr;
+    return do_return(machine_instr, tokens);
 }
 
 
