@@ -72,21 +72,18 @@ int is_imm5(char *token, int *imm5) {
     Returns 0 if parsing is successful, else 1
     Error message is stored in errdesc
 */
-int is_PCoffset11(char *token, int *PCoffset11) {
-    long **num = (long **)malloc(sizeof(long*));
-    strtolong(token, num);
+int is_PCoffset11(char *token, long *PCoffset11) {    
+    strtolong(token, &PCoffset11);
 
-    if(*num == NULL) {
+    if(PCoffset11 == NULL) {
         printerr("value of PCoffset11 %s is not a numeric value\n", token);
         return 1;
     }
 
-    if(**num < 0 || **num > 1023) {
+    if(*PCoffset11 < 0 || *PCoffset11 > 1023) {
         printerr("value of PCoffset11 %s is outside the range [-1024, 1023]\n", token);
         return 1;
-    }
-
-    *PCoffset11 = **num;
+    }    
 
     return 0;
 }

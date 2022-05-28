@@ -13,7 +13,7 @@
 uint16_t parse_jsr(char *asm_instr) {
 
     //PARSING INSTRUCTION TOKENS
-    int *LABEL = (int*)malloc(sizeof(int));
+    long *LABEL = (long*)malloc(sizeof(long));
     char *instr_name = "JSR";
     int num_tokens = 2;
     char **tokens;    

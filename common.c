@@ -54,8 +54,7 @@ void strtolong(char *str, long **num) {
     if(str == pEnd) {
         *num = NULL;
     }
-    else {
-        *num = (long *)malloc(sizeof(long));
+    else {        
         **num = l;
     }
 
