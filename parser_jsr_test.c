@@ -6,7 +6,7 @@
 #include "lc3.h"
 #include "lc3test.h"
 
-void test_jsr_right_instruction(void **state) {
+void test_jsr_right_instruction(void __attribute__ ((unused)) **state) {
     char asm_instr[] = "JSR 1";
     uint16_t machine_instr = parse_jsr(asm_instr);
     unsigned char *bytes = (unsigned char *)&machine_instr;
@@ -15,7 +15,7 @@ void test_jsr_right_instruction(void **state) {
     assert_int_equal(bytes[1], 72);
 }
 
-void test_jsr_PCoffset11_too_big(void **state) {
+void test_jsr_PCoffset11_too_big(void __attribute__ ((unused))  **state) {
     char asm_instr[] = "JSR 2000";
     uint16_t machine_instr = parse_jsr(asm_instr);
 
@@ -23,7 +23,7 @@ void test_jsr_PCoffset11_too_big(void **state) {
     assert_string_equal(errdesc, "value of PCoffset11 2000 is outside the range [-1024, 1023]\n");
 }
 
-void test_jsr_PCoffset11_too_small(void **state) {
+void test_jsr_PCoffset11_too_small(void __attribute__ ((unused))  **state) {
     char asm_instr[] = "JSR -2000";
     uint16_t machine_instr = parse_jsr(asm_instr);
 
@@ -31,7 +31,7 @@ void test_jsr_PCoffset11_too_small(void **state) {
     assert_string_equal(errdesc, "value of PCoffset11 -2000 is outside the range [-1024, 1023]\n");
 }
 
-void test_jsr_wrong_instruction(void **state) {
+void test_jsr_wrong_instruction(void __attribute__ ((unused))  **state) {
     char asm_instr[] = "ADD 1";
     uint16_t machine_instr = parse_jsr(asm_instr);
 
@@ -39,7 +39,7 @@ void test_jsr_wrong_instruction(void **state) {
     assert_string_equal(errdesc, "expected JSR but found ADD\n");
 }
 
-void test_jsr_wrong_element_in_instruction(void **state) {
+void test_jsr_wrong_element_in_instruction(void __attribute__ ((unused))  **state) {
     char asm_instr[] = "JSR 1 R";
     uint16_t machine_instr = parse_jsr(asm_instr);
 
@@ -47,7 +47,7 @@ void test_jsr_wrong_element_in_instruction(void **state) {
     assert_string_equal(errdesc, "unexpected token in JSR instruction\n");
 }
 
-void test_jsr_non_numeric_label_in_instruction(void **state) {
+void test_jsr_non_numeric_label_in_instruction(void __attribute__ ((unused))  **state) {
     char asm_instr[] = "JSR A";
     uint16_t machine_instr = parse_jsr(asm_instr);
 
@@ -55,7 +55,7 @@ void test_jsr_non_numeric_label_in_instruction(void **state) {
     assert_string_equal(errdesc, "value of PCoffset11 A is not a numeric value\n");
 }
 
-int main(int argc, char const *argv[]) {
+int main(int __attribute__ ((unused)) argc, char const __attribute__ ((unused)) *argv[]) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_jsr_right_instruction),
         cmocka_unit_test(test_jsr_PCoffset11_too_big),

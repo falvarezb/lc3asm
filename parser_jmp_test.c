@@ -6,7 +6,7 @@
 #include "lc3.h"
 #include "lc3test.h"
 
-void test_jmp_register(void **state) {
+void test_jmp_register(void  __attribute__ ((unused)) **state) {
     char asm_instr[] = "JMP R6";
     uint16_t machine_instr = parse_jmp(asm_instr);
     unsigned char *bytes = (unsigned char *)&machine_instr;
@@ -15,7 +15,7 @@ void test_jmp_register(void **state) {
     assert_int_equal(bytes[1], 193);
 }
 
-void test_jmp_wrong_register_BaseR(void **state) {
+void test_jmp_wrong_register_BaseR(void  __attribute__ ((unused)) **state) {
     char asm_instr[] = "JMP R8";
     uint16_t machine_instr = parse_jmp(asm_instr);
 
@@ -23,7 +23,7 @@ void test_jmp_wrong_register_BaseR(void **state) {
     assert_string_equal(errdesc, "expected register but found R8\n");
 }
 
-void test_jmp_wrong_instruction(void **state) {
+void test_jmp_wrong_instruction(void  __attribute__ ((unused)) **state) {
     char asm_instr[] = "ADD R0";
     uint16_t machine_instr = parse_jmp(asm_instr);
 
@@ -31,7 +31,7 @@ void test_jmp_wrong_instruction(void **state) {
     assert_string_equal(errdesc, "expected JMP but found ADD\n");
 }
 
-void test_jmp_wrong_element_in_instruction(void **state) {
+void test_jmp_wrong_element_in_instruction(void  __attribute__ ((unused)) **state) {
     char asm_instr[] = "JMP R0,R1";
     uint16_t machine_instr = parse_jmp(asm_instr);
 

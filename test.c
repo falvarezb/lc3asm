@@ -6,7 +6,7 @@
 #include "lc3.h"
 #include "lc3test.h"
 
-int main(int argc, char const *argv[]) {
+int main(int __attribute__ ((unused)) argc, char const __attribute__ ((unused))  *argv[]) {
     const struct CMUnitTest tests[] = {
         // ADD tests
         cmocka_unit_test(test_add_SR2),

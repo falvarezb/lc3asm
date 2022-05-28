@@ -93,7 +93,7 @@ char **instruction_tokens(char *asm_instr, char *instr_name, int num_tokens) {
     char **tokens = (char **)malloc(num_tokens * sizeof(char *));
     if(tokens == NULL) {
         printerr("out of memory\n");
-        return 0;
+        return NULL;
     }
     int i = 0;
     char *delimiters = " ,";

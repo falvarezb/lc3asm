@@ -6,7 +6,7 @@
 #include "lc3.h"
 #include "lc3test.h"
 
-void test_not_register(void **state) {
+void test_not_register(void  __attribute__ ((unused)) **state) {
     char asm_instr[] = "NOT R4,R5";
     uint16_t machine_instr = parse_not(asm_instr);
     unsigned char *bytes = (unsigned char *)&machine_instr;
@@ -15,7 +15,7 @@ void test_not_register(void **state) {
     assert_int_equal(bytes[1], 153);
 }
 
-void test_not_wrong_register_DR(void **state) {
+void test_not_wrong_register_DR(void  __attribute__ ((unused)) **state) {
     char asm_instr[] = "NOT R8,R1";
     uint16_t machine_instr = parse_not(asm_instr);
 
@@ -23,7 +23,7 @@ void test_not_wrong_register_DR(void **state) {
     assert_string_equal(errdesc, "expected register but found R8\n");
 }
 
-void test_not_wrong_register_SR(void **state) {
+void test_not_wrong_register_SR(void  __attribute__ ((unused)) **state) {
     char asm_instr[] = "NOT R0,SR1";
     uint16_t machine_instr = parse_not(asm_instr);
 
@@ -31,7 +31,7 @@ void test_not_wrong_register_SR(void **state) {
     assert_string_equal(errdesc, "expected register but found SR1\n");
 }
 
-void test_not_wrong_instruction(void **state) {
+void test_not_wrong_instruction(void  __attribute__ ((unused)) **state) {
     char asm_instr[] = "ADD R0,R1";
     uint16_t machine_instr = parse_not(asm_instr);
 
@@ -39,7 +39,7 @@ void test_not_wrong_instruction(void **state) {
     assert_string_equal(errdesc, "expected NOT but found ADD\n");
 }
 
-void test_not_wrong_element_in_instruction(void **state) {
+void test_not_wrong_element_in_instruction(void  __attribute__ ((unused)) **state) {
     char asm_instr[] = "NOT R0,R1,R2,R3";
     uint16_t machine_instr = parse_not(asm_instr);
 
