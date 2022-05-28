@@ -14,6 +14,7 @@ void test_add_wrong_imm5_too_small_dec(void **state);
 void test_add_wrong_imm5_too_big_hex(void **state);
 void test_add_wrong_imm5_too_small_hex(void **state);
 void test_add_wrong_imm5_format(void **state);
+void test_add_wrong_imm5_number(void **state);
 void test_add_wrong_instruction(void **state);
 void test_add_wrong_element_in_instruction(void **state);
 
@@ -28,6 +29,7 @@ void test_and_wrong_imm5_too_small_dec(void **state);
 void test_and_wrong_imm5_too_big_hex(void **state);
 void test_and_wrong_imm5_too_small_hex(void **state);
 void test_and_wrong_imm5_format(void **state);
+void test_and_wrong_imm5_number(void **state);
 void test_and_wrong_instruction(void **state);
 void test_and_wrong_element_in_instruction(void **state);
 

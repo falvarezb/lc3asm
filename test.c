@@ -19,6 +19,7 @@ int main(int __attribute__ ((unused)) argc, char const __attribute__ ((unused)) 
         cmocka_unit_test(test_add_wrong_imm5_too_big_hex),
         cmocka_unit_test(test_add_wrong_imm5_too_small_hex),
         cmocka_unit_test(test_add_wrong_imm5_format),
+        cmocka_unit_test(test_add_wrong_imm5_number),
         cmocka_unit_test(test_add_wrong_instruction),
         cmocka_unit_test(test_add_wrong_element_in_instruction),  
         // AND tests
@@ -32,6 +33,7 @@ int main(int __attribute__ ((unused)) argc, char const __attribute__ ((unused)) 
         cmocka_unit_test(test_and_wrong_imm5_too_big_hex),
         cmocka_unit_test(test_and_wrong_imm5_too_small_hex),
         cmocka_unit_test(test_and_wrong_imm5_format),
+        cmocka_unit_test(test_and_wrong_imm5_number),
         cmocka_unit_test(test_and_wrong_instruction),
         cmocka_unit_test(test_and_wrong_element_in_instruction),  
         // NOT tests

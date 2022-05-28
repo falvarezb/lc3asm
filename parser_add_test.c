@@ -89,6 +89,14 @@ void test_add_wrong_imm5_format(void  __attribute__ ((unused)) **state) {
     assert_string_equal(errdesc, "operand imm5 0 must be decimal or hex\n");
 }
 
+void test_add_wrong_imm5_number(void  __attribute__ ((unused)) **state) {
+    char asm_instr[] = "ADD R0,R1,#y";
+    uint16_t machine_instr = parse_add(asm_instr);
+
+    assert_int_equal(machine_instr, 0);
+    assert_string_equal(errdesc, "value of imm5 #y is not a numeric value\n");
+}
+
 void test_add_wrong_instruction(void  __attribute__ ((unused)) **state) {
     char asm_instr[] = "AND R0,R1,R2";
     uint16_t machine_instr = parse_add(asm_instr);

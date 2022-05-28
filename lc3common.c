@@ -40,10 +40,14 @@ int is_register(char *token) {
     Returns 0 if parsing is successful, else 1
     Error message is stored in errdesc
 */
-int is_imm5(char *token, int *imm5) {
+int is_imm5(char *token, long *imm5) {
     char first_ch = *token;
     if(first_ch == '#') { //decimal literal
-        *imm5 = atoi(token + 1);
+        strtolong(token + 1, &imm5);
+        if(imm5 == NULL) {
+            printerr("value of imm5 %s is not a numeric value\n", token);
+            return 1;
+        }
         if(*imm5 < -16 || *imm5 > 15) {
             printerr("value of operand imm5 %s is outside the range [-16,15]\n", token + 1);
             return 1;
@@ -51,7 +55,7 @@ int is_imm5(char *token, int *imm5) {
         return 0;
     }
     else if(first_ch == 'x') { //hex literal
-        if(sscanf(token + 1, "%x", imm5) < 1) {
+        if(sscanf(token + 1, "%lx", imm5) < 1) {
             printerr("error while reading operand imm5 %s\n", token);
             return 1;
         }
@@ -72,7 +76,7 @@ int is_imm5(char *token, int *imm5) {
     Returns 0 if parsing is successful, else 1
     Error message is stored in errdesc
 */
-int is_PCoffset11(char *token, long *PCoffset11) {    
+int is_PCoffset11(char *token, long *PCoffset11) {
     strtolong(token, &PCoffset11);
 
     if(PCoffset11 == NULL) {
@@ -83,7 +87,7 @@ int is_PCoffset11(char *token, long *PCoffset11) {
     if(*PCoffset11 < 0 || *PCoffset11 > 1023) {
         printerr("value of PCoffset11 %s is outside the range [-1024, 1023]\n", token);
         return 1;
-    }    
+    }
 
     return 0;
 }

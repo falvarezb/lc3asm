@@ -15,7 +15,7 @@ uint16_t parse_add(char *asm_instr) {
 
     //PARSING INSTRUCTION TOKENS
     int DR, SR1, SR2;
-    int imm5;
+    long imm5;
     char *instr_name = "ADD";
     int num_tokens = 4;
     char **tokens;    
