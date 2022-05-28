@@ -15,5 +15,6 @@ extern char errdesc[];
 void error_exit(const char *format, const char *text);
 char *bin(unsigned int decimal);
 int printerr(char *format, ...);
+void strtolong(char* str, long** num);
 
 #endif

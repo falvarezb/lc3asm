@@ -67,17 +67,27 @@ int is_imm5(char *token, int *imm5) {
 
 /*
     Parse the token representing a memory location relative to the PC and stores its numeric value in PCoffset11
-    PCoffset11 is a 11-bit value, range [-1024, 1023]    
+    PCoffset11 is a 11-bit value, range [-1024, 1023]
 
     Returns 0 if parsing is successful, else 1
     Error message is stored in errdesc
 */
 int is_PCoffset11(char *token, int *PCoffset11) {
-    *PCoffset11 = atoi(token);
-    if(*PCoffset11 < 0 || *PCoffset11 > 1023) {
+    long **num = (long **)malloc(sizeof(long*));
+    strtolong(token, num);
+
+    if(*num == NULL) {
+        printerr("value of PCoffset11 %s is not a numeric value\n", token);
+        return 1;
+    }
+
+    if(**num < 0 || **num > 1023) {
         printerr("value of PCoffset11 %s is outside the range [-1024, 1023]\n", token);
         return 1;
     }
+
+    *PCoffset11 = **num;
+
     return 0;
 }
 
@@ -92,7 +102,7 @@ char **instruction_tokens(char *asm_instr, char *instr_name, int num_tokens) {
     char *delimiters = " ,";
     char *pch = strtok(asm_instr, delimiters);
     while(pch != NULL) {
-        if(i > num_tokens-1) {
+        if(i > num_tokens - 1) {
             printerr("unexpected token in %s instruction\n", instr_name);
             return 0;
         }

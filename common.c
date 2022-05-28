@@ -4,9 +4,9 @@ char errdesc[ERR_DESC_LENGTH];
 
 /**
  * @brief Prints error message to stdout and exits the program
- * 
- * @param format 
- * @param text 
+ *
+ * @param format
+ * @param text
  */
 void error_exit(const char *format, const char *text) {
     printf(format, text);
@@ -15,8 +15,8 @@ void error_exit(const char *format, const char *text) {
 
 /**
  * @brief Stores error description in global variable errdesc
- * 
- * @param format 
+ *
+ * @param format
  * @param ... format specifiers
  * @return int return value of vsnprintf
  */
@@ -30,8 +30,8 @@ int printerr(char *format, ...) {
 
 /**
  * @brief Calculate binary representation of a decimal number
- * 
- * @param decimal 
+ *
+ * @param decimal
  * @return char* containing binary representation
  */
 char *bin(unsigned int decimal) {
@@ -46,4 +46,17 @@ char *bin(unsigned int decimal) {
         *(result + (size - i - 1)) = ((decimal >> i) & 1);
     }
     return result;
+}
+
+void strtolong(char *str, long **num) {
+    char *pEnd;// = (char**) malloc(sizeof(char*));    
+    long l = strtol(str, &pEnd, 10);
+    if(str == pEnd) {
+        *num = NULL;
+    }
+    else {
+        *num = (long *)malloc(sizeof(long));
+        **num = l;
+    }
+
 }
