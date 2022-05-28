@@ -49,7 +49,7 @@ char *bin(unsigned int decimal) {
 }
 
 void strtolong(char *str, long **num) {
-    char *pEnd;// = (char**) malloc(sizeof(char*));    
+    char *pEnd;
     long l = strtol(str, &pEnd, 10);
     if(str == pEnd) {
         *num = NULL;

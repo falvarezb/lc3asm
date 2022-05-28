@@ -13,7 +13,7 @@
 uint16_t parse_jsr(char *asm_instr) {
 
     //PARSING INSTRUCTION TOKENS
-    long *LABEL = (long*)malloc(sizeof(long));
+    long LABEL;
     char *instr_name = "JSR";
     int num_tokens = 2;
     char **tokens;    
@@ -29,7 +29,7 @@ uint16_t parse_jsr(char *asm_instr) {
         return 0;
     }
 
-    if((is_PCoffset11(tokens[1], LABEL))) {        
+    if((is_PCoffset11(tokens[1], &LABEL))) {        
         return 0;
     }
 
@@ -42,7 +42,7 @@ uint16_t parse_jsr(char *asm_instr) {
     machine_instr += (1 << 11);
 
     //LABEL
-    machine_instr += (*LABEL);
+    machine_instr += (LABEL);
 
     return machine_instr;
 }
