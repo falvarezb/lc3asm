@@ -10,6 +10,9 @@
         "errno.h": "c",
         "common.h": "c",
         "lc3.h": "c",
-        "lc3common.h": "c"
+        "lc3common.h": "c",
+        "stdlib.h": "c",
+        "stdio.h": "c",
+        "lc3test.h": "c"
     }
 }

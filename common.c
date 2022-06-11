@@ -1,5 +1,5 @@
 #include "common.h"
-#define ERR_DESC_LENGTH 100
+#define ERR_DESC_LENGTH 200
 char errdesc[ERR_DESC_LENGTH];
 
 /**
@@ -19,13 +19,17 @@ void error_exit(const char *format, const char *text) {
  * @param format
  * @param ... format specifiers
  * @return int return value of vsnprintf
- */
+ */ 
 int printerr(char *format, ...) {
     va_list ap;
     va_start(ap, format);
     int result = vsnprintf(errdesc, ERR_DESC_LENGTH, format, ap);
     va_end(ap);
     return result;
+}
+
+void clearerrdesc() {    
+    errdesc[0] = '\0';
 }
 
 /**

@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${fileDirname}/out/${fileBasenameNoExtension}",
-            "args": ["../lc3practice/test.obj", "bin"],
+           // "args": ["../lc3practice/test.obj", "bin"],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],
@@ -42,6 +42,19 @@
             "externalConsole": false,
             "MIMode": "lldb",
             "preLaunchTask": "C/C++ macos: test"
+        },
+        {
+            "name": "gcc macos - parser file test",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/out/test.out",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${fileDirname}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "lldb",
+            "preLaunchTask": "C/C++ macos: parse file test"
         },
         {
             "name": "gcc linux - test",
