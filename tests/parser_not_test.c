@@ -3,8 +3,8 @@
 #include <setjmp.h>
 #include <cmocka.h>
 #include <stdbool.h>
-#include "lc3.h"
-#include "lc3test.h"
+#include "../lc3.h"
+#include "../lc3test.h"
 
 void test_not_register(void  __attribute__ ((unused)) **state) {
     char asm_instr[] = "NOT R4,R5";

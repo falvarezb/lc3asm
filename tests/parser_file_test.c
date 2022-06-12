@@ -3,8 +3,8 @@
 #include <setjmp.h>
 #include <cmocka.h>
 #include <stdbool.h>
-#include "lc3.h"
-#include "lc3test.h"
+#include "../lc3.h"
+#include "../lc3test.h"
 
 void test_file(void  __attribute__ ((unused)) **state) {
     FILE * source_file = fopen("/Users/franciscoalvarez/Projects/personal/lc3/lc3asm/tests/t1.asm", "r");
