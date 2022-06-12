@@ -13,8 +13,9 @@ OUTPUT_DIRS = ${BUILD_DIR} ${LOG_DIR} tools/${BUILD_DIR}
 CC = gcc
 CFLAGS = -Og -Wall -Wno-missing-braces -Wextra -Wshadow -Wpedantic -std=c11 -fno-common --coverage -fprofile-exclude-files=.*test\.c
 LDFLAGS =
-SRCS_PROD := common.c lc3common.c parser_add.c parser_and.c parser_not.c parser_ret.c parser_jmp.c parser_jsr.c
-OBJS_PROD := $(addprefix $(BUILD_DIR)/, $(patsubst %.c,%.o,$(SRCS_PROD)))
+SOURCE_DIR := src
+SOURCE_TEST := test
+OBJS_PROD := $(addprefix $(BUILD_DIR)/, $(patsubst %.c,%.o,$(shell ls $(SOURCE_DIR))))
 SRCS_TEST := test.c parser_add_test.c parser_and_test.c parser_not_test.c parser_ret_test.c parser_jmp_test.c
 OBJS_TEST := $(addprefix $(BUILD_DIR)/, $(patsubst %.c,%.o,$(SRCS_TEST)))
 SRCS_TOOLS := lc3objdump.c
@@ -102,7 +103,7 @@ $(TOOLS_BUILD_DIR)/lc3objdump: $(OBJS_TOOLS)
 ##############################
 
 # if an object ﬁle is needed, compile the corresponding .c ﬁle
-${BUILD_DIR}/%.o: src/%.c
+${BUILD_DIR}/%.o: $(SOURCE_DIR)/%.c
 	$(COMPILE.c) $< -o $@
 
 ${BUILD_DIR}/%.o: test/%.c
