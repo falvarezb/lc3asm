@@ -105,7 +105,7 @@ $(TOOLS_BUILD_DIR)/lc3objdump: $(OBJS_TOOLS)
 ${BUILD_DIR}/%.o: src/%.c
 	$(COMPILE.c) $< -o $@
 
-${BUILD_DIR}/%.o: tests/%.c
+${BUILD_DIR}/%.o: test/%.c
 	$(COMPILE.c) $< -o $@
 
 # if an object ﬁle is needed, compile the corresponding .c ﬁle
