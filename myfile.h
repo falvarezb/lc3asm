@@ -1,2 +1,0 @@
-
-char* hello_world();

@@ -1,4 +1,4 @@
-#include "lc3.h"
+#include "../lc3.h"
 
 uint16_t end_of_file() {
     printerr("END_OF_FILE");

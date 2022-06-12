@@ -1,5 +1,5 @@
 
-#include "lc3.h"
+#include "../lc3.h"
 
 /**
  * @brief

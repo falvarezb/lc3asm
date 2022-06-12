@@ -1,22 +1,22 @@
 
-#include "lc3.h"
+#include "../lc3.h"
 
 /**
  * @brief
  *
  * Assembler formats:
- * ADD DR,SR1,SR2
- * ADD DR,SR1,imm5
+ * AND DR,SR1,SR2
+ * AND DR,SR1,imm5
  *
- * @param asm_instr ADD instruction
+ * @param asm_instr AND instruction
  * @return uint16_t* 16 bits representation of the instruction or 0 in case of error
  */
-uint16_t parse_add(char *asm_instr) {
+uint16_t parse_and(char *asm_instr) {
 
     //PARSING INSTRUCTION TOKENS
     int DR, SR1, SR2;
     long imm5;
-    char *instr_name = "ADD";
+    char *instr_name = "AND";
     int num_tokens = 4;
     char **tokens;    
 
@@ -25,9 +25,9 @@ uint16_t parse_add(char *asm_instr) {
     }
 
     //VALIDATING TOKENS
-    if(strcmp(tokens[0], "ADD")) {
+    if(strcmp(tokens[0], "AND")) {
         //this should not happen        
-        printerr("expected ADD but found %s\n", tokens[0]);
+        printerr("expected AND but found %s\n", tokens[0]);
         return do_return(0, tokens);
     }
 
@@ -38,14 +38,14 @@ uint16_t parse_add(char *asm_instr) {
 
     if((SR1 = is_register(tokens[2])) == -1) {
         printerr("expected register but found %s\n", tokens[2]);
-        return do_return(0, tokens);       
+        return do_return(0, tokens);        
     }
 
 
     //CONVERTING TO BINARY REPRESENTATION
 
-    //ops code: 0001
-    uint16_t machine_instr = 1 << 12;
+    //ops code: 0101
+    uint16_t machine_instr = 5 << 12;
 
     //DR
     DR = DR << 9;
@@ -66,7 +66,7 @@ uint16_t parse_add(char *asm_instr) {
         machine_instr += imm5;
     }
 
-    return do_return(machine_instr, tokens);    
+    return do_return(machine_instr, tokens);
 }
 
 

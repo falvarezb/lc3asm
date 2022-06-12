@@ -1,4 +1,4 @@
-#include "common.h"
+#include "../common.h"
 #define ERR_DESC_LENGTH 200
 char errdesc[ERR_DESC_LENGTH];
 
