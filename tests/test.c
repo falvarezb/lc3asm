@@ -3,8 +3,8 @@
 #include <setjmp.h>
 #include <cmocka.h>
 #include <stdbool.h>
-#include "../lc3.h"
-#include "../lc3test.h"
+#include "../include/lc3.h"
+#include "lc3test.h"
 
 int main(int __attribute__ ((unused)) argc, char const __attribute__ ((unused))  *argv[]) {
     const struct CMUnitTest tests[] = {

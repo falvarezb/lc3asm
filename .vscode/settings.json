@@ -13,6 +13,8 @@
         "lc3common.h": "c",
         "stdlib.h": "c",
         "stdio.h": "c",
-        "lc3test.h": "c"
+        "lc3test.h": "c",
+        "cmocka.h": "c",
+        "stdarg.h": "c"
     }
 }

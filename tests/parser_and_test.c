@@ -3,8 +3,8 @@
 #include <setjmp.h>
 #include <cmocka.h>
 #include <stdbool.h>
-#include "../lc3.h"
-#include "../lc3test.h"
+#include "../include/lc3.h"
+#include "lc3test.h"
 
 void test_and_SR2(void  __attribute__ ((unused)) **state) {
     char asm_instr[] = "AND R0,R1,R2";
