@@ -4,7 +4,6 @@
 #include <cmocka.h>
 #include <stdbool.h>
 #include "../include/lc3.h"
-#include "lc3test.h"
 
 void test_jmp_register(void  __attribute__ ((unused)) **state) {
     char asm_instr[] = "JMP R6";
