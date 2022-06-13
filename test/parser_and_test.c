@@ -113,20 +113,21 @@ void test_and_wrong_element_in_instruction(void  __attribute__ ((unused)) **stat
     assert_string_equal(errdesc, "unexpected token in AND instruction\n");
 }
 
-// int main(int argc, char const *argv[]) {
-//     const struct CMUnitTest tests[] = {
-//         cmocka_unit_test(test_and_SR2),
-//         cmocka_unit_test(test_and_imm5_decimal),
-//         cmocka_unit_test(test_and_imm5_hex),
-//         cmocka_unit_test(test_and_wrong_register_DR),
-//         cmocka_unit_test(test_and_wrong_register_SR1),
-//         cmocka_unit_test(test_and_wrong_imm5_too_big_dec),
-//         cmocka_unit_test(test_and_wrong_imm5_too_small_dec),
-//         cmocka_unit_test(test_and_wrong_imm5_too_big_hex),
-//         cmocka_unit_test(test_and_wrong_imm5_too_small_hex),
-//         cmocka_unit_test(test_and_wrong_imm5_format),
-//         cmocka_unit_test(test_and_wrong_instruction),
-//         cmocka_unit_test(test_and_wrong_element_in_instruction)
-//     };
-//     return cmocka_run_group_tests(tests, NULL, NULL);
-// }
+int main(int argc, char const *argv[]) {
+    const struct CMUnitTest tests[] = {
+        cmocka_unit_test(test_and_SR2),
+        cmocka_unit_test(test_and_imm5_decimal),
+        cmocka_unit_test(test_and_imm5_hex),
+        cmocka_unit_test(test_and_wrong_register_DR),
+        cmocka_unit_test(test_and_wrong_register_SR1),
+        cmocka_unit_test(test_and_wrong_imm5_too_big_dec),
+        cmocka_unit_test(test_and_wrong_imm5_too_small_dec),
+        cmocka_unit_test(test_and_wrong_imm5_too_big_hex),
+        cmocka_unit_test(test_and_wrong_imm5_too_small_hex),
+        cmocka_unit_test(test_and_wrong_imm5_format),
+        cmocka_unit_test(test_and_wrong_imm5_number),
+        cmocka_unit_test(test_and_wrong_instruction),
+        cmocka_unit_test(test_and_wrong_element_in_instruction)
+    };
+    return cmocka_run_group_tests(tests, NULL, NULL);
+}

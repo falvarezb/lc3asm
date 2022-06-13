@@ -47,13 +47,13 @@ void test_not_wrong_element_in_instruction(void  __attribute__ ((unused)) **stat
     assert_string_equal(errdesc, "unexpected token in NOT instruction\n");
 }
 
-// int main(int argc, char const *argv[]) {
-//     const struct CMUnitTest tests[] = {
-//         cmocka_unit_test(test_not_register),
-//         cmocka_unit_test(test_not_wrong_register_DR),
-//         cmocka_unit_test(test_not_wrong_register_SR),
-//         cmocka_unit_test(test_not_wrong_instruction),
-//         cmocka_unit_test(test_not_wrong_element_in_instruction)
-//     };
-//     return cmocka_run_group_tests(tests, NULL, NULL);
-// }
+int main(int argc, char const *argv[]) {
+    const struct CMUnitTest tests[] = {
+        cmocka_unit_test(test_not_register),
+        cmocka_unit_test(test_not_wrong_register_DR),
+        cmocka_unit_test(test_not_wrong_register_SR),
+        cmocka_unit_test(test_not_wrong_instruction),
+        cmocka_unit_test(test_not_wrong_element_in_instruction)
+    };
+    return cmocka_run_group_tests(tests, NULL, NULL);
+}

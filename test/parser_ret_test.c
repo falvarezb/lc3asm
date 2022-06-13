@@ -31,11 +31,11 @@ void test_ret_wrong_element_in_instruction(void  __attribute__ ((unused)) **stat
     assert_string_equal(errdesc, "unexpected token in RET instruction\n");
 }
 
-// int main(int argc, char const *argv[]) {
-//     const struct CMUnitTest tests[] = {
-//         cmocka_unit_test(test_ret_right_instruction),
-//         cmocka_unit_test(test_ret_wrong_instruction),
-//         cmocka_unit_test(test_ret_wrong_element_in_instruction)
-//     };
-//     return cmocka_run_group_tests(tests, NULL, NULL);
-// }
+int main(int argc, char const *argv[]) {
+    const struct CMUnitTest tests[] = {
+        cmocka_unit_test(test_ret_right_instruction),
+        cmocka_unit_test(test_ret_wrong_instruction),
+        cmocka_unit_test(test_ret_wrong_element_in_instruction)
+    };
+    return cmocka_run_group_tests(tests, NULL, NULL);
+}

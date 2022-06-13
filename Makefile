@@ -14,7 +14,6 @@ CC = gcc
 CFLAGS = -Og -Wall -Wno-missing-braces -Wextra -Wshadow -Wpedantic -std=c11 -fno-common --coverage -fprofile-exclude-files=.*test\.c
 LDFLAGS =
 SOURCE_DIR := src
-SOURCE_TEST := test
 OBJS_PROD := $(addprefix $(BUILD_DIR)/, $(patsubst %.c,%.o,$(shell ls $(SOURCE_DIR))))
 SRCS_TEST := test.c parser_add_test.c parser_and_test.c parser_not_test.c parser_ret_test.c parser_jmp_test.c
 OBJS_TEST := $(addprefix $(BUILD_DIR)/, $(patsubst %.c,%.o,$(SRCS_TEST)))
@@ -31,9 +30,9 @@ LDLIBS =
 #endif
 
 
-.PHONY: all clean compile compiletest unittest addtest myfile runobjdump
+.PHONY: all clean compile compiletest unittest runobjdump
 
-unittest: test jsrtest
+unittest: addtest andtest jmptest nottest rettest jsrtest filetest
 
 all: clean compile unittest
 
@@ -50,17 +49,61 @@ compiletest: $(OBJS_PROD) $(OBJS_TEST)
 #######################
 
 #### run unit tests using cmocka library  ######
-test: $(BUILD_DIR)/test
+addtest: $(BUILD_DIR)/addtest
 	$(VALGRIND) ./$^	
 
-$(BUILD_DIR)/test: $(OBJS_PROD) $(OBJS_TEST)
+$(BUILD_DIR)/addtest: $(OBJS_PROD) $(BUILD_DIR)/parser_add_test.o
 	$(LINK.c) $^ -o $@ $(LDLIBS) -lcmocka
+
+#######################
+
+andtest: $(BUILD_DIR)/andtest
+	$(VALGRIND) ./$^	
+
+$(BUILD_DIR)/andtest: $(OBJS_PROD) $(BUILD_DIR)/parser_and_test.o
+	$(LINK.c) $^ -o $@ $(LDLIBS) -lcmocka
+
+#######################
+
+jmptest: $(BUILD_DIR)/jmptest
+	$(VALGRIND) ./$^	
+
+$(BUILD_DIR)/jmptest: $(OBJS_PROD) $(BUILD_DIR)/parser_jmp_test.o
+	$(LINK.c) $^ -o $@ $(LDLIBS) -lcmocka
+
+#######################
+
+nottest: $(BUILD_DIR)/nottest
+	$(VALGRIND) ./$^	
+
+$(BUILD_DIR)/nottest: $(OBJS_PROD) $(BUILD_DIR)/parser_not_test.o
+	$(LINK.c) $^ -o $@ $(LDLIBS) -lcmocka
+
+#######################
+
+rettest: $(BUILD_DIR)/rettest
+	$(VALGRIND) ./$^	
+
+$(BUILD_DIR)/rettest: $(OBJS_PROD) $(BUILD_DIR)/parser_ret_test.o
+	$(LINK.c) $^ -o $@ $(LDLIBS) -lcmocka
+
+#######################
 
 jsrtest: $(BUILD_DIR)/jsrtest
 	$(VALGRIND) ./$^
 
 $(BUILD_DIR)/jsrtest: $(OBJS_PROD) $(BUILD_DIR)/parser_jsr_test.o
 	$(LINK.c) $^ -o $@ $(LDLIBS) -lcmocka
+
+#######################
+
+filetest: $(BUILD_DIR)/filetest
+	$(VALGRIND) ./$^	
+
+$(BUILD_DIR)/filetest: $(OBJS_PROD) $(BUILD_DIR)/parser_file_test.o
+	$(LINK.c) $^ -o $@ $(LDLIBS) -lcmocka
+
+#######################
 
 coverage_report: unittest
 	gcov $(BUILD_DIR)/*.gcda > /dev/null

@@ -7,15 +7,15 @@
 #include "lc3test.h"
 
 void test_file(void  __attribute__ ((unused)) **state) {
-    FILE * source_file = fopen("/Users/franciscoalvarez/Projects/personal/lc3/lc3asm/tests/t1.asm", "r");
-    FILE * actual_obj_file = fopen("/Users/franciscoalvarez/Projects/personal/lc3/lc3asm/tests/t1.actual.obj", "w");    
+    FILE * source_file = fopen("/Users/franciscoalvarez/Projects/personal/lc3/lc3asm/test/t1.asm", "r");
+    FILE * actual_obj_file = fopen("/Users/franciscoalvarez/Projects/personal/lc3/lc3asm/test/t1.actual.obj", "w");    
 
     parse_file(source_file, actual_obj_file);
     fclose(source_file);
     fclose(actual_obj_file);
 
-    FILE * expected_obj_file = fopen("/Users/franciscoalvarez/Projects/personal/lc3/lc3asm/tests/t1.obj", "r");
-    actual_obj_file = fopen("/Users/franciscoalvarez/Projects/personal/lc3/lc3asm/tests/t1.actual.obj", "r");
+    FILE * expected_obj_file = fopen("/Users/franciscoalvarez/Projects/personal/lc3/lc3asm/test/t1.obj", "r");
+    actual_obj_file = fopen("/Users/franciscoalvarez/Projects/personal/lc3/lc3asm/test/t1.actual.obj", "r");
     
     char buf_expected[2];
     char buf_actual[2];

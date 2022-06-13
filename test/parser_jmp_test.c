@@ -39,12 +39,12 @@ void test_jmp_wrong_element_in_instruction(void  __attribute__ ((unused)) **stat
     assert_string_equal(errdesc, "unexpected token in JMP instruction\n");
 }
 
-// int main(int argc, char const *argv[]) {
-//     const struct CMUnitTest tests[] = {
-//         cmocka_unit_test(test_jmp_register),
-//         cmocka_unit_test(test_jmp_wrong_register_BaseR),        
-//         cmocka_unit_test(test_jmp_wrong_instruction),
-//         cmocka_unit_test(test_wrong_element_in_instruction)
-//     };
-//     return cmocka_run_group_tests(tests, NULL, NULL);
-// }
+int main(int argc, char const *argv[]) {
+    const struct CMUnitTest tests[] = {
+        cmocka_unit_test(test_jmp_register),
+        cmocka_unit_test(test_jmp_wrong_register_BaseR),        
+        cmocka_unit_test(test_jmp_wrong_instruction),
+        cmocka_unit_test(test_jmp_wrong_element_in_instruction)
+    };
+    return cmocka_run_group_tests(tests, NULL, NULL);
+}
