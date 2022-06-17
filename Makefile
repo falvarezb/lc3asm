@@ -11,6 +11,8 @@ LOG_DIR = logs
 OUTPUT_DIRS = ${BUILD_DIR} ${LOG_DIR} tools/${BUILD_DIR}
 
 CC = gcc
+# _POSIX_C_SOURCE=200809 to expose strdup in Linux
+# CFLAGS = -D_POSIX_C_SOURCE=200809 -g -Wall -Wextra -Wshadow -std=c11
 CFLAGS = -Og -Wall -Wno-missing-braces -Wextra -Wshadow -Wpedantic -std=c11 -fno-common --coverage -fprofile-exclude-files=.*test\.c
 LDFLAGS =
 SOURCE_DIR := src
