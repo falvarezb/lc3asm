@@ -29,7 +29,7 @@ node_t* add(char *key, char *val) {
     unsigned hashval;
 
     if((np = lookup(key)) == NULL){
-        np = (node_t *) malloc(sizeof(*np));
+        np = malloc(sizeof(*np));
         if (np == NULL || (np->key = strdup(key)) == NULL)
             return NULL;
         hashval = hash(key);

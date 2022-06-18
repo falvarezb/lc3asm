@@ -40,7 +40,7 @@ void clearerrdesc() {
  */
 char *bin(unsigned int decimal) {
     size_t size = CHAR_BIT * sizeof(int);
-    char *result = (char *)malloc(size);
+    char *result = malloc(size);
     if(result == NULL) {
         error_exit("failure to allocate memory", "");
     }
