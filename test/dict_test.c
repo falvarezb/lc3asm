@@ -1,4 +1,4 @@
-#include "dict.h"
+#include "../include/dict.h"
 #include <stddef.h>
 #include <stdarg.h>
 #include <setjmp.h>

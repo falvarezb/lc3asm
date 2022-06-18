@@ -107,6 +107,14 @@ $(BUILD_DIR)/filetest: $(OBJS_PROD) $(BUILD_DIR)/parser_file_test.o
 
 #######################
 
+dicttest: $(BUILD_DIR)/dicttest
+	$(VALGRIND) ./$^	
+
+$(BUILD_DIR)/dicttest: $(OBJS_PROD) $(BUILD_DIR)/dict_test.o
+	$(LINK.c) $^ -o $@ $(LDLIBS) -lcmocka
+
+#######################
+
 coverage_report: unittest
 	gcov $(BUILD_DIR)/*.gcda > /dev/null
 	mv *.c.gcov $(BUILD_DIR)/

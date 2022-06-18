@@ -1,7 +1,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include "dict.h"
+#include "../include/dict.h"
 
 #define DICTSIZE 101
 
