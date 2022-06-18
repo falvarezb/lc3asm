@@ -31,10 +31,8 @@ uint16_t parse_orig() {
  * @return uint16_t  16-bit representation of machine instruction, 0 if assembly instruction cannot be parsed
  */
 uint16_t parse_line(char *line) {
-    //saving line before it is modified by strtok
-    size_t line_size = strlen(line) + 1;
-    char *line_copy = (char *)malloc(line_size * sizeof(char));
-    memcpy(line_copy, line, line_size);
+    //saving line before it is modified by strtok    
+    char *line_copy = strdup(line);    
 
     char *delimiters = " ";
     char *assembly_instr = strtok(line_copy, delimiters);
