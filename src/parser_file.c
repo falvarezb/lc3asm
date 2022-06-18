@@ -1,27 +1,42 @@
 #include "../include/lc3.h"
+#include "../include/dict.h"
 
-uint16_t end_of_file() {
+static uint16_t end_of_file() {
     printerr("END_OF_FILE");
     return 0;
 }
 
-uint16_t comment() {
+static uint16_t comment() {
     printerr("COMMENT");
     return 0;
 }
 
-uint16_t blank_line() {
+static uint16_t label() {
+    printerr("LABEL");
+    return 0;
+}
+
+static uint16_t blank_line() {
     printerr("BLANK");
     return 0;
 }
 
-uint16_t parse_halt() {
+static uint16_t parse_halt() {
     return 0xf025;
 }
 
-uint16_t parse_orig() {
+static uint16_t parse_orig() {
     //FIXME proper implementation, hardcoded for now
     return 0x3000;
+}
+
+/**
+ * @brief parse line
+ * 
+ * @param line 
+ */
+void parse_line_first_pass(char *line) {
+
 }
 
 /**
@@ -35,7 +50,7 @@ uint16_t parse_line(char *line) {
     //saving line before it is modified by strtok    
     char *line_copy = strdup(line);
     if(line_copy == NULL) {
-        printerr("out of memory");
+        printerr("out of memory\n");
         return 0;
     } 
 
@@ -75,9 +90,8 @@ uint16_t parse_line(char *line) {
     else if(assembly_instr[0] == ';') {
         result = comment();
     }
-    else {
-        printerr("no instruction found in %s\n", line);
-        result = 0;
+    else {        
+        result = label();
     }
 
     free(line_copy);
@@ -124,7 +138,7 @@ int parse_file(FILE *source_file, FILE *object_file) {
 
     //check if getline resulted in error
     if(errno) {
-        printerr("getLine error %d", errno);
+        printerr("getLine error %d\n", errno);
         free(line);
         return EXIT_FAILURE;
     }
