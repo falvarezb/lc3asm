@@ -38,46 +38,48 @@ uint16_t parse_line(char *line) {
 
     char *delimiters = " ";
     char *assembly_instr = strtok(line_copy, delimiters);
+
+    int result = 0;
     if(assembly_instr == NULL) {
-        return blank_line();
+        result = blank_line();
     }
     else if(strcmp(assembly_instr, "ADD") == 0) {
-        return parse_add(line);
+        result = parse_add(line);
     }
     else if(strcmp(assembly_instr, "AND") == 0) {
-        return parse_and(line);
+        result = parse_and(line);
     }
     else if(strcmp(assembly_instr, "JMP") == 0) {
-        return parse_jmp(line);
+        result = parse_jmp(line);
     }
     else if(strcmp(assembly_instr, "JSR") == 0) {
-        return parse_jsr(line);
+        result = parse_jsr(line);
     }
     else if(strcmp(assembly_instr, "NOT") == 0) {
-        return parse_not(line);
+        result = parse_not(line);
     }
     else if(strcmp(assembly_instr, "RET") == 0) {
-        return parse_ret(line);
+        result = parse_ret(line);
     }
     else if(strcmp(assembly_instr, "HALT") == 0) {
-        return parse_halt();
+        result = parse_halt();
     }
     else if(strcmp(assembly_instr, ".ORIG") == 0) {
-        return parse_orig();
+        result = parse_orig();
     }
     else if(strcmp(assembly_instr, ".END") == 0) {
-        return end_of_file();
+        result = end_of_file();
     }
     else if(assembly_instr[0] == ';') {
-        return comment();
+        result = comment();
     }
     else {
         printerr("no instruction found in %s\n", line);
-        return 0;
+        result = 0;
     }
 
     free(line_copy);
-    return 0;
+    return result;
 }
 
 int parse_file(FILE *source_file, FILE *object_file) {
