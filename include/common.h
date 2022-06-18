@@ -9,6 +9,7 @@
 #include <limits.h>
 #include <stdint.h>
 #include <stdarg.h>
+#include <errno.h>
 
 extern char errdesc[];
 

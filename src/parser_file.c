@@ -76,8 +76,8 @@ uint16_t parse_line(char *line) {
         return 0;
     }
 
-    return 0;
     free(line_copy);
+    return 0;
 }
 
 int parse_file(FILE *source_file, FILE *object_file) {
@@ -85,6 +85,7 @@ int parse_file(FILE *source_file, FILE *object_file) {
     size_t len = 0;
     ssize_t read;
 
+    errno = 0;
     while((read = getline(&line, &len, source_file)) != -1) {                
         printf("%s", line);
         //remove newline char at the end of the line
@@ -103,6 +104,7 @@ int parse_file(FILE *source_file, FILE *object_file) {
                 continue;
             }
             else {
+                free(line);
                 return EXIT_FAILURE;
             }
         }
@@ -117,7 +119,11 @@ int parse_file(FILE *source_file, FILE *object_file) {
     }
 
     //check if getline resulted in error
-    //...
+    if(errno) {
+        printerr("getLine error %d", errno);
+        free(line);
+        return EXIT_FAILURE;
+    }
 
     free(line);
     return EXIT_SUCCESS;
