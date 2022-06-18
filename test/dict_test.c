@@ -7,10 +7,10 @@
 void add_new_entry(void** state){
     (void) state; /* unused */
 
-    node_t* entry = add("mykey", "myval");
+    node_t* entry = add("mykey", 1);
     assert_non_null(entry);
     assert_string_equal(entry->key, "mykey");
-    assert_string_equal(entry->val, "myval");
+    assert_int_equal(entry->val, 1);
     print();
 }
 
@@ -20,7 +20,7 @@ void lookup_entry(void** state){
     node_t* entry = lookup("mykey");
     assert_non_null(entry);
     assert_string_equal(entry->key, "mykey");
-    assert_string_equal(entry->val, "myval");
+    assert_int_equal(entry->val, 1);
 }
 
 void lookup_nonexistent_entry(void** state){
@@ -33,9 +33,9 @@ void lookup_nonexistent_entry(void** state){
 void modify_existing_entry(void** state){
     (void) state; /* unused */
 
-    node_t* entry = add("mykey", "newval");      
+    node_t* entry = add("mykey", 2);      
     assert_string_equal(entry->key, "mykey");
-    assert_string_equal(entry->val, "newval");
+    assert_int_equal(entry->val, 2);
     print();
 }
 
@@ -52,8 +52,8 @@ void remove_first_entry(void** state){
     (void) state; /* unused */
     
     //'fc' and 'key' have the same hash value
-    add("fc", "val2");
-    add("key", "val1");
+    add("fc", 3);
+    add("key", 1);
     print();
     delete("key");   
     node_t* entry = lookup("key");
@@ -66,7 +66,7 @@ void remove_first_entry(void** state){
 void remove_last_entry(void** state){
     (void) state; /* unused */
     
-    add("key", "val1");
+    add("key", 1);
     print();
     delete("fc");   
     node_t* entry = lookup("fc");
@@ -79,15 +79,16 @@ void remove_last_entry(void** state){
 void printer(void** state){
     (void) state; /* unused */
     
-    add("fc", "val2");
-    add("key", "val1");
-    add("flc", "val3");
-    add("kuey", "val4");
+    add("fc", 2);
+    add("key", 1);
+    add("flc", 3);
+    add("kuey", 4);
     print(); 
 }
 
 int main(int argc, char const *argv[])
 {
+    (void) argv; /* unused */
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(add_new_entry),
         cmocka_unit_test(lookup_entry),

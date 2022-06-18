@@ -24,26 +24,24 @@ node_t* lookup(char *key) {
     return NULL;
 }
 
-node_t* add(char *key, char *val) {
+node_t* add(char *key, int val) {
     node_t *np;
     unsigned hashval;
 
     if((np = lookup(key)) == NULL){
         np = malloc(sizeof(*np));
         if (np == NULL || (np->key = strdup(key)) == NULL)
-            return NULL;
-        hashval = hash(key);
+            return NULL;        
 
         //adding new node to the front of the linked list
+        hashval = hash(key);
         np->next = dict[hashval];
         dict[hashval] = np;
 
-    } else {
-        free((void*) np->val);
     }
 
-    if((np->val = strdup(val)) == NULL)
-        return NULL;
+    np->val = val;
+
     return np;
 }
 
@@ -60,8 +58,7 @@ bool delete(char *key) {
             } else {                
                 prev->next = curr->next;
             }
-            free((void*) curr->key);
-            free((void*) curr->val);
+            free((void*) curr->key);            
             free((void*) curr);
             return 0;
         }
@@ -79,7 +76,7 @@ void print() {
             has_elements = 1;
             if(np == dict[i])
                 printf("%zu ", i);
-            printf("- (%s,%s) ", np->key, np->val);
+            printf("- (%s,%d) ", np->key, np->val);
         }
         if(has_elements)
             printf("\n");

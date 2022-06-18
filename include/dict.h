@@ -1,5 +1,5 @@
-#ifndef FAB_DICT
-#define FAB_DICT
+#ifndef _FAB_DICT
+#define _FAB_DICT
 
 #include <stdbool.h>
 
@@ -12,7 +12,7 @@
 typedef struct node {
     struct node *next;
     char *key; 
-    char *val;
+    int val;
 } node_t;
 
 /**
@@ -21,7 +21,7 @@ typedef struct node {
  * Returns a pointer to the key-val pair created/modified or NULL if there is no 
  * enough memory for a new entry
  **/
-node_t* add(char *key, char *val);
+node_t* add(char *key, int val);
 
 /**
  *  Returns a pointer to key-val pair or NULL if 'key' is not found
