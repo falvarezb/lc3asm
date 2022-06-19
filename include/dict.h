@@ -2,6 +2,7 @@
 #define _FAB_DICT
 
 #include <stdbool.h>
+#define DICTSIZE 101
 
 /*
     - each key-val pair is stored in a node of a linked list
@@ -9,6 +10,7 @@
     - the array is indexed by the hash value of the keys
 */
 
+//FIXME make val size_t
 typedef struct node {
     struct node *next;
     char *key; 
@@ -29,9 +31,23 @@ node_t* add(char *key, int val);
 node_t* lookup(char *key);
 
 /**
+ * Iterates over the content of the dictionary, returning a pointer 
+ * to the next key-val pair on each call (or NULL if no more elements are available)
+ * 
+ * The state of the iterator can be reset to the first element by passing 'true' as an
+ * argument
+ **/
+node_t* next(bool reset);
+
+/**
  *  Deletes a key-val pair
  **/
 bool delete(char *key);
+
+/**
+ *  Initialize the elements of dictionary to null
+ **/
+void initialize();
 
 /**
  * Prints out the elements of the dictionary

@@ -42,7 +42,8 @@ void modify_existing_entry(void** state){
 void remove_only_existing_entry(void** state){
     (void) state; /* unused */
     
-    delete("mykey");   
+    bool deleted = delete("mykey");
+    assert_true(deleted);
     node_t* removed_entry = lookup("mykey");
     assert_null(removed_entry);  
     print();    
@@ -55,7 +56,8 @@ void remove_first_entry(void** state){
     add("fc", 3);
     add("key", 1);
     print();
-    delete("key");   
+    bool deleted = delete("key");  
+    assert_true(deleted); 
     node_t* entry = lookup("key");
     assert_null(entry);  
     entry = lookup("fc");
@@ -68,12 +70,21 @@ void remove_last_entry(void** state){
     
     add("key", 1);
     print();
-    delete("fc");   
+    bool deleted = delete("fc");   
+    assert_true(deleted);
     node_t* entry = lookup("fc");
     assert_null(entry);  
     entry = lookup("key");
     assert_non_null(entry);  
     print(); 
+}
+
+void fail_remove_nonexistent_entry(void** state){
+    (void) state; /* unused */
+    
+    print();
+    bool deleted = delete("xxx");   
+    assert_false(deleted);    
 }
 
 void printer(void** state){
@@ -84,6 +95,59 @@ void printer(void** state){
     add("flc", 3);
     add("kuey", 4);
     print(); 
+}
+
+void iterate_over_dictionary(void** state){
+    (void) state; /* unused */
+    
+    assert_true(DICTSIZE > 65);
+    initialize();
+    add("fc", 2);
+    add("key", 1);
+    add("flc", 3);
+    add("kuey", 4);
+    print();
+
+    node_t* entry = next(true);
+    assert_string_equal(entry->key, "kuey");
+    assert_int_equal(entry->val, 4);
+
+    entry = next(false);
+    assert_string_equal(entry->key, "key");
+    assert_int_equal(entry->val, 1);
+
+    entry = next(false);
+    assert_string_equal(entry->key, "fc");
+    assert_int_equal(entry->val, 2);
+
+    entry = next(false);
+    assert_string_equal(entry->key, "flc");
+    assert_int_equal(entry->val, 3);
+
+    entry = next(false);
+    assert_null(entry);
+
+    entry = next(true);
+    assert_string_equal(entry->key, "kuey");
+    assert_int_equal(entry->val, 4);     
+}
+
+void initialize_dictionary(void** state){
+    (void) state; /* unused */
+    
+    assert_true(DICTSIZE > 65);
+    initialize();
+    add("kuey", 4);
+    print();
+
+    node_t* entry = next(true);
+    assert_string_equal(entry->key, "kuey");
+    assert_int_equal(entry->val, 4);
+
+    initialize();
+
+    entry = next(true);
+    assert_null(entry);        
 }
 
 int main(int argc, char const *argv[])
@@ -97,7 +161,10 @@ int main(int argc, char const *argv[])
         cmocka_unit_test(remove_only_existing_entry),
         cmocka_unit_test(remove_first_entry),
         cmocka_unit_test(remove_last_entry),
-        cmocka_unit_test(printer)         
+        cmocka_unit_test(fail_remove_nonexistent_entry),
+        cmocka_unit_test(iterate_over_dictionary),
+        cmocka_unit_test(initialize_dictionary),
+        cmocka_unit_test(printer)        
     };
     return cmocka_run_group_tests(tests, NULL, NULL);
 }

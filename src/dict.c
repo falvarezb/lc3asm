@@ -3,20 +3,18 @@
 #include <stdio.h>
 #include "../include/dict.h"
 
-#define DICTSIZE 101
-
 static node_t *dict[DICTSIZE];
 
 unsigned hash(char *s) {
     unsigned hashval;
-    for (hashval = 0; *s != '\0'; s++)
+    for(hashval = 0; *s != '\0'; s++)
         hashval = *s + 31 * hashval;
     return hashval % DICTSIZE;
 }
 
-node_t* lookup(char *key) {
+node_t *lookup(char *key) {
     node_t *np;
-    
+
     for(np = dict[hash(key)]; np != NULL; np = np->next) {
         if(strcmp(np->key, key) == 0)
             return np;
@@ -24,14 +22,14 @@ node_t* lookup(char *key) {
     return NULL;
 }
 
-node_t* add(char *key, int val) {
+node_t *add(char *key, int val) {
     node_t *np;
     unsigned hashval;
 
-    if((np = lookup(key)) == NULL){
+    if((np = lookup(key)) == NULL) {
         np = malloc(sizeof(*np));
-        if (np == NULL || (np->key = strdup(key)) == NULL)
-            return NULL;        
+        if(np == NULL || (np->key = strdup(key)) == NULL)
+            return NULL;
 
         //adding new node to the front of the linked list
         hashval = hash(key);
@@ -54,23 +52,24 @@ bool delete(char *key) {
         if(strcmp(curr->key, key) == 0) {
             if(prev == NULL) {
                 //remove node from front of list
-                dict[hashval] = curr->next;                
-            } else {                
+                dict[hashval] = curr->next;
+            }
+            else {
                 prev->next = curr->next;
             }
-            free((void*) curr->key);            
-            free((void*) curr);
-            return 0;
+            free((void *)curr->key);
+            free((void *)curr);
+            return true;
         }
     }
 
-    return 1;
+    return false;
 }
 
 void print() {
     node_t *np;
 
-    for (size_t i = 0; i < DICTSIZE; i++) {
+    for(size_t i = 0; i < DICTSIZE; i++) {
         int has_elements = 0;
         for(np = dict[i]; np != NULL; np = np->next) {
             has_elements = 1;
@@ -81,4 +80,31 @@ void print() {
         if(has_elements)
             printf("\n");
     }
+}
+
+node_t *next(bool reset) {
+    node_t *result = NULL;
+    static size_t i = 0;
+    static node_t *current = NULL;
+
+    if(reset) {
+        i = 0;
+        current = dict[0];
+    }
+
+    while(current == NULL && i < DICTSIZE - 1) {
+        i++;
+        current = dict[i];
+    }
+    result = current;
+    
+    if(current) {
+        current = current->next;
+    }
+    return result;
+}
+
+void initialize() {
+    for(size_t i = 0; i<DICTSIZE; i++)
+        dict[i] = NULL;
 }
