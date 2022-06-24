@@ -35,6 +35,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/out/test.out",
+            // "args": ["-p", "/suite2"],
             "args": [],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",

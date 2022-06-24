@@ -49,6 +49,10 @@ Unit tests are executed with the command:
 
 After running the unit tests, a browser window will open with the test coverage information, that is the final product of using [gcov](https://gcc.gnu.org/onlinedocs/gcc-10.1.0/gcc/Gcov-Intro.html#Gcov-Intro) and [lcov](http://ltp.sourceforge.net/coverage/lcov.php). See next section for more details.
 
+https://docs.gtk.org/glib/testing.html
+
+https://www.manpagez.com/html/glib/glib-2.42.2/glib-Testing.php
+
 ### Test coverage
 
 Test coverage is done with [gcov](https://gcc.gnu.org/onlinedocs/gcc-10.1.0/gcc/Gcov-Intro.html#Gcov-Intro), that takes as input two files, [.gcda and .gcno](https://gcc.gnu.org/onlinedocs/gcc-10.1.0/gcc/Gcov-Data-Files.html#Gcov-Data-Files), which are generated thanks to the compilation flags `-fprofile-arcs` and `-ftest-coverage option`, respectively.

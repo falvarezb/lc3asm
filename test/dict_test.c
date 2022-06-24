@@ -3,6 +3,7 @@
 #include <stdarg.h>
 #include <setjmp.h>
 #include <cmocka.h>
+#include <glib.h>
 
 void add_new_entry(void** state){
     (void) state; /* unused */
@@ -14,6 +15,13 @@ void add_new_entry(void** state){
     print();
 }
 
+void add_new_entry2(){    
+    node_t* entry = add("mykey", 1);
+    g_assert_nonnull(entry);
+    g_assert_cmpstr(entry->key, ==, "mykey");
+    g_assert_cmpint(entry->val, ==, 1);
+}
+
 void lookup_entry(void** state){
     (void) state; /* unused */
 
@@ -21,6 +29,13 @@ void lookup_entry(void** state){
     assert_non_null(entry);
     assert_string_equal(entry->key, "mykey");
     assert_int_equal(entry->val, 1);
+}
+
+void lookup_entry2(){
+    node_t* entry = lookup("mykey");
+    g_assert_nonnull(entry);
+    g_assert_cmpstr(entry->key, ==, "mykey");
+    g_assert_cmpint(entry->val, ==, 1);
 }
 
 void lookup_nonexistent_entry(void** state){
@@ -150,21 +165,35 @@ void initialize_dictionary(void** state){
     assert_null(entry);        
 }
 
-int main(int argc, char const *argv[])
+// int main(int argc, char const *argv[])
+// {
+//     (void) argv; /* unused */
+//     const struct CMUnitTest tests[] = {
+//         cmocka_unit_test(add_new_entry),
+//         cmocka_unit_test(lookup_entry),
+//         cmocka_unit_test(lookup_entry2),
+//         cmocka_unit_test(lookup_nonexistent_entry),
+//         cmocka_unit_test(modify_existing_entry),
+//         cmocka_unit_test(remove_only_existing_entry),
+//         cmocka_unit_test(remove_first_entry),
+//         cmocka_unit_test(remove_last_entry),
+//         cmocka_unit_test(fail_remove_nonexistent_entry),
+//         cmocka_unit_test(iterate_over_dictionary),
+//         cmocka_unit_test(initialize_dictionary),
+//         cmocka_unit_test(printer)        
+//     };
+//     return cmocka_run_group_tests(tests, NULL, NULL);
+// }
+
+int
+main (int argc, char *argv[])
 {
-    (void) argv; /* unused */
-    const struct CMUnitTest tests[] = {
-        cmocka_unit_test(add_new_entry),
-        cmocka_unit_test(lookup_entry),
-        cmocka_unit_test(lookup_nonexistent_entry),
-        cmocka_unit_test(modify_existing_entry),
-        cmocka_unit_test(remove_only_existing_entry),
-        cmocka_unit_test(remove_first_entry),
-        cmocka_unit_test(remove_last_entry),
-        cmocka_unit_test(fail_remove_nonexistent_entry),
-        cmocka_unit_test(iterate_over_dictionary),
-        cmocka_unit_test(initialize_dictionary),
-        cmocka_unit_test(printer)        
-    };
-    return cmocka_run_group_tests(tests, NULL, NULL);
+  g_test_init(&argc, &argv, NULL);
+  g_test_set_nonfatal_assertions();
+
+  // Define the tests.
+  g_test_add_func("/dict/test1", add_new_entry2);
+  g_test_add_func("/dict/test2", lookup_entry2);
+
+  return g_test_run ();
 }
