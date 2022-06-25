@@ -33,7 +33,7 @@ void test_object_file_creation(void  __attribute__ ((unused)) **state) {
     assert_int_equal(read, fread(buf_actual, 1, 2, actual_obj_file));
 }
 
-void test_symbol_table_calculation1(void  __attribute__ ((unused)) **state) {
+void test_symbol_table_calculation_t2(void  __attribute__ ((unused)) **state) {
     initialize();
     FILE * source_file = fopen("/Users/franciscoalvarez/Projects/personal/lc3/lc3asm/test/t2.asm", "r");
     FILE * actual_sym_file = fopen("/Users/franciscoalvarez/Projects/personal/lc3/lc3asm/test/t2.actual.sym", "w");    
@@ -48,7 +48,7 @@ void test_symbol_table_calculation1(void  __attribute__ ((unused)) **state) {
     assert_int_equal(label->val, 0x3003);
 }
 
-void test_symbol_table_calculation2(void  __attribute__ ((unused)) **state) {
+void test_symbol_table_calculation_t3(void  __attribute__ ((unused)) **state) {
     initialize();
     FILE * source_file = fopen("/Users/franciscoalvarez/Projects/personal/lc3/lc3asm/test/t3.asm", "r");
     FILE * actual_sym_file = fopen("/Users/franciscoalvarez/Projects/personal/lc3/lc3asm/test/t3.actual.sym", "w");    
@@ -96,7 +96,7 @@ void test_symbol_table_serialization(void  __attribute__ ((unused)) **state) {
 int main(int argc, char const *argv[]) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_object_file_creation),
-        cmocka_unit_test(test_symbol_table_calculation1),
+        cmocka_unit_test(test_symbol_table_calculation_t2),
         cmocka_unit_test(test_symbol_table_serialization)
     };
     return cmocka_run_group_tests(tests, NULL, NULL);
