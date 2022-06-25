@@ -10,6 +10,7 @@
 #include <stdint.h>
 #include <stdarg.h>
 #include <errno.h>
+#include <assert.h>
 
 extern char errdesc[];
 

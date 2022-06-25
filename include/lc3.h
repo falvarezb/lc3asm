@@ -21,6 +21,7 @@ uint16_t parse_ret(char *instr);
 uint16_t parse_jmp(char *instr);
 uint16_t parse_jsr(char *instr);
 int parse_file(FILE *source_file, FILE *object_file);
+int first_pass(FILE *source_file, FILE *destination_file);
 
 
 #endif
