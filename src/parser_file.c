@@ -36,7 +36,7 @@ static uint16_t parse_orig() {
     return 0x3000;
 }
 
-static int serialize_symbol_table(FILE* destination_file) {
+int serialize_symbol_table(FILE* destination_file) {
     fprintf(destination_file, "// Symbol table\n// Scope level 0:\n//	Symbol Name       Page Address\n//	----------------  ------------\n");
     node_t *node = next(true);
     while(node) {
@@ -90,14 +90,8 @@ uint16_t parse_line_first_pass(char *line, size_t *instruction_counter) {
     return result;
 }
 
-
-/**
- * @brief parse line
- *
- * @param line line containing assembly instruction
- */
-int first_pass(FILE *source_file, FILE *destination_file) {
-    char *line = NULL;
+int compute_symbol_table(FILE *source_file) {
+char *line = NULL;
     size_t len = 0;
     ssize_t read;
     size_t instruction_counter;
@@ -155,6 +149,18 @@ int first_pass(FILE *source_file, FILE *destination_file) {
     }
 
     free(line);
+    return EXIT_SUCCESS;
+}
+
+
+
+/**
+ * @brief parse line
+ *
+ * @param line line containing assembly instruction
+ */
+int first_pass(FILE *source_file, FILE *destination_file) {
+    compute_symbol_table(source_file);
     return serialize_symbol_table(destination_file);
 }
 

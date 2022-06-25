@@ -6,7 +6,7 @@
 #include "../include/lc3.h"
 #include "../include/dict.h"
 
-void test_file(void  __attribute__ ((unused)) **state) {
+void test_object_file_creation(void  __attribute__ ((unused)) **state) {
     FILE * source_file = fopen("/Users/franciscoalvarez/Projects/personal/lc3/lc3asm/test/t1.asm", "r");
     FILE * actual_obj_file = fopen("/Users/franciscoalvarez/Projects/personal/lc3/lc3asm/test/t1.actual.obj", "w");    
 
@@ -33,12 +33,27 @@ void test_file(void  __attribute__ ((unused)) **state) {
     assert_int_equal(read, fread(buf_actual, 1, 2, actual_obj_file));
 }
 
-void test_symbol_table_calculation(void  __attribute__ ((unused)) **state) {
+void test_symbol_table_calculation1(void  __attribute__ ((unused)) **state) {
     initialize();
     FILE * source_file = fopen("/Users/franciscoalvarez/Projects/personal/lc3/lc3asm/test/t2.asm", "r");
     FILE * actual_sym_file = fopen("/Users/franciscoalvarez/Projects/personal/lc3/lc3asm/test/t2.actual.sym", "w");    
 
-    first_pass(source_file, actual_sym_file);
+    compute_symbol_table(source_file);
+    fclose(source_file);
+    fclose(actual_sym_file);
+
+    //test symbol table content
+    node_t *label = lookup("LABEL");
+    assert_non_null(label);
+    assert_int_equal(label->val, 0x3003);
+}
+
+void test_symbol_table_calculation2(void  __attribute__ ((unused)) **state) {
+    initialize();
+    FILE * source_file = fopen("/Users/franciscoalvarez/Projects/personal/lc3/lc3asm/test/t3.asm", "r");
+    FILE * actual_sym_file = fopen("/Users/franciscoalvarez/Projects/personal/lc3/lc3asm/test/t3.actual.sym", "w");    
+
+    compute_symbol_table(source_file);
     fclose(source_file);
     fclose(actual_sym_file);
 
@@ -51,10 +66,13 @@ void test_symbol_table_calculation(void  __attribute__ ((unused)) **state) {
 void test_symbol_table_serialization(void  __attribute__ ((unused)) **state) {
     initialize();
     add("LABEL", 0x3003);
+    FILE * actual_sym_file = fopen("/Users/franciscoalvarez/Projects/personal/lc3/lc3asm/test/t2.actual.sym", "w");
+    serialize_symbol_table(actual_sym_file);
+    fclose(actual_sym_file);
 
     //test symbol table serialization
     FILE * expected_sym_file = fopen("/Users/franciscoalvarez/Projects/personal/lc3/lc3asm/test/t2.sym", "r");
-    FILE * actual_sym_file = fopen("/Users/franciscoalvarez/Projects/personal/lc3/lc3asm/test/t2.actual.sym", "r");
+    actual_sym_file = fopen("/Users/franciscoalvarez/Projects/personal/lc3/lc3asm/test/t2.actual.sym", "r");
 
     size_t num_lines = 1;
     char *line_expected = NULL;
@@ -77,8 +95,8 @@ void test_symbol_table_serialization(void  __attribute__ ((unused)) **state) {
 
 int main(int argc, char const *argv[]) {
     const struct CMUnitTest tests[] = {
-        cmocka_unit_test(test_file),
-        cmocka_unit_test(test_symbol_table_calculation),
+        cmocka_unit_test(test_object_file_creation),
+        cmocka_unit_test(test_symbol_table_calculation1),
         cmocka_unit_test(test_symbol_table_serialization)
     };
     return cmocka_run_group_tests(tests, NULL, NULL);
