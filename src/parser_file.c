@@ -36,6 +36,16 @@ static uint16_t parse_orig() {
     return 0x3000;
 }
 
+static int serialize_symbol_table(FILE* destination_file) {
+    fprintf(destination_file, "// Symbol table\n// Scope level 0:\n//	Symbol Name       Page Address\n//	----------------  ------------\n");
+    node_t *node = next(true);
+    while(node) {
+        fprintf(destination_file, "//	%s             %x\n", node->key, node->val);
+        node = next(false);
+    }
+    return EXIT_SUCCESS;
+}
+
 uint16_t parse_line_first_pass(char *line, size_t *instruction_counter) {
 
     //saving line before it is modified by strtok    
@@ -145,14 +155,7 @@ int first_pass(FILE *source_file, FILE *destination_file) {
     }
 
     free(line);
-    //serialize symbol table
-    fprintf(destination_file, "// Symbol table\n// Scope level 0:\n//	Symbol Name       Page Address\n//	----------------  ------------\n");
-    node_t *node = next(true);
-    while(node) {
-        fprintf(destination_file, "//	%s             %x\n", node->key, node->val);
-        node = next(false);
-    }
-    return EXIT_SUCCESS;
+    return serialize_symbol_table(destination_file);
 }
 
 /**
