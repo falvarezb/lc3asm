@@ -137,7 +137,7 @@
                 "${workspaceFolder}/out/test.out"
             ],
             "options": {
-                "cwd": "${fileDirname}"
+                "cwd": "${workspaceFolder}"
             },
             "problemMatcher": [
                 "$gcc"
@@ -173,7 +173,7 @@
                 "${workspaceFolder}/out/test.out"
             ],
             "options": {
-                "cwd": "${fileDirname}"
+                "cwd": "${workspaceFolder}"
             },
             "problemMatcher": [
                 "$gcc"
