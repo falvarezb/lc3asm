@@ -61,5 +61,4 @@ void strtolong(char *str, long **num) {
     else {
         **num = l;
     }
-
 }

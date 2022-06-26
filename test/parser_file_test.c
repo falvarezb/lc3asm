@@ -95,8 +95,9 @@ void test_symbol_table_serialization(void  __attribute__ ((unused)) **state) {
 
 int main(int argc, char const *argv[]) {
     const struct CMUnitTest tests[] = {
-        cmocka_unit_test(test_object_file_creation),
-        cmocka_unit_test(test_symbol_table_calculation_t2),
+        // cmocka_unit_test(test_object_file_creation),
+        // cmocka_unit_test(test_symbol_table_calculation_t2),
+        cmocka_unit_test(test_symbol_table_calculation_t3),
         cmocka_unit_test(test_symbol_table_serialization)
     };
     return cmocka_run_group_tests(tests, NULL, NULL);

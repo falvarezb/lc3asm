@@ -36,7 +36,7 @@ static uint16_t parse_orig() {
     return 0x3000;
 }
 
-int serialize_symbol_table(FILE* destination_file) {
+int serialize_symbol_table(FILE *destination_file) {
     fprintf(destination_file, "// Symbol table\n// Scope level 0:\n//	Symbol Name       Page Address\n//	----------------  ------------\n");
     node_t *node = next(true);
     while(node) {
@@ -46,7 +46,7 @@ int serialize_symbol_table(FILE* destination_file) {
     return EXIT_SUCCESS;
 }
 
-uint16_t parse_line_first_pass(char *line, size_t *instruction_counter) {
+uint16_t parse_line_first_pass(const char *line, size_t *instruction_counter) {
 
     //saving line before it is modified by strtok    
     char *line_copy = strdup(line);
@@ -91,7 +91,7 @@ uint16_t parse_line_first_pass(char *line, size_t *instruction_counter) {
 }
 
 int compute_symbol_table(FILE *source_file) {
-char *line = NULL;
+    char *line = NULL;
     size_t len = 0;
     ssize_t read;
     size_t instruction_counter;
@@ -123,17 +123,58 @@ char *line = NULL;
             }
             else if(strcmp(errdesc, "LABEL") == 0) {
                 clearerrdesc();
-                if((label = strdup(line)) == NULL) {
-                    printerr("out of memory\n");
-                    return EXIT_FAILURE;
+
+                //FIXME what if the label has multiple words?
+                char *delimiters = " ";
+                label = strtok(line, delimiters);
+                char *labelled_instruction = strtok(NULL, delimiters);
+                if(labelled_instruction) {
+                    //instruction is in the same line as label
+                    machine_instr = parse_line_first_pass(labelled_instruction, &instruction_counter);
+                    if(!machine_instr) {
+                        if(strcmp(errdesc, "END_OF_FILE") == 0) {
+                            add(label, instruction_counter);
+                            free(label);
+                            label = NULL;
+                            instruction_counter++;
+                            //stop reading file
+                            break;
+                        }
+                        else if(
+                            strcmp(errdesc, "COMMENT") == 0 ||
+                            strcmp(errdesc, "BLANK") == 0 ||
+                            strcmp(errdesc, ".ORIG") == 0
+                            ) {
+                            //ignore line and continue
+                            clearerrdesc();
+                            continue;
+                        }
+                        else {
+                            //error: unknown symbol
+                            free(line);
+                            return EXIT_FAILURE;
+                        }
+
+                    }
+                    else {
+                        add(label, instruction_counter);
+                        free(label);
+                        label = NULL;
+                        instruction_counter++;
+                    }
                 }
-                //FIXME what if the label has multiple words? 
-                add(label, 0);
+                else {
+                    //instruction is in a different line than label
+                    if((label = strdup(line)) == NULL) {
+                        printerr("out of memory\n");
+                        return EXIT_FAILURE;
+                    }
+                    add(label, 0);
+                }
+
             }
             else {
-                //error: unknown symbol, shouldn't happen as any unknown symbol
-                //is interpreted as a label
-                assert(false);
+                //error: unknown symbol
                 free(line);
                 return EXIT_FAILURE;
             }
@@ -148,7 +189,7 @@ char *line = NULL;
         }
     }
 
-    free(line);
+    //free(line);
     return EXIT_SUCCESS;
 }
 
