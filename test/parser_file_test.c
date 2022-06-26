@@ -31,6 +31,8 @@ void test_object_file_creation(void  __attribute__ ((unused)) **state) {
     }
     
     assert_int_equal(read, fread(buf_actual, 1, 2, actual_obj_file));
+    fclose(expected_obj_file);
+    fclose(actual_obj_file);
 }
 
 void test_symbol_table_calculation_t2(void  __attribute__ ((unused)) **state) {
@@ -46,6 +48,9 @@ void test_symbol_table_calculation_t2(void  __attribute__ ((unused)) **state) {
     node_t *label = lookup("LABEL");
     assert_non_null(label);
     assert_int_equal(label->val, 0x3003);
+    free(label->key);
+    free(label->next);
+    free(label);
 }
 
 void test_symbol_table_calculation_t3(void  __attribute__ ((unused)) **state) {
@@ -61,6 +66,9 @@ void test_symbol_table_calculation_t3(void  __attribute__ ((unused)) **state) {
     node_t *label = lookup("LABEL");
     assert_non_null(label);
     assert_int_equal(label->val, 0x3003);
+    free(label->key);
+    free(label->next);
+    free(label);
 }
 
 void test_symbol_table_serialization(void  __attribute__ ((unused)) **state) {
@@ -76,11 +84,11 @@ void test_symbol_table_serialization(void  __attribute__ ((unused)) **state) {
 
     size_t num_lines = 1;
     char *line_expected = NULL;
+    char *line_actual = NULL; 
     size_t len = 0;
     ssize_t read_expected;
     while((read_expected = getline(&line_expected, &len, expected_sym_file)) != -1) {
-        printf("line checked: %zu\n", num_lines);
-        char *line_actual = NULL;        
+        printf("line checked: %zu\n", num_lines);      
         ssize_t read_actual;
         if((read_actual = getline(&line_actual, &len, actual_sym_file)) != -1) {            
             assert_true(strcmp(line_expected, line_actual) == 0);
@@ -91,6 +99,14 @@ void test_symbol_table_serialization(void  __attribute__ ((unused)) **state) {
             assert_int_equal(read_expected, read_actual);
         }
     }
+    fclose(expected_sym_file);
+    fclose(actual_sym_file);
+    free(line_expected);
+    free(line_actual);
+    node_t *label = lookup("LABEL");
+    free(label->key);
+    free(label->next);
+    free(label);
 }
 
 int main(int argc, char const *argv[]) {

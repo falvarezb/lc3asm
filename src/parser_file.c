@@ -90,32 +90,32 @@ uint16_t parse_line_first_pass(const char *line, size_t *instruction_counter) {
     return result;
 }
 
-typedef struct {
-    char* main_line;
-    char* secondary_line;
+typedef struct lines {
+    char *whole_line; //whole_line is handled by library function 'getline'
+    char *partial_line; //next token after a label in the same line
 } line_t;
 
 int compute_symbol_table(FILE *source_file) {
-    line_t line_placholder = {NULL, NULL};
+    line_t line_placholder = { NULL, NULL };
     char *line = NULL;
     size_t len = 0;
-    ssize_t read;
     size_t instruction_counter;
     //FIXME label should be an array of strings to allow several labels for the
     //same instruction
-    char *label = NULL;
+    //currently, only one label per instruction is supported
+    char *label = NULL; //contains last found label; reset to null when label is added to the symbol table
+    char *tmpline;
 
     errno = 0;
-    read = getline(&line_placholder.main_line, &len, source_file);
-    //remove newline char at the end of the line
-    line_placholder.main_line[read - 1] = '\0';
+    ssize_t read = getline(&line_placholder.whole_line, &len, source_file);
+    line_placholder.whole_line[read - 1] = '\0'; //remove newline char at the end of the line
     while(read != -1) {
-        if(line_placholder.secondary_line) {
-            line = line_placholder.secondary_line;
-            line_placholder.secondary_line = NULL;
+        //partial line takes precedence as it contains a subset of the whole line that needs to be processed independently
+        if(line_placholder.partial_line) {
+            line = line_placholder.partial_line;
         }
-        else{
-            line = line_placholder.main_line;
+        else {
+            line = line_placholder.whole_line;
         }
         printf("%s", line);
 
@@ -123,6 +123,7 @@ int compute_symbol_table(FILE *source_file) {
 
 
         if(strcmp(errdesc, "END_OF_FILE") == 0) {
+            //FIXME label associated to .END directive
             //stop reading file
             break;
         }
@@ -132,13 +133,12 @@ int compute_symbol_table(FILE *source_file) {
             strcmp(errdesc, ".ORIG") == 0
             ) {
             //ignore line and continue
-            clearerrdesc();            
+            clearerrdesc();
         }
         else if(strcmp(errdesc, "LABEL") == 0) {
             clearerrdesc();
-
-            //FIXME what if the label has multiple words?
-            char* tmpline;
+            
+            
             if((tmpline = strdup(line)) == NULL) {
                 free(line);
                 printerr("out of memory\n");
@@ -147,43 +147,46 @@ int compute_symbol_table(FILE *source_file) {
             char *delimiters = " ";
             //FIXME free tmpline
             label = strtok(tmpline, delimiters);
-            char *opscode = strtok(NULL, delimiters);
-            if(opscode) {
-                //instruction is in the same line as label
-                //strcpy(line, opscode); 
-                line_placholder.secondary_line = opscode;                               
-                read = strlen(line);                
+            line_placholder.partial_line = strtok(NULL, delimiters);
+            if(line_placholder.partial_line) {
+                //instruction is in the same line as label                
+                //line_placholder.partial_line = next_token_after_label;
+                read = strlen(line_placholder.partial_line);
                 continue;
             }
-            else {
-                //instruction is in a different line than label
-                if((label = strdup(line)) == NULL) {
-                    free(line);
-                    printerr("out of memory\n");
-                    return EXIT_FAILURE;
-                }                
-            }
+            // else {
+            //     //instruction is in a different line than label
+            //     if((label = strdup(line)) == NULL) {
+            //         free(line);
+            //         printerr("out of memory\n");
+            //         return EXIT_FAILURE;
+            //     }
+            // }
         }
         else if(strcmp(errdesc, "INSTRUCTION") == 0) {
             if(label) {
                 add(label, instruction_counter);
-                free(label);
+                free(tmpline);
                 label = NULL;
+                // if(line_placholder.partial_line != NULL) {
+                    // free(line_placholder.partial_line);             
+                // }
+                line_placholder.partial_line = NULL;
             }
             instruction_counter++;
         }
         else {
             //error: unknown symbol
-            free(line);
+            //free(line);
             return EXIT_FAILURE;
         }
 
-        read = getline(&line_placholder.main_line, &len, source_file);
+        read = getline(&line_placholder.whole_line, &len, source_file);
         //remove newline char at the end of the line
         line[read - 1] = '\0';
     }
 
-    free(line);
+    free(line_placholder.whole_line);
     return EXIT_SUCCESS;
 }
 

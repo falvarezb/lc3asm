@@ -25,7 +25,7 @@ LDLIBS =
 # -lglib-2.0
 
 ifeq ($(shell uname), Linux)
-	VALGRIND = valgrind --tool=memcheck --leak-check=full 
+	VALGRIND = valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all
 	VALGRIND += --verbose --log-file=${LOG_DIR}/valgrind.log
 else
 	VALGRIND =
