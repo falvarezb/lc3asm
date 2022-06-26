@@ -24,13 +24,12 @@ OBJS_TOOLS := $(addprefix $(TOOLS_BUILD_DIR)/, $(patsubst %.c,%.o,$(SRCS_TOOLS))
 LDLIBS = 
 # -lglib-2.0
 
-
-#if __linux__
+ifeq ($(shell uname), Linux)
 	VALGRIND = valgrind --tool=memcheck --leak-check=full 
 	VALGRIND += --verbose --log-file=${LOG_DIR}/valgrind.log
-#else
-	VALGRIND = 
-#endif
+else
+	VALGRIND =
+endif
 
 
 .PHONY: all clean compile compiletest unittest runobjdump
