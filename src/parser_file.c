@@ -90,7 +90,13 @@ uint16_t parse_line_first_pass(const char *line, size_t *instruction_counter) {
     return result;
 }
 
+typedef struct {
+    char* main_line;
+    char* secondary_line;
+} line_t;
+
 int compute_symbol_table(FILE *source_file) {
+    line_t line_placholder = {NULL, NULL};
     char *line = NULL;
     size_t len = 0;
     ssize_t read;
@@ -100,86 +106,65 @@ int compute_symbol_table(FILE *source_file) {
     char *label = NULL;
 
     errno = 0;
-    while((read = getline(&line, &len, source_file)) != -1) {
+    read = getline(&line_placholder.main_line, &len, source_file);
+    //remove newline char at the end of the line
+    line_placholder.main_line[read - 1] = '\0';
+    while(read != -1) {
+        if(line_placholder.secondary_line) {
+            line = line_placholder.secondary_line;
+            line_placholder.secondary_line = NULL;
+        }
+        else{
+            line = line_placholder.main_line;
+        }
         printf("%s", line);
-        //remove newline char at the end of the line
-        line[read - 1] = '\0';
 
         uint16_t machine_instr = parse_line_first_pass(line, &instruction_counter);
 
-        if(!machine_instr) {
-            if(strcmp(errdesc, "END_OF_FILE") == 0) {
-                //stop reading file
-                break;
-            }
-            else if(
-                strcmp(errdesc, "COMMENT") == 0 ||
-                strcmp(errdesc, "BLANK") == 0 ||
-                strcmp(errdesc, ".ORIG") == 0
-                ) {
-                //ignore line and continue
-                clearerrdesc();
-                continue;
-            }
-            else if(strcmp(errdesc, "LABEL") == 0) {
-                clearerrdesc();
 
-                //FIXME what if the label has multiple words?
-                char *delimiters = " ";
-                label = strtok(line, delimiters);
-                char *labelled_instruction = strtok(NULL, delimiters);
-                if(labelled_instruction) {
-                    //instruction is in the same line as label
-                    machine_instr = parse_line_first_pass(labelled_instruction, &instruction_counter);
-                    if(!machine_instr) {
-                        if(strcmp(errdesc, "END_OF_FILE") == 0) {
-                            add(label, instruction_counter);
-                            free(label);
-                            label = NULL;
-                            instruction_counter++;
-                            //stop reading file
-                            break;
-                        }
-                        else if(
-                            strcmp(errdesc, "COMMENT") == 0 ||
-                            strcmp(errdesc, "BLANK") == 0 ||
-                            strcmp(errdesc, ".ORIG") == 0
-                            ) {
-                            //ignore line and continue
-                            clearerrdesc();
-                            continue;
-                        }
-                        else {
-                            //error: unknown symbol
-                            free(line);
-                            return EXIT_FAILURE;
-                        }
+        if(strcmp(errdesc, "END_OF_FILE") == 0) {
+            //stop reading file
+            break;
+        }
+        else if(
+            strcmp(errdesc, "COMMENT") == 0 ||
+            strcmp(errdesc, "BLANK") == 0 ||
+            strcmp(errdesc, ".ORIG") == 0
+            ) {
+            //ignore line and continue
+            clearerrdesc();            
+        }
+        else if(strcmp(errdesc, "LABEL") == 0) {
+            clearerrdesc();
 
-                    }
-                    else {
-                        add(label, instruction_counter);
-                        free(label);
-                        label = NULL;
-                        instruction_counter++;
-                    }
-                }
-                else {
-                    //instruction is in a different line than label
-                    if((label = strdup(line)) == NULL) {
-                        printerr("out of memory\n");
-                        return EXIT_FAILURE;
-                    }
-                    add(label, 0);
-                }
-
-            }
-            else {
-                //error: unknown symbol
+            //FIXME what if the label has multiple words?
+            char* tmpline;
+            if((tmpline = strdup(line)) == NULL) {
                 free(line);
+                printerr("out of memory\n");
                 return EXIT_FAILURE;
             }
+            char *delimiters = " ";
+            //FIXME free tmpline
+            label = strtok(tmpline, delimiters);
+            char *opscode = strtok(NULL, delimiters);
+            if(opscode) {
+                //instruction is in the same line as label
+                //strcpy(line, opscode); 
+                line_placholder.secondary_line = opscode;                               
+                read = strlen(line);                
+                continue;
+            }
+            else {
+                //instruction is in a different line than label
+                if((label = strdup(line)) == NULL) {
+                    free(line);
+                    printerr("out of memory\n");
+                    return EXIT_FAILURE;
+                }                
+            }
         }
-        else {
+        else if(strcmp(errdesc, "INSTRUCTION") == 0) {
             if(label) {
                 add(label, instruction_counter);
                 free(label);
@@ -187,9 +172,18 @@ int compute_symbol_table(FILE *source_file) {
             }
             instruction_counter++;
         }
+        else {
+            //error: unknown symbol
+            free(line);
+            return EXIT_FAILURE;
+        }
+
+        read = getline(&line_placholder.main_line, &len, source_file);
+        //remove newline char at the end of the line
+        line[read - 1] = '\0';
     }
 
-    //free(line);
+    free(line);
     return EXIT_SUCCESS;
 }
 
@@ -265,8 +259,8 @@ uint16_t parse_line(char *line) {
 }
 
 int parse_file(FILE *source_file, FILE *destination_file) {
-    char *line = NULL;
-    size_t len = 0;
+    char *line = malloc(sizeof(char) * 1000);
+    size_t len = 1000;
     ssize_t read;
 
     errno = 0;
