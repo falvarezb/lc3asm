@@ -11,9 +11,9 @@ LOG_DIR = logs
 OUTPUT_DIRS = ${BUILD_DIR} ${LOG_DIR} tools/${BUILD_DIR}
 
 CC = gcc
-# _POSIX_C_SOURCE=200809 to expose strdup in Linux
-# CFLAGS = -D_POSIX_C_SOURCE=200809 -g -Wall -Wextra -Wshadow -std=c11
-CFLAGS = -Og -Wall -Wno-missing-braces -Wextra -Wshadow -Wpedantic -std=c11 -fno-common --coverage -fprofile-exclude-files=.*test\.c -I/usr/local/include/glib-2.0 -I/usr/local/lib/glib-2.0/include
+# _POSIX_C_SOURCE=200809 to expose strdup and getline in Linux
+CFLAGS = -D_POSIX_C_SOURCE=200809 -Og -Wall -Wno-missing-braces -Wextra -Wshadow -Wpedantic -std=c11 -fno-common --coverage 
+# -I/usr/local/include/glib-2.0 -I/usr/local/lib/glib-2.0/include
 LDFLAGS =
 SOURCE_DIR := src
 OBJS_PROD := $(addprefix $(BUILD_DIR)/, $(patsubst %.c,%.o,$(shell ls $(SOURCE_DIR))))
@@ -21,7 +21,8 @@ SRCS_TEST := test.c parser_add_test.c parser_and_test.c parser_not_test.c parser
 OBJS_TEST := $(addprefix $(BUILD_DIR)/, $(patsubst %.c,%.o,$(SRCS_TEST)))
 SRCS_TOOLS := lc3objdump.c
 OBJS_TOOLS := $(addprefix $(TOOLS_BUILD_DIR)/, $(patsubst %.c,%.o,$(SRCS_TOOLS)))
-LDLIBS = glib-2.0
+LDLIBS = 
+# -lglib-2.0
 
 
 #if __linux__
@@ -55,7 +56,7 @@ addtest: $(BUILD_DIR)/addtest
 	$(VALGRIND) ./$^	
 
 $(BUILD_DIR)/addtest: $(OBJS_PROD) $(BUILD_DIR)/parser_add_test.o
-	$(LINK.c) $^ -o $@ -l$(LDLIBS) -lcmocka
+	$(LINK.c) $^ -o $@ $(LDLIBS) -lcmocka
 
 #######################
 
@@ -63,7 +64,7 @@ andtest: $(BUILD_DIR)/andtest
 	$(VALGRIND) ./$^	
 
 $(BUILD_DIR)/andtest: $(OBJS_PROD) $(BUILD_DIR)/parser_and_test.o
-	$(LINK.c) $^ -o $@ -l$(LDLIBS) -lcmocka
+	$(LINK.c) $^ -o $@ $(LDLIBS) -lcmocka
 
 #######################
 
@@ -71,7 +72,7 @@ jmptest: $(BUILD_DIR)/jmptest
 	$(VALGRIND) ./$^	
 
 $(BUILD_DIR)/jmptest: $(OBJS_PROD) $(BUILD_DIR)/parser_jmp_test.o
-	$(LINK.c) $^ -o $@ -l$(LDLIBS) -lcmocka
+	$(LINK.c) $^ -o $@ $(LDLIBS) -lcmocka
 
 #######################
 
@@ -79,7 +80,7 @@ nottest: $(BUILD_DIR)/nottest
 	$(VALGRIND) ./$^	
 
 $(BUILD_DIR)/nottest: $(OBJS_PROD) $(BUILD_DIR)/parser_not_test.o
-	$(LINK.c) $^ -o $@ -l$(LDLIBS) -lcmocka
+	$(LINK.c) $^ -o $@ $(LDLIBS) -lcmocka
 
 #######################
 
@@ -87,7 +88,7 @@ rettest: $(BUILD_DIR)/rettest
 	$(VALGRIND) ./$^	
 
 $(BUILD_DIR)/rettest: $(OBJS_PROD) $(BUILD_DIR)/parser_ret_test.o
-	$(LINK.c) $^ -o $@ -l$(LDLIBS) -lcmocka
+	$(LINK.c) $^ -o $@ $(LDLIBS) -lcmocka
 
 #######################
 
@@ -95,7 +96,7 @@ jsrtest: $(BUILD_DIR)/jsrtest
 	$(VALGRIND) ./$^
 
 $(BUILD_DIR)/jsrtest: $(OBJS_PROD) $(BUILD_DIR)/parser_jsr_test.o
-	$(LINK.c) $^ -o $@ -l$(LDLIBS) -lcmocka
+	$(LINK.c) $^ -o $@ $(LDLIBS) -lcmocka
 
 #######################
 
@@ -103,7 +104,7 @@ filetest: $(BUILD_DIR)/filetest
 	$(VALGRIND) ./$^	
 
 $(BUILD_DIR)/filetest: $(OBJS_PROD) $(BUILD_DIR)/parser_file_test.o
-	$(LINK.c) $^ -o $@ -l$(LDLIBS) -lcmocka
+	$(LINK.c) $^ -o $@ $(LDLIBS) -lcmocka
 
 #######################
 
@@ -111,7 +112,7 @@ dicttest: $(BUILD_DIR)/dicttest
 	$(VALGRIND) ./$^	
 
 $(BUILD_DIR)/dicttest: $(OBJS_PROD) $(BUILD_DIR)/dict_test.o
-	$(LINK.c) $^ -o $@ -l$(LDLIBS) -lcmocka
+	$(LINK.c) $^ -o $@ $(LDLIBS) -lcmocka
 
 #######################
 
@@ -135,7 +136,7 @@ myfile: $(BUILD_DIR)/myfile
 	$(VALGRIND) ./$^
 
 $(BUILD_DIR)/myfile: $(OBJS_PROD)
-	$(LINK.c) $^ -o $@ -l$(LDLIBS)
+	$(LINK.c) $^ -o $@ $(LDLIBS)
 
 
 ####################### 
@@ -148,7 +149,7 @@ runobjdump: $(TOOLS_BUILD_DIR)/lc3objdump
 	$(VALGRIND) ./$^ $(filename) $(output_mode)
 
 $(TOOLS_BUILD_DIR)/lc3objdump: $(OBJS_TOOLS)
-	$(LINK.c) $^ -o $@ -l$(LDLIBS)
+	$(LINK.c) $^ -o $@ $(LDLIBS)
 
 
 ############################## 

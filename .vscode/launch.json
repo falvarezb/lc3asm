@@ -58,6 +58,19 @@
             "preLaunchTask": "C/C++ macos: parse file test"
         },
         {
+            "name": "gcc linux - parser file test",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/out/test.out",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${fileDirname}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "preLaunchTask": "C/C++ linux: parse file test"
+        },
+        {
             "name": "gcc linux - test",
             "type": "cppdbg",
             "request": "launch",

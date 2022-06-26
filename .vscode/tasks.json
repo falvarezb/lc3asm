@@ -148,6 +148,42 @@
             },
             "detail": "Task to run tests"
         },
+        {
+            "type": "cppbuild",
+            "label": "C/C++ linux: parse file test",
+            "command": "/usr/bin/gcc",
+            "args": [
+                "-g",
+                "-Wall",    
+                "-Wno-missing-braces ",  
+                "${workspaceFolder}/test/parser_file_test.c",                
+                "${workspaceFolder}/src/parser_file.c",              
+                "${workspaceFolder}/src/parser_add.c",
+                "${workspaceFolder}/src/parser_and.c",
+                "${workspaceFolder}/src/parser_jmp.c",
+                "${workspaceFolder}/src/parser_jsr.c",
+                "${workspaceFolder}/src/parser_not.c",
+                "${workspaceFolder}/src/parser_ret.c",
+                "${workspaceFolder}/src/common.c",        
+                "${workspaceFolder}/src/lc3common.c",
+                "${workspaceFolder}/src/dict.c",           
+                "-lcmocka",
+                "-fno-common",
+                "-o",
+                "${workspaceFolder}/out/test.out"
+            ],
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "Task to run tests"
+        },
     ],
     "version": "2.0.0"
 }

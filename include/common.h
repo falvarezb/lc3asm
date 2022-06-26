@@ -11,6 +11,7 @@
 #include <stdarg.h>
 #include <errno.h>
 #include <assert.h>
+#include <unistd.h>
 
 extern char errdesc[];
 
