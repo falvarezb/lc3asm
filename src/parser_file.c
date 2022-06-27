@@ -58,7 +58,7 @@ uint16_t parse_line_first_pass(const char *line, size_t *instruction_counter) {
     char *delimiters = " ";
     char *assembly_instr = strtok(line_copy, delimiters);
     int result = 0;
-    if(assembly_instr == NULL) {
+    if(assembly_instr == NULL || assembly_instr[0] == '\n') {
         result = blank_line();
     }
     else if(
