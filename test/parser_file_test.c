@@ -6,6 +6,22 @@
 #include "../include/lc3.h"
 #include "../include/dict.h"
 
+void run_sym_test(const char* asm_file_name, const char* sym_file_name) {
+    initialize();
+    FILE * source_file = fopen(asm_file_name, "r");
+    FILE * actual_sym_file = fopen(sym_file_name, "w");    
+
+    compute_symbol_table(source_file);
+    fclose(source_file);
+}
+
+void assert_sym(const char* label, size_t num_instruction) {
+    node_t *node = lookup(label);
+    assert_non_null(node);
+    assert_int_equal(node->val, num_instruction);
+    delete(label);
+}
+
 void test_object_file_creation(void  __attribute__ ((unused)) **state) {
     FILE * source_file = fopen("./test/t1.asm", "r");
     FILE * actual_obj_file = fopen("./test/t1.actual.obj", "w");    
@@ -36,39 +52,20 @@ void test_object_file_creation(void  __attribute__ ((unused)) **state) {
 }
 
 void test_symbol_table_calculation_t2(void  __attribute__ ((unused)) **state) {
-    initialize();
-    FILE * source_file = fopen("./test/t2.asm", "r");
-    FILE * actual_sym_file = fopen("./test/t2.actual.sym", "w");    
-
-    compute_symbol_table(source_file);
-    fclose(source_file);
-    fclose(actual_sym_file);
-
-    //test symbol table content
-    node_t *label = lookup("LABEL");
-    assert_non_null(label);
-    assert_int_equal(label->val, 0x3003);
-    free(label->key);
-    free(label->next);
-    free(label);
+    run_sym_test("./test/t2.asm", "./test/t2.actual.sym");
+    assert_sym("LABEL", 0x3003);
 }
 
 void test_symbol_table_calculation_t3(void  __attribute__ ((unused)) **state) {
-    initialize();
-    FILE * source_file = fopen("./test/t3.asm", "r");
-    FILE * actual_sym_file = fopen("./test/t3.actual.sym", "w");    
+    run_sym_test("./test/t3.asm", "./test/t3.actual.sym");
+    assert_sym("LABEL", 0x3003);
+}
 
-    compute_symbol_table(source_file);
-    fclose(source_file);
-    fclose(actual_sym_file);
-
-    //test symbol table content
-    node_t *label = lookup("LABEL");
-    assert_non_null(label);
-    assert_int_equal(label->val, 0x3003);
-    free(label->key);
-    free(label->next);
-    free(label);
+void test_symbol_table_calculation_t4(void  __attribute__ ((unused)) **state) {
+    run_sym_test("./test/t4.asm", "./test/t4.actual.sym");
+    assert_sym("LABEL1", 0x3003);
+    assert_sym("LABEL2", 0x3001);
+    assert_sym("LABEL3", 0x3002);
 }
 
 void test_symbol_table_serialization(void  __attribute__ ((unused)) **state) {
@@ -104,9 +101,7 @@ void test_symbol_table_serialization(void  __attribute__ ((unused)) **state) {
     free(line_expected);
     free(line_actual);
     node_t *label = lookup("LABEL");
-    free(label->key);
-    free(label->next);
-    free(label);
+    delete(label->key);
 }
 
 int main(int argc, char const *argv[]) {
@@ -114,6 +109,7 @@ int main(int argc, char const *argv[]) {
         cmocka_unit_test(test_object_file_creation),
         cmocka_unit_test(test_symbol_table_calculation_t2),
         cmocka_unit_test(test_symbol_table_calculation_t3),
+        cmocka_unit_test(test_symbol_table_calculation_t4),
         cmocka_unit_test(test_symbol_table_serialization)
     };
     return cmocka_run_group_tests(tests, NULL, NULL);
