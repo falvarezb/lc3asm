@@ -107,8 +107,7 @@ int compute_symbol_table(FILE *source_file) {
     char *tmpline;
 
     errno = 0;
-    ssize_t read = getline(&line_holder.whole_line, &len, source_file);
-    line_holder.whole_line[read - 1] = '\0'; //remove newline char at the end of the line
+    ssize_t read = getline(&line_holder.whole_line, &len, source_file);    
     while(read != -1) {
         //partial line takes precedence as it contains a subset of the whole line that needs to be processed independently
         if(line_holder.partial_line) {
@@ -116,6 +115,7 @@ int compute_symbol_table(FILE *source_file) {
         }
         else {
             line = line_holder.whole_line;
+            line[read - 1] = '\0'; //remove newline char at the end of the line
         }
         printf("%s", line);
 
@@ -164,8 +164,7 @@ int compute_symbol_table(FILE *source_file) {
             return EXIT_FAILURE;
         }
 
-        read = getline(&line_holder.whole_line, &len, source_file);        
-        line[read - 1] = '\0'; //remove newline char at the end of the line
+        read = getline(&line_holder.whole_line, &len, source_file); 
     }
 
     free(line_holder.whole_line);

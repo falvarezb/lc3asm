@@ -11,5 +11,5 @@ LABEL3 HALT
 ; label and instruction are in the same line
 LABEL1 ADD R0,R1,R2
 
-
+LABEL4
     .END
