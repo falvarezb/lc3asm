@@ -82,6 +82,7 @@ uint16_t parse_line_first_pass(const char *line, size_t *instruction_counter) {
         result = label();
     }
 
+    free(line_copy);
     return result;
 }
 
