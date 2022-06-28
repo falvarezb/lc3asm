@@ -50,10 +50,6 @@ uint16_t parse_line_first_pass(const char *line, size_t *instruction_counter) {
 
     //saving line before it is modified by strtok    
     char *line_copy = strdup(line);
-    if(line_copy == NULL) {
-        printerr("out of memory\n");
-        return 0;
-    }
 
     char *delimiters = " ";
     char *assembly_instr = strtok(line_copy, delimiters);
@@ -86,17 +82,16 @@ uint16_t parse_line_first_pass(const char *line, size_t *instruction_counter) {
         result = label();
     }
 
-    free(line_copy);
     return result;
 }
 
-typedef struct lines {
+typedef struct {
     char *whole_line; //whole_line is handled by library function 'getline'
     char *partial_line; //next token after a label in the same line
-} line_t;
+} lineholder_t;
 
 int compute_symbol_table(FILE *source_file) {
-    line_t line_holder = { NULL, NULL };
+    lineholder_t line_holder = { NULL, NULL };
     char *line = NULL;
     size_t len = 0;
     size_t instruction_counter;
@@ -123,7 +118,10 @@ int compute_symbol_table(FILE *source_file) {
 
 
         if(strcmp(errdesc, "END_OF_FILE") == 0) {
-            //FIXME label associated to .END directive
+            if(label) {
+                add(label, instruction_counter);
+                free(tmpline);
+            }
             //stop reading file
             break;
         }

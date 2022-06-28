@@ -1,5 +1,5 @@
-#ifndef _FAB_DICT
-#define _FAB_DICT
+#ifndef FAB_DICT
+#define FAB_DICT
 
 #include <stdbool.h>
 #define DICTSIZE 101

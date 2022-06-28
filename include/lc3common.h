@@ -3,6 +3,9 @@
 #define FAB_LC3_COMMON
 #include "common.h"
 
+typedef enum {
+    ORIG_DIRECTIVE, END_DIRECTIVE, OPSCODE, LABEL, COMMENT, BLANK_LINE
+} linetype_t;
 
 int is_register(char *token);
 int is_imm5(char *token, long *imm5);
