@@ -40,7 +40,7 @@ int serialize_symbol_table(FILE *destination_file) {
     fprintf(destination_file, "// Symbol table\n// Scope level 0:\n//	Symbol Name       Page Address\n//	----------------  ------------\n");
     node_t *node = next(true);
     while(node) {
-        fprintf(destination_file, "//	%s             %x\n", node->key, node->val);
+        fprintf(destination_file, "//	%s             %lx\n", node->key, node->val);
         node = next(false);
     }
     return EXIT_SUCCESS;

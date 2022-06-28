@@ -14,7 +14,7 @@
 typedef struct node {
     struct node *next;
     char *key; 
-    int val;
+    size_t val;
 } node_t;
 
 /**
@@ -23,12 +23,12 @@ typedef struct node {
  * Returns a pointer to the key-val pair created/modified or NULL if there is no 
  * enough memory for a new entry
  **/
-node_t* add(char *key, int val);
+node_t* add(const char *key, int val);
 
 /**
  *  Returns a pointer to key-val pair or NULL if 'key' is not found
  **/
-node_t* lookup(char *key);
+node_t* lookup(const char *key);
 
 /**
  * Iterates over the content of the dictionary, returning a pointer 
@@ -42,7 +42,7 @@ node_t* next(bool reset);
 /**
  *  Deletes a key-val pair
  **/
-bool delete(char *key);
+bool delete(const char *key);
 
 /**
  *  Initialize the elements of dictionary to null

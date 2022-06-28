@@ -5,14 +5,14 @@
 
 static node_t *dict[DICTSIZE];
 
-unsigned hash(char *s) {
+unsigned hash(const char *s) {
     unsigned hashval;
     for(hashval = 0; *s != '\0'; s++)
         hashval = *s + 31 * hashval;
     return hashval % DICTSIZE;
 }
 
-node_t *lookup(char *key) {
+node_t *lookup(const char *key) {
     node_t *np;
 
     for(np = dict[hash(key)]; np != NULL; np = np->next) {
@@ -22,7 +22,7 @@ node_t *lookup(char *key) {
     return NULL;
 }
 
-node_t *add(char *key, int val) {
+node_t *add(const char *key, int val) {
     node_t *np;
     unsigned hashval;
 
@@ -43,7 +43,7 @@ node_t *add(char *key, int val) {
     return np;
 }
 
-bool delete(char *key) {
+bool delete(const char *key) {
 
     node_t *curr, *prev = NULL;
 
@@ -75,7 +75,7 @@ void print() {
             has_elements = 1;
             if(np == dict[i])
                 printf("%zu ", i);
-            printf("- (%s,%d) ", np->key, np->val);
+            printf("- (%s,%lu) ", np->key, np->val);
         }
         if(has_elements)
             printf("\n");
