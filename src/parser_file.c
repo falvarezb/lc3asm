@@ -53,9 +53,9 @@ uint16_t parse_line_first_pass(const char *line, size_t *instruction_counter) {
 
     char *delimiters = " ";
     char *assembly_instr = strtok(line_copy, delimiters);
-    int result = 0;
+    linetype_t result;
     if(assembly_instr == NULL || assembly_instr[0] == '\n') {
-        result = blank_line();
+        result = BLANK_LINE;
     }
     else if(
         strcmp(assembly_instr, "ADD") == 0 ||
@@ -66,20 +66,20 @@ uint16_t parse_line_first_pass(const char *line, size_t *instruction_counter) {
         strcmp(assembly_instr, "RET") == 0 ||
         strcmp(assembly_instr, "HALT") == 0
         ) {
-        result = instruction();
+        result = OPSCODE;
     }
     else if(strcmp(assembly_instr, ".ORIG") == 0) {
-        result = 0;
+        result = ORIG_DIRECTIVE;
         *instruction_counter = parse_orig();
     }
     else if(strcmp(assembly_instr, ".END") == 0) {
-        result = end_of_file();
+        result = END_DIRECTIVE;
     }
     else if(assembly_instr[0] == ';') {
-        result = comment();
+        result = COMMENT;
     }
     else {
-        result = label();
+        result = LABEL;
     }
 
     free(line_copy);
@@ -103,7 +103,7 @@ int compute_symbol_table(FILE *source_file) {
     char *tmpline;
 
     errno = 0;
-    ssize_t read = getline(&line_holder.whole_line, &len, source_file);    
+    ssize_t read = getline(&line_holder.whole_line, &len, source_file);
     while(read != -1) {
         //partial line takes precedence as it contains a subset of the whole line that needs to be processed independently
         if(line_holder.partial_line) {
@@ -115,10 +115,9 @@ int compute_symbol_table(FILE *source_file) {
         }
         printf("%s", line);
 
-        uint16_t machine_instr = parse_line_first_pass(line, &instruction_counter);
+        linetype_t line_type = parse_line_first_pass(line, &instruction_counter);
 
-
-        if(strcmp(errdesc, "END_OF_FILE") == 0) {
+        if(line_type == END_DIRECTIVE) {
             if(label) {
                 add(label, instruction_counter);
                 free(tmpline);
@@ -127,20 +126,15 @@ int compute_symbol_table(FILE *source_file) {
             break;
         }
         else if(
-            strcmp(errdesc, "COMMENT") == 0 ||
-            strcmp(errdesc, "BLANK") == 0 ||
-            strcmp(errdesc, ".ORIG") == 0
+            line_type == COMMENT ||
+            line_type == BLANK_LINE ||
+            line_type == ORIG_DIRECTIVE
             ) {
-            //ignore line and continue
-            clearerrdesc();
+            //ignore line and continue            
         }
-        else if(strcmp(errdesc, "LABEL") == 0) {
-            clearerrdesc();                    
-            if((tmpline = strdup(line)) == NULL) {                
-                printerr("out of memory\n");
-                return EXIT_FAILURE;
-            }
-            char *delimiters = " ";    
+        else if(line_type == LABEL) {
+            tmpline = strdup(line);
+            char *delimiters = " ";
             label = strtok(tmpline, delimiters);
             line_holder.partial_line = strtok(NULL, delimiters);
             if(line_holder.partial_line) {
@@ -149,7 +143,7 @@ int compute_symbol_table(FILE *source_file) {
                 continue;
             }
         }
-        else if(strcmp(errdesc, "INSTRUCTION") == 0) {
+        else if(line_type == OPSCODE) {
             if(label) {
                 add(label, instruction_counter);
                 free(tmpline);
@@ -163,7 +157,7 @@ int compute_symbol_table(FILE *source_file) {
             return EXIT_FAILURE;
         }
 
-        read = getline(&line_holder.whole_line, &len, source_file); 
+        read = getline(&line_holder.whole_line, &len, source_file);
     }
 
     free(line_holder.whole_line);
