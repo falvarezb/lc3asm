@@ -93,11 +93,8 @@ int compute_symbol_table(FILE *source_file) {
     char *line = NULL;
     size_t len = 0;
     size_t instruction_counter;
-    //FIXME label should be an array of strings to allow several labels for the
-    //same instruction
-    //currently, only one label per instruction is supported
     int num_found_labels = 0;
-    char *found_labels[MAX_NUM_LABELS_PER_INSTRUCTION] = {}; //contains last found labels; reset to null when label is added to the symbol table
+    char *found_labels[MAX_NUM_LABELS_PER_INSTRUCTION] = {}; //contains last found labels; reset to null when labels are added to the symbol table
     char *tmpline;
 
     errno = 0;
