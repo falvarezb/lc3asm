@@ -7,6 +7,7 @@ LABEL2
     ADD R0,R0,#1    
 LABEL3 HALT
 
+LABEL5
 
 ; label and instruction are in the same line
 LABEL1 ADD R0,R1,R2

@@ -1,14 +1,11 @@
 #include "../include/lc3.h"
 #include "../include/dict.h"
 
+#define MAX_NUM_LABELS_PER_INSTRUCTION 10
+
 static uint16_t end_of_file() {
     printerr("END_OF_FILE");
     return 0;
-}
-
-static uint16_t instruction() {
-    printerr("INSTRUCTION");
-    return 1;
 }
 
 static uint16_t comment() {
@@ -99,7 +96,8 @@ int compute_symbol_table(FILE *source_file) {
     //FIXME label should be an array of strings to allow several labels for the
     //same instruction
     //currently, only one label per instruction is supported
-    char *label = NULL; //contains last found label; reset to null when label is added to the symbol table
+    int num_found_labels = 0;
+    char *found_labels[MAX_NUM_LABELS_PER_INSTRUCTION] = {}; //contains last found labels; reset to null when label is added to the symbol table
     char *tmpline;
 
     errno = 0;
@@ -118,9 +116,9 @@ int compute_symbol_table(FILE *source_file) {
         linetype_t line_type = parse_line_first_pass(line, &instruction_counter);
 
         if(line_type == END_DIRECTIVE) {
-            if(label) {
-                add(label, instruction_counter);
-                free(tmpline);
+            for(int i = 0; i < num_found_labels; i++) {
+                add(found_labels[i], instruction_counter);
+                free(found_labels[i]);
             }
             //stop reading file
             break;
@@ -135,7 +133,7 @@ int compute_symbol_table(FILE *source_file) {
         else if(line_type == LABEL) {
             tmpline = strdup(line);
             char *delimiters = " ";
-            label = strtok(tmpline, delimiters);
+            found_labels[num_found_labels++] = strtok(tmpline, delimiters);
             line_holder.partial_line = strtok(NULL, delimiters);
             if(line_holder.partial_line) {
                 //instruction is in the same line as label                                
@@ -144,12 +142,13 @@ int compute_symbol_table(FILE *source_file) {
             }
         }
         else if(line_type == OPSCODE) {
-            if(label) {
-                add(label, instruction_counter);
-                free(tmpline);
-                label = NULL;
-                line_holder.partial_line = NULL;
+            for(int i = 0; i < num_found_labels; i++) {
+                add(found_labels[i], instruction_counter);
+                free(found_labels[i]);
+                found_labels[i] = NULL;
             }
+            num_found_labels = 0;
+            line_holder.partial_line = NULL;
             instruction_counter++;
         }
         else {

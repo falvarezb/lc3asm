@@ -66,6 +66,7 @@ void test_symbol_table_calculation_t4(void  __attribute__((unused)) **state) {
     assert_sym("LABEL2", 0x3001);
     assert_sym("LABEL3", 0x3002);
     assert_sym("LABEL4", 0x3004);
+    assert_sym("LABEL5", 0x3003);
 }
 
 void test_symbol_table_serialization(void  __attribute__((unused)) **state) {
