@@ -131,6 +131,15 @@ int compute_symbol_table(FILE *source_file) {
             //ignore line and continue            
         }
         else if(line_type == LABEL) {
+            if(line_holder.partial_line) {
+                //2 labels in the same line is not allowed
+                printerr("invalid opcode ('%s')", line);
+                for(int i = 0; i < num_found_labels; i++) {
+                    free(found_labels[i]);
+                }
+                free(line_holder.whole_line);
+                return EXIT_FAILURE;
+            }
             tmpline = strdup(line);
             char *delimiters = " ";
             found_labels[num_found_labels++] = strtok(tmpline, delimiters);

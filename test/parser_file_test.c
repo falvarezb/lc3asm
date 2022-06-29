@@ -6,12 +6,13 @@
 #include "../include/lc3.h"
 #include "../include/dict.h"
 
-void run_sym_test(const char *asm_file_name) {
+int run_sym_test(const char *asm_file_name) {
     initialize();
     FILE *source_file = fopen(asm_file_name, "r");
 
-    compute_symbol_table(source_file);
+    int result = compute_symbol_table(source_file);
     fclose(source_file);
+    return result;
 }
 
 void assert_sym(const char *label, size_t num_instruction) {
@@ -69,6 +70,11 @@ void test_symbol_table_calculation_t4(void  __attribute__((unused)) **state) {
     assert_sym("LABEL5", 0x3003);
 }
 
+void test_symbol_table_calculation_t5(void  __attribute__((unused)) **state) {
+    assert_int_equal(run_sym_test("./test/t5.asm"), EXIT_FAILURE);
+    assert_string_equal(errdesc, "invalid opcode ('LABEL2')");     
+}
+
 void test_symbol_table_serialization(void  __attribute__((unused)) **state) {
     initialize();
     add("LABEL", 0x3003);
@@ -111,6 +117,7 @@ int main(int argc, char const *argv[]) {
         cmocka_unit_test(test_symbol_table_calculation_t2),
         cmocka_unit_test(test_symbol_table_calculation_t3),
         cmocka_unit_test(test_symbol_table_calculation_t4),
+        cmocka_unit_test(test_symbol_table_calculation_t5),
         cmocka_unit_test(test_symbol_table_serialization)
     };
     return cmocka_run_group_tests(tests, NULL, NULL);
