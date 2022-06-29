@@ -12,8 +12,7 @@ OUTPUT_DIRS = ${BUILD_DIR} ${LOG_DIR} tools/${BUILD_DIR}
 
 CC = gcc
 # _POSIX_C_SOURCE=200809 to expose strdup and getline in Linux
-CFLAGS = -D_POSIX_C_SOURCE=200809 -Og -Wall -Wno-missing-braces -Wextra -Wshadow -Wpedantic -std=c11 -fno-common --coverage 
-# -I/usr/local/include/glib-2.0 -I/usr/local/lib/glib-2.0/include
+CFLAGS = -D_POSIX_C_SOURCE=200809 -D_GNU_SOURCE -Og -Wall -Wno-missing-braces -Wextra -Wshadow -Wpedantic -std=c11 -fno-common --coverage -I/usr/local/include/glib-2.0 -I/usr/local/lib/glib-2.0/include -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include
 LDFLAGS =
 SOURCE_DIR := src
 OBJS_PROD := $(addprefix $(BUILD_DIR)/, $(patsubst %.c,%.o,$(shell ls $(SOURCE_DIR))))
@@ -21,8 +20,7 @@ SRCS_TEST := test.c parser_add_test.c parser_and_test.c parser_not_test.c parser
 OBJS_TEST := $(addprefix $(BUILD_DIR)/, $(patsubst %.c,%.o,$(SRCS_TEST)))
 SRCS_TOOLS := lc3objdump.c
 OBJS_TOOLS := $(addprefix $(TOOLS_BUILD_DIR)/, $(patsubst %.c,%.o,$(SRCS_TOOLS)))
-LDLIBS = 
-# -lglib-2.0
+LDLIBS = -lglib-2.0
 
 ifeq ($(shell uname), Linux)
 	VALGRIND = valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all

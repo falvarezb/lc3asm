@@ -2,6 +2,7 @@
 #define FAB_DICT
 
 #include <stdbool.h>
+#include <unistd.h>
 #define DICTSIZE 101
 
 /*
