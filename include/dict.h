@@ -2,7 +2,7 @@
 #define FAB_DICT
 
 #include <stdbool.h>
-#include <unistd.h>
+#include <stdint.h>
 #define DICTSIZE 101
 
 /*
@@ -10,12 +10,10 @@
     - each linked list is pointed to by the element of an array
     - the array is indexed by the hash value of the keys
 */
-
-//FIXME make val size_t
 typedef struct node {
     struct node *next;
     char *key; 
-    size_t val;
+    uint16_t val; //uint16_t is the range of LC3's memory address space
 } node_t;
 
 /**
@@ -24,7 +22,7 @@ typedef struct node {
  * Returns a pointer to the key-val pair created/modified or NULL if there is no 
  * enough memory for a new entry
  **/
-node_t* add(const char *key, int val);
+node_t* add(const char *key, uint16_t val);
 
 /**
  *  Returns a pointer to key-val pair or NULL if 'key' is not found

@@ -48,7 +48,7 @@ int serialize_symbol_table(FILE *destination_file) {
     }
     node_t *node = next(true);
     while(node) {
-        if((num_chars_written = fprintf(destination_file, "//	%s             %lx\n", node->key, node->val) < 0)) {
+        if((num_chars_written = fprintf(destination_file, "//	%s             %hx\n", node->key, node->val) < 0)) {
             printerr("error when writing serialized symbol table to file");
             return EXIT_FAILURE;
         }

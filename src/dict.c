@@ -22,7 +22,7 @@ node_t *lookup(const char *key) {
     return NULL;
 }
 
-node_t *add(const char *key, int val) {
+node_t *add(const char *key, uint16_t val) {
     node_t *np;
     unsigned hashval;
 
@@ -75,7 +75,7 @@ void print() {
             has_elements = 1;
             if(np == dict[i])
                 printf("%zu ", i);
-            printf("- (%s,%lu) ", np->key, np->val);
+            printf("- (%s,%hu) ", np->key, np->val);
         }
         if(has_elements)
             printf("\n");
