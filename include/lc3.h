@@ -20,8 +20,8 @@ uint16_t parse_not(char *instr);
 uint16_t parse_ret(char *instr);
 uint16_t parse_jmp(char *instr);
 uint16_t parse_jsr(char *instr);
-int parse_file(FILE *source_file, FILE *object_file);
-int first_pass_parser(FILE *source_file, FILE *destination_file);
+int first_pass_parse(FILE *source_file, FILE *destination_file);
+int second_pass_parse(FILE *source_file, FILE *object_file);
 int compute_symbol_table(FILE *source_file);
 int serialize_symbol_table(FILE* destination_file);
 

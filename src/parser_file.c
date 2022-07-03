@@ -235,7 +235,7 @@ int compute_symbol_table(FILE *source_file) {
  * @param destination_file The string resulting of serializing the symbol table is written to destination_file
  * @return int Return 0 if process is completed successfully, 1 otherwise (errdesc is set accordingly)
  */
-int first_pass_parser(FILE *source_file, FILE *destination_file) {
+int first_pass_parse(FILE *source_file, FILE *destination_file) {
     int result;
     if((result = compute_symbol_table(source_file))) {
         return result;
@@ -302,7 +302,7 @@ uint16_t parse_line(char *line) {
     return result;
 }
 
-int parse_file(FILE *source_file, FILE *destination_file) {
+int second_pass_parse(FILE *source_file, FILE *destination_file) {
     char *line = malloc(sizeof(char) * 1000);
     size_t len = 1000;
     ssize_t read;
@@ -355,6 +355,6 @@ int parse_file(FILE *source_file, FILE *destination_file) {
 
 #ifdef FAB_MAIN
 int main(int argc, char const *argv[]) {
-    //parse_file();
+    //second_pass_parse();
 }
 #endif

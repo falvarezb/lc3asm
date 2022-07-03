@@ -26,7 +26,7 @@ void test_object_file_creation(void  __attribute__((unused)) **state) {
     FILE *source_file = fopen("./test/t1.asm", "r");
     FILE *actual_obj_file = fopen("./test/t1.actual.obj", "w");
 
-    parse_file(source_file, actual_obj_file);
+    second_pass_parse(source_file, actual_obj_file);
     fclose(source_file);
     fclose(actual_obj_file);
 
