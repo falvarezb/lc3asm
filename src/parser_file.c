@@ -145,9 +145,9 @@ int compute_symbol_table(FILE *source_file) {
     lineholder_t line_holder = { .whole_line = NULL, .partial_line = NULL };
     char *line = NULL;
     size_t len = 0;
-    uint16_t instruction_counter;
+    uint16_t instruction_counter = 0;
     int num_found_labels = 0;
-    char *found_labels[MAX_NUM_LABELS_PER_INSTRUCTION] = {}; //contains last found labels; reset to null when labels are added to the symbol table
+    char *found_labels[MAX_NUM_LABELS_PER_INSTRUCTION] = {0}; //contains last found labels; reset to null when labels are added to the symbol table
     char *tmpline;
 
     errno = 0;
