@@ -72,7 +72,7 @@ void test_symbol_table_calculation_t4(void  __attribute__((unused)) **state) {
 
 void test_symbol_table_calculation_t5(void  __attribute__((unused)) **state) {
     assert_int_equal(run_sym_test("./test/t5.asm"), EXIT_FAILURE);
-    assert_string_equal(errdesc, "invalid opcode ('LABEL2')");     
+    assert_string_equal(errdesc, "invalid opcode ('LABEL2')");
 }
 
 void test_symbol_table_serialization(void  __attribute__((unused)) **state) {
@@ -111,6 +111,20 @@ void test_symbol_table_serialization(void  __attribute__((unused)) **state) {
     delete(label->key);
 }
 
+void test_symbol_table_serialization_failure(void  __attribute__((unused)) **state) {
+    initialize();
+    node_t *label = add("LABEL", 0x3003);
+    FILE *actual_sym_file = fopen("./test/t2.actual.sym", "r");
+    int result = serialize_symbol_table(actual_sym_file);
+    assert_string_equal(errdesc, "error when writing serialized symbol table to file");
+    
+    assert_int_equal(result, 1);
+
+    fclose(actual_sym_file);
+    delete(label->key);
+}
+
+
 int main(int argc, char const *argv[]) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_object_file_creation),
@@ -118,7 +132,8 @@ int main(int argc, char const *argv[]) {
         cmocka_unit_test(test_symbol_table_calculation_t3),
         cmocka_unit_test(test_symbol_table_calculation_t4),
         cmocka_unit_test(test_symbol_table_calculation_t5),
-        cmocka_unit_test(test_symbol_table_serialization)
+        cmocka_unit_test(test_symbol_table_serialization),
+        cmocka_unit_test(test_symbol_table_serialization_failure)
     };
     return cmocka_run_group_tests(tests, NULL, NULL);
 }

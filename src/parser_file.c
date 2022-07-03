@@ -43,13 +43,13 @@ static uint16_t parse_orig() {
 int serialize_symbol_table(FILE *destination_file) {
     int num_chars_written;
     if ((num_chars_written = fprintf(destination_file, "// Symbol table\n// Scope level 0:\n//	Symbol Name       Page Address\n//	----------------  ------------\n")) < 0) {
-        printerr("error when serializing symbol table");
+        printerr("error when writing serialized symbol table to file");
         return EXIT_FAILURE;
     }
     node_t *node = next(true);
     while(node) {
         if((num_chars_written = fprintf(destination_file, "//	%s             %lx\n", node->key, node->val) < 0)) {
-            printerr("error when serializing symbol table");
+            printerr("error when writing serialized symbol table to file");
             return EXIT_FAILURE;
         }
         node = next(false);
@@ -237,7 +237,7 @@ int compute_symbol_table(FILE *source_file) {
  */
 int first_pass_parser(FILE *source_file, FILE *destination_file) {
     int result;
-    if(result = compute_symbol_table(source_file)) {
+    if((result = compute_symbol_table(source_file))) {
         return result;
     }
     return serialize_symbol_table(destination_file);
