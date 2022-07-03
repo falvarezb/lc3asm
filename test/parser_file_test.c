@@ -22,16 +22,16 @@ void assert_sym(const char *label, size_t num_instruction) {
     delete(label);
 }
 
-void test_object_file_creation(void  __attribute__((unused)) **state) {
-    FILE *source_file = fopen("./test/t1.asm", "r");
-    FILE *actual_obj_file = fopen("./test/t1.actual.obj", "w");
+void run_file_creation_test(char* asm_file_name, char* obj_file_name, char* actual_obj_file_name) {
+    FILE *source_file = fopen(asm_file_name, "r");
+    FILE *actual_obj_file = fopen(actual_obj_file_name, "w");
 
     second_pass_parse(source_file, actual_obj_file);
     fclose(source_file);
     fclose(actual_obj_file);
 
-    FILE *expected_obj_file = fopen("./test/t1.obj", "r");
-    actual_obj_file = fopen("./test/t1.actual.obj", "r");
+    FILE *expected_obj_file = fopen(obj_file_name, "r");
+    actual_obj_file = fopen(actual_obj_file_name, "r");
 
     char buf_expected[2];
     char buf_actual[2];
@@ -49,6 +49,10 @@ void test_object_file_creation(void  __attribute__((unused)) **state) {
     assert_int_equal(read, fread(buf_actual, 1, 2, actual_obj_file));
     fclose(expected_obj_file);
     fclose(actual_obj_file);
+}
+
+void test_object_file_creation_t1(void  __attribute__((unused)) **state) {
+    run_file_creation_test("./test/t1.asm", "./test/t1.obj", "./test/t1.actual.obj");
 }
 
 void test_symbol_table_calculation_t2(void  __attribute__((unused)) **state) {
@@ -127,7 +131,7 @@ void test_symbol_table_serialization_failure(void  __attribute__((unused)) **sta
 
 int main(int argc, char const *argv[]) {
     const struct CMUnitTest tests[] = {
-        cmocka_unit_test(test_object_file_creation),
+        cmocka_unit_test(test_object_file_creation_t1),
         cmocka_unit_test(test_symbol_table_calculation_t2),
         cmocka_unit_test(test_symbol_table_calculation_t3),
         cmocka_unit_test(test_symbol_table_calculation_t4),
