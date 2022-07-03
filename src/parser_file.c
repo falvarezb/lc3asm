@@ -36,13 +36,13 @@ static uint16_t parse_orig() {
 
 /**
  * @brief Serialize the symbol table as a string and writes it to the given file
- * 
+ *
  * @param destination_file File where the symbol table is serialized
  * @return int Returns 0 if serialization is successful or 1 if there is a writing error (errdesc is set accordingly)
  */
 int serialize_symbol_table(FILE *destination_file) {
     int num_chars_written;
-    if ((num_chars_written = fprintf(destination_file, "// Symbol table\n// Scope level 0:\n//	Symbol Name       Page Address\n//	----------------  ------------\n")) < 0) {
+    if((num_chars_written = fprintf(destination_file, "// Symbol table\n// Scope level 0:\n//	Symbol Name       Page Address\n//	----------------  ------------\n")) < 0) {
         printerr("error when writing serialized symbol table to file");
         return EXIT_FAILURE;
     }
@@ -105,6 +105,49 @@ linetype_t compute_line_type(const char *line) {
 }
 
 /**
+ * @brief Determine the opcode type of the instruction in the given line
+ *
+ * The possible types are determined by the values of enum opcode_t
+ *
+ * @param opcode line of the asm file to be inspected
+ * @return opcode_t value indicative of the type of opcode
+ */
+opcode_t compute_opcode_type(const char *line) {
+
+    //saving line before it is modified by strtok    
+    char *line_copy = strdup(line);
+
+    char *delimiters = " ";
+    char *assembly_instr = strtok(line_copy, delimiters);
+    opcode_t result;
+    if(strcmp(assembly_instr, "ADD") == 0) {
+        result = ADD;
+    }
+    else if(strcmp(assembly_instr, "AND") == 0) {
+        result = AND;
+    }
+    else if(strcmp(assembly_instr, "JMP") == 0) {
+        result = JMP;
+    }
+    else if(strcmp(assembly_instr, "JSR") == 0) {
+        result = JSR;
+    }
+    else if(strcmp(assembly_instr, "NOT") == 0) {
+        result = NOT;
+    }
+    else if(strcmp(assembly_instr, "RET") == 0) {
+        result = RET;
+    }
+    else {
+        result = HALT;
+    }
+
+    free(line_copy);
+    return result;
+}
+
+
+/**
  * @brief struct with information about the line being parsed
  *
  * At any given time, the line being parsed may be an entire line of the asm
@@ -121,23 +164,24 @@ typedef struct {
 
 /**
  * @brief Compute the symbol table by creating a dictionary to map labels to instructions.
- * 
- * Each instruction is identified by its memory location. 
+ *
+ * Each instruction is identified by its memory location.
  * The memory location of the first instruction is given by the directive `.ORIG`
- * 
+ *
  * Each instruction in the asm file can be mapped up to __MAX_NUM_LABELS_PER_INSTRUCTION__ labels.
- * 
+ *
  * Labels can be in the same line as the instruction or in a different one.
  * If in the same line, the label must come before the instruction.
- * 
+ *
  * There cannot be more than one label in the same line.
- * 
+ *
  * If there is an error, the function returns 1 and errdesc is updated with a description of the error.
- * 
+ *
  * Possible error causes:
  * - unknown line type
  * - invalid opcode after a label
- * 
+ * - error returned by _getline_
+ *
  * @param source_file Source fle containing the asm code
  * @return int Return code: 1 if there is an error, 0 otherwise
  */
@@ -146,8 +190,8 @@ int compute_symbol_table(FILE *source_file) {
     char *line = NULL;
     size_t len = 0;
     uint16_t instruction_counter = 0;
-    int num_found_labels = 0;
-    char *found_labels[MAX_NUM_LABELS_PER_INSTRUCTION] = {0}; //contains last found labels; reset to null when labels are added to the symbol table
+    int num_found_labels = 0; //number of found labels for a given instruction; reset to zero when labels are added to the symbol table
+    char *found_labels[MAX_NUM_LABELS_PER_INSTRUCTION] = { 0 }; //array containing last found labels; reset to null when labels are added to the symbol table
     char *tmpline;
 
     errno = 0;
@@ -173,8 +217,7 @@ int compute_symbol_table(FILE *source_file) {
             //stop reading file
             break;
         }
-        else if(
-            line_type == ORIG_DIRECTIVE) {
+        else if(line_type == ORIG_DIRECTIVE) {
             //read memory address of first instruction
             instruction_counter = parse_orig();
         }
@@ -213,7 +256,7 @@ int compute_symbol_table(FILE *source_file) {
         }
         else {
             //this should never happen as line_type takes values from an enum  
-            printerr("unknown line type ('%d')", line_type);          
+            printerr("unknown line type ('%d')", line_type);
             return EXIT_FAILURE;
         }
 
@@ -221,6 +264,13 @@ int compute_symbol_table(FILE *source_file) {
     }
 
     free(line_holder.whole_line);
+
+    //check if getline resulted in error
+    if(read == -1 && errno) {
+        printerr("getLine error %d\n", errno);
+        return EXIT_FAILURE;
+    }
+
     return EXIT_SUCCESS;
 }
 
@@ -228,7 +278,7 @@ int compute_symbol_table(FILE *source_file) {
 
 /**
  * @brief Executes first pass on the assembly source file
- * 
+ *
  * During the first pass, lines of the source file are parsed to identify labels and create the symbol table.
  *
  * @param source_file Source file with assembly code
@@ -303,9 +353,10 @@ uint16_t parse_line(char *line) {
 }
 
 int second_pass_parse(FILE *source_file, FILE *destination_file) {
-    char *line = malloc(sizeof(char) * 1000);
-    size_t len = 1000;
+    char *line = NULL;
+    size_t len = 0;
     ssize_t read;
+    uint16_t machine_instr = 0;
 
     errno = 0;
     while((read = getline(&line, &len, source_file)) != -1) {
@@ -313,24 +364,48 @@ int second_pass_parse(FILE *source_file, FILE *destination_file) {
         //remove newline char at the end of the line
         line[read - 1] = '\0';
 
-        uint16_t machine_instr = parse_line(line);
+        linetype_t line_type = compute_line_type(line);
 
-        if(!machine_instr) {
-            if(strcmp(errdesc, "END_OF_FILE") == 0) {
-                //stop reading file
-                break;
+        if(line_type == END_DIRECTIVE) {
+            //stop reading file
+            break;
+        }
+        else if(line_type == COMMENT || line_type == BLANK_LINE) {
+            //ignore line and continue
+            continue;
+        }
+        else if(line_type == ORIG_DIRECTIVE) {
+            machine_instr = parse_orig();
+            char *bytes = (char *)&machine_instr;
+            //swap bytes (because of little-endian representation)
+            char byte = bytes[0];
+            bytes[0] = bytes[1];
+            bytes[1] = byte;
+            fwrite(bytes, sizeof(char), 2, destination_file);
+        }
+        else if(line_type == OPCODE) {
+            opcode_t opcode_type = compute_opcode_type(line);
+            if(opcode_type == ADD) {
+                machine_instr = parse_add(line);
             }
-            else if(strcmp(errdesc, "COMMENT") == 0 || strcmp(errdesc, "BLANK") == 0) {
-                //ignore line and continue
-                clearerrdesc();
-                continue;
+            else if(opcode_type == AND) {
+                machine_instr = parse_and(line);
+            }
+            else if(opcode_type == JMP) {
+                machine_instr = parse_jmp(line);
+            }
+            else if(opcode_type == JSR) {
+                machine_instr = parse_jsr(line);
+            }
+            else if(opcode_type == NOT) {
+                machine_instr = parse_not(line);
+            }
+            else if(opcode_type == RET) {
+                machine_instr = parse_ret(line);
             }
             else {
-                free(line);
-                return EXIT_FAILURE;
+                machine_instr = parse_halt();
             }
-        }
-        else {
             char *bytes = (char *)&machine_instr;
             //swap bytes (because of little-endian representation)
             char byte = bytes[0];
@@ -343,11 +418,10 @@ int second_pass_parse(FILE *source_file, FILE *destination_file) {
     free(line);
 
     //check if getline resulted in error
-    if(errno) {
+    if(read == -1 && errno) {
         printerr("getLine error %d\n", errno);
         return EXIT_FAILURE;
     }
-
 
     return EXIT_SUCCESS;
 }
