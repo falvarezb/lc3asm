@@ -11,8 +11,7 @@ LOG_DIR = logs
 OUTPUT_DIRS = ${BUILD_DIR} ${LOG_DIR} tools/${BUILD_DIR}
 
 CC = gcc
-# _POSIX_C_SOURCE=200809 to expose strdup and getline in Linux
-CFLAGS = -D_POSIX_C_SOURCE=200809 -D_GNU_SOURCE -Og -Wall -Wno-missing-braces -Wextra -Wshadow -Wpedantic -std=c11 -fno-common --coverage -I/usr/local/include/glib-2.0 -I/usr/local/lib/glib-2.0/include -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include
+CFLAGS = -Og -Wall -Wno-missing-braces -Wextra -Wshadow -Wpedantic -std=c11 -fno-common --coverage
 LDFLAGS =
 SOURCE_DIR := src
 OBJS_PROD := $(addprefix $(BUILD_DIR)/, $(patsubst %.c,%.o,$(shell ls $(SOURCE_DIR))))
@@ -25,8 +24,11 @@ LDLIBS = -lglib-2.0
 ifeq ($(shell uname), Linux)
 	VALGRIND = valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all
 	VALGRIND += --verbose --log-file=${LOG_DIR}/valgrind.log
-else
+	# _POSIX_C_SOURCE=200809 to expose strdup and getline in Linux
+	CFLAGS += -D_POSIX_C_SOURCE=200809 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include
+else ifeq ($(shell uname), Darwin)
 	VALGRIND =
+	CFLAGS += -I/usr/local/include/glib-2.0 -I/usr/local/lib/glib-2.0/include
 endif
 
 
