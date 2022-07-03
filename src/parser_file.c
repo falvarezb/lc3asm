@@ -14,6 +14,19 @@ static uint16_t parse_orig() {
     return 0x3000;
 }
 
+static int write_machine_instruction(uint16_t machine_instr, FILE *destination_file) {
+    char *bytes = (char *)&machine_instr;
+    //swap bytes (because of little-endian representation)
+    char byte = bytes[0];
+    bytes[0] = bytes[1];
+    bytes[1] = byte;
+    size_t written = fwrite(bytes, sizeof(char), 2, destination_file);
+    if(written != 2) {
+        return EXIT_FAILURE;
+    }
+    return EXIT_SUCCESS;
+}
+
 /**
  * @brief Serialize the symbol table as a string and writes it to the given file
  *
@@ -297,12 +310,10 @@ int second_pass_parse(FILE *source_file, FILE *destination_file) {
         }
         else if(line_type == ORIG_DIRECTIVE) {
             machine_instr = parse_orig();
-            char *bytes = (char *)&machine_instr;
-            //swap bytes (because of little-endian representation)
-            char byte = bytes[0];
-            bytes[0] = bytes[1];
-            bytes[1] = byte;
-            fwrite(bytes, sizeof(char), 2, destination_file);
+            if(write_machine_instruction(machine_instr, destination_file)) {
+                printerr("error writing instruction to object file\n");
+                return EXIT_FAILURE;
+            }
         }
         else if(line_type == OPCODE) {
             opcode_t opcode_type = compute_opcode_type(line);
@@ -327,12 +338,10 @@ int second_pass_parse(FILE *source_file, FILE *destination_file) {
             else {
                 machine_instr = parse_halt();
             }
-            char *bytes = (char *)&machine_instr;
-            //swap bytes (because of little-endian representation)
-            char byte = bytes[0];
-            bytes[0] = bytes[1];
-            bytes[1] = byte;
-            fwrite(bytes, sizeof(char), 2, destination_file);
+            if(write_machine_instruction(machine_instr, destination_file)) {
+                printerr("error writing instruction to object file\n");
+                return EXIT_FAILURE;
+            }
         }
     }
 
