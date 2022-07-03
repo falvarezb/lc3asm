@@ -8,7 +8,10 @@
 *.elf
 *.sym
 !test/t1.obj
+!test/t2.obj
 !test/t2.sym
+!test/t3.sym
+!test/t4.sym
 
 # Linker output
 *.ilk

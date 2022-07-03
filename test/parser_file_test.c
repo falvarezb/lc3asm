@@ -55,6 +55,10 @@ void test_object_file_creation_t1(void  __attribute__((unused)) **state) {
     run_file_creation_test("./test/t1.asm", "./test/t1.obj", "./test/t1.actual.obj");
 }
 
+void test_object_file_creation_t2(void  __attribute__((unused)) **state) {
+    run_file_creation_test("./test/t2.asm", "./test/t2.obj", "./test/t2.actual.obj");
+}
+
 void test_symbol_table_calculation_t2(void  __attribute__((unused)) **state) {
     run_sym_test("./test/t2.asm");
     assert_sym("LABEL", 0x3003);
@@ -132,6 +136,7 @@ void test_symbol_table_serialization_failure(void  __attribute__((unused)) **sta
 int main(int argc, char const *argv[]) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_object_file_creation_t1),
+        cmocka_unit_test(test_object_file_creation_t2),
         cmocka_unit_test(test_symbol_table_calculation_t2),
         cmocka_unit_test(test_symbol_table_calculation_t3),
         cmocka_unit_test(test_symbol_table_calculation_t4),
