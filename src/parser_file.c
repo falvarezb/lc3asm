@@ -115,8 +115,8 @@ linetype_t compute_line_type(const char *line) {
  *
  */
 typedef struct {
-    char *whole_line;
-    char *partial_line;
+    char *whole_line; /*!< line of the file that is being parsed */
+    char *partial_line; /*!< portion of a label line containing the next word after the label */
 } lineholder_t;
 
 /**
