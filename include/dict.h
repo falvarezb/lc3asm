@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
-#define DICTSIZE 101
+#define DICTSIZE 2000
 
 /*
     - each key-val pair is stored in a node of a linked list
