@@ -4,26 +4,6 @@
 
 #define MAX_NUM_LABELS_PER_INSTRUCTION 10
 
-static uint16_t end_of_file() {
-    printerr("END_OF_FILE");
-    return 0;
-}
-
-static uint16_t comment() {
-    printerr("COMMENT");
-    return 0;
-}
-
-static uint16_t label() {
-    printerr("LABEL");
-    return 0;
-}
-
-static uint16_t blank_line() {
-    printerr("BLANK");
-    return 0;
-}
-
 static uint16_t parse_halt() {
     return 0xf025;
 }
@@ -293,70 +273,11 @@ int first_pass_parse(FILE *source_file, FILE *destination_file) {
     return serialize_symbol_table(destination_file);
 }
 
-/**
- * @brief parse line and return the binary representation of the instruction
- *
- * @param line line containing assembly instruction
- * @return uint16_t  16-bit representation of machine instruction, 0 if assembly instruction cannot be parsed
- */
-uint16_t parse_line(char *line) {
-
-    //saving line before it is modified by strtok    
-    char *line_copy = strdup(line);
-    if(line_copy == NULL) {
-        printerr("out of memory\n");
-        return 0;
-    }
-
-    char *delimiters = " ";
-    char *assembly_instr = strtok(line_copy, delimiters);
-    int result = 0;
-    if(assembly_instr == NULL) {
-        result = blank_line();
-    }
-    else if(strcmp(assembly_instr, "ADD") == 0) {
-        result = parse_add(line);
-    }
-    else if(strcmp(assembly_instr, "AND") == 0) {
-        result = parse_and(line);
-    }
-    else if(strcmp(assembly_instr, "JMP") == 0) {
-        result = parse_jmp(line);
-    }
-    else if(strcmp(assembly_instr, "JSR") == 0) {
-        result = parse_jsr(line);
-    }
-    else if(strcmp(assembly_instr, "NOT") == 0) {
-        result = parse_not(line);
-    }
-    else if(strcmp(assembly_instr, "RET") == 0) {
-        result = parse_ret(line);
-    }
-    else if(strcmp(assembly_instr, "HALT") == 0) {
-        result = parse_halt();
-    }
-    else if(strcmp(assembly_instr, ".ORIG") == 0) {
-        result = parse_orig();
-    }
-    else if(strcmp(assembly_instr, ".END") == 0) {
-        result = end_of_file();
-    }
-    else if(assembly_instr[0] == ';') {
-        result = comment();
-    }
-    else {
-        result = label();
-    }
-
-    free(line_copy);
-    return result;
-}
-
 int second_pass_parse(FILE *source_file, FILE *destination_file) {
     char *line = NULL;
     size_t len = 0;
     ssize_t read;
-    uint16_t machine_instr = 0;
+    uint16_t machine_instr = 0; // 16-bit representation of machine instruction, 0 if assembly instruction cannot be parsed
 
     errno = 0;
     while((read = getline(&line, &len, source_file)) != -1) {
