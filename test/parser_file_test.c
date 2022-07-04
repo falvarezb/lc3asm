@@ -56,6 +56,8 @@ void test_object_file_creation_t1(void  __attribute__((unused)) **state) {
 }
 
 void test_object_file_creation_t2(void  __attribute__((unused)) **state) {
+    initialize();
+    add("LABEL", 0x3003);
     run_file_creation_test("./test/t2.asm", "./test/t2.obj", "./test/t2.actual.obj");
 }
 

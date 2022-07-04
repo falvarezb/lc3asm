@@ -70,26 +70,27 @@ int is_imm5(char *token, long *imm5) {
 }
 
 /*
-    Parse the token representing a memory location relative to the PC and stores its numeric value in PCoffset11
+    Parse the label representing a memory location relative to the PC and stores its numeric value in PCoffset11
     PCoffset11 is a 11-bit value, range [-1024, 1023]
 
     Returns 0 if parsing is successful, else 1
     Error message is stored in errdesc
 */
-int is_PCoffset11(char *token, long *PCoffset11) {
-    strtolong(token, &PCoffset11);
+int is_PCoffset11(char *label, long *PCoffset11) {
+    //retrieve from symbol table the memory location corresponding to label
+    node_t *node = lookup(label);
+    if(!node) {
+        printerr("label %s not found\n", label);
+        return EXIT_FAILURE;
+    }
+    *PCoffset11 = node->val - 0x3000 - 1;    
 
-    if(PCoffset11 == NULL) {
-        printerr("value of PCoffset11 %s is not a numeric value\n", token);
-        return 1;
+    if(*PCoffset11 < -1024 || *PCoffset11 > 1023) {
+        printerr("value of PCoffset11 %ld is outside the range [-1024, 1023]\n", *PCoffset11);
+        return EXIT_FAILURE;
     }
 
-    if(*PCoffset11 < 0 || *PCoffset11 > 1023) {
-        printerr("value of PCoffset11 %s is outside the range [-1024, 1023]\n", token);
-        return 1;
-    }
-
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 uint16_t do_return(uint16_t ret, char **tokens) {

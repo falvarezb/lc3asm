@@ -2,6 +2,7 @@
 #ifndef FAB_LC3_COMMON
 #define FAB_LC3_COMMON
 #include "common.h"
+#include "dict.h"
 
 typedef enum {
     ORIG_DIRECTIVE, END_DIRECTIVE, OPCODE, LABEL, COMMENT, BLANK_LINE
