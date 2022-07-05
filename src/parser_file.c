@@ -327,7 +327,7 @@ int second_pass_parse(FILE *source_file, FILE *destination_file) {
                 machine_instr = parse_jmp(line);
             }
             else if(opcode_type == JSR) {
-                machine_instr = parse_jsr(line);
+                machine_instr = parse_jsr(line, 0);
             }
             else if(opcode_type == NOT) {
                 machine_instr = parse_not(line);

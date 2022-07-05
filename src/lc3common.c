@@ -69,31 +69,7 @@ int is_imm5(char *token, long *imm5) {
     return 1;
 }
 
-/*
-    Parse the label representing a memory location relative to the PC and stores its numeric value in PCoffset11
-    PCoffset11 is a 11-bit value, range [-1024, 1023]
-
-    Returns 0 if parsing is successful, else 1
-    Error message is stored in errdesc
-*/
-int is_PCoffset11(char *label, long *PCoffset11) {
-    //retrieve from symbol table the memory location corresponding to label
-    node_t *node = lookup(label);
-    if(!node) {
-        printerr("label %s not found\n", label);
-        return EXIT_FAILURE;
-    }
-    *PCoffset11 = node->val - 0x3000 - 1;    
-
-    if(*PCoffset11 < -1024 || *PCoffset11 > 1023) {
-        printerr("value of PCoffset11 %ld is outside the range [-1024, 1023]\n", *PCoffset11);
-        return EXIT_FAILURE;
-    }
-
-    return EXIT_SUCCESS;
-}
-
-uint16_t do_return(uint16_t ret, char **tokens) {
+uint16_t do_return(uint16_t ret, char **tokens) {    
     free(tokens);
     return ret;
 }
@@ -110,6 +86,7 @@ char **instruction_tokens(char *asm_instr, char *instr_name, int num_tokens) {
     while(pch != NULL) {
         if(i > num_tokens - 1) {
             printerr("unexpected token in %s instruction\n", instr_name);
+            free(tokens);
             return NULL;
         }
 

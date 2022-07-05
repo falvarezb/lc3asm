@@ -51,27 +51,27 @@ void run_file_creation_test(char* asm_file_name, char* obj_file_name, char* actu
     fclose(actual_obj_file);
 }
 
-void test_object_file_creation_t1(void  __attribute__((unused)) **state) {
+void test_second_pass_without_labels_t1(void  __attribute__((unused)) **state) {
     run_file_creation_test("./test/t1.asm", "./test/t1.obj", "./test/t1.actual.obj");
 }
 
-void test_object_file_creation_t2(void  __attribute__((unused)) **state) {
+void test_second_pass_with_labels_t2(void  __attribute__((unused)) **state) {
     initialize();
     add("LABEL", 0x3003);
     run_file_creation_test("./test/t2.asm", "./test/t2.obj", "./test/t2.actual.obj");
 }
 
-void test_symbol_table_calculation_t2(void  __attribute__((unused)) **state) {
+void test_symbol_table_t2(void  __attribute__((unused)) **state) {
     run_sym_test("./test/t2.asm");
     assert_sym("LABEL", 0x3003);
 }
 
-void test_symbol_table_calculation_t3(void  __attribute__((unused)) **state) {
+void test_symbol_table_t3(void  __attribute__((unused)) **state) {
     run_sym_test("./test/t3.asm");
     assert_sym("LABEL", 0x3003);
 }
 
-void test_symbol_table_calculation_t4(void  __attribute__((unused)) **state) {
+void test_symbol_table_t4(void  __attribute__((unused)) **state) {
     run_sym_test("./test/t4.asm");
     assert_sym("LABEL1", 0x3003);
     assert_sym("LABEL2", 0x3001);
@@ -80,7 +80,7 @@ void test_symbol_table_calculation_t4(void  __attribute__((unused)) **state) {
     assert_sym("LABEL5", 0x3003);
 }
 
-void test_symbol_table_calculation_t5(void  __attribute__((unused)) **state) {
+void test_symbol_table_t5(void  __attribute__((unused)) **state) {
     assert_int_equal(run_sym_test("./test/t5.asm"), EXIT_FAILURE);
     assert_string_equal(errdesc, "invalid opcode ('LABEL2')");
 }
@@ -137,12 +137,12 @@ void test_symbol_table_serialization_failure(void  __attribute__((unused)) **sta
 
 int main(int argc, char const *argv[]) {
     const struct CMUnitTest tests[] = {
-        cmocka_unit_test(test_object_file_creation_t1),
-        cmocka_unit_test(test_object_file_creation_t2),
-        cmocka_unit_test(test_symbol_table_calculation_t2),
-        cmocka_unit_test(test_symbol_table_calculation_t3),
-        cmocka_unit_test(test_symbol_table_calculation_t4),
-        cmocka_unit_test(test_symbol_table_calculation_t5),
+        cmocka_unit_test(test_second_pass_without_labels_t1),
+        cmocka_unit_test(test_second_pass_with_labels_t2),
+        cmocka_unit_test(test_symbol_table_t2),
+        cmocka_unit_test(test_symbol_table_t3),
+        cmocka_unit_test(test_symbol_table_t4),
+        cmocka_unit_test(test_symbol_table_t5),
         cmocka_unit_test(test_symbol_table_serialization),
         cmocka_unit_test(test_symbol_table_serialization_failure)
     };

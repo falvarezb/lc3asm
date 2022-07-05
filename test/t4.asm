@@ -9,7 +9,7 @@ LABEL3 HALT
 
 LABEL5
 
-; label and instruction are in the same line
+; multiple labels associated to the same instruction
 LABEL1 ADD R0,R1,R2
 
 LABEL4
