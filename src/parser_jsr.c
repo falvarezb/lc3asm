@@ -27,9 +27,10 @@ static bool strtolong2(char *str, long *num) {
  * In case of having a label representing a memory address, the corresponding PCoffset11 is worked out.
  *
  * @param asm_instr JSR instruction
+ * @param instruction_location memory address of the instruction being parsed
  * @return uint16_t* 16-bit machine instruction or 0 in case of error (errdesc is set with details of the error)
  */
-uint16_t parse_jsr(char *asm_instr, uint16_t instruction_number) {
+uint16_t parse_jsr(char *asm_instr, uint16_t instruction_location) {
 
     //PARSING INSTRUCTION TOKENS
     long PCoffset11;
@@ -56,7 +57,7 @@ uint16_t parse_jsr(char *asm_instr, uint16_t instruction_number) {
             printerr("Symbol not found ('%s')\n", tokens[1]);            
             return do_return(0, tokens);
         }
-        PCoffset11 = node->val - instruction_number - 1;
+        PCoffset11 = node->val - instruction_location - 1;
     }
     else {
         //validate PCoffset11 numerical range

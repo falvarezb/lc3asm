@@ -290,6 +290,7 @@ int second_pass_parse(FILE *source_file, FILE *destination_file) {
     char *line = NULL;
     size_t len = 0;
     ssize_t read;
+    uint16_t instruction_counter; // incremental value that represents the memory address of each instruction
     uint16_t machine_instr = 0; // 16-bit representation of machine instruction, 0 if assembly instruction cannot be parsed
 
     errno = 0;
@@ -310,6 +311,7 @@ int second_pass_parse(FILE *source_file, FILE *destination_file) {
         }
         else if(line_type == ORIG_DIRECTIVE) {
             machine_instr = parse_orig();
+            instruction_counter = machine_instr;
             if(write_machine_instruction(machine_instr, destination_file)) {
                 printerr("error writing instruction to object file\n");
                 return EXIT_FAILURE;
@@ -327,7 +329,7 @@ int second_pass_parse(FILE *source_file, FILE *destination_file) {
                 machine_instr = parse_jmp(line);
             }
             else if(opcode_type == JSR) {
-                machine_instr = parse_jsr(line, 0);
+                machine_instr = parse_jsr(line, instruction_counter);
             }
             else if(opcode_type == NOT) {
                 machine_instr = parse_not(line);
@@ -342,6 +344,7 @@ int second_pass_parse(FILE *source_file, FILE *destination_file) {
                 printerr("error writing instruction to object file\n");
                 return EXIT_FAILURE;
             }
+            instruction_counter++;
         }
     }
 
