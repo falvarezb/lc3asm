@@ -14,14 +14,20 @@ static bool strtolong2(char *str, long *num) {
 }
 
 /**
- * @brief
+ * @brief Parse an assembly JSR instruction and returns the corresponding machine instruction
  *
  * Assembler formats:
  * JSR LABEL
  * JSR PCoffset11
+ * 
+ * PCoffset11 is an 11-bit value; bits [10:0] of an instruction; used with the JSR opcode to compute the target address of a subroutine call. 
+ * Bits [10:0] are taken as an 11-bit 2’s complement integer, sign-extended to 16 bits and then added to the incremented PC to form the target address. 
+ * Range −1024..1023.
+ * 
+ * In case of having a label representing a memory address, the corresponding PCoffset11 is worked out.
  *
  * @param asm_instr JSR instruction
- * @return uint16_t* 16 bits representation of the instruction or 0 in case of error
+ * @return uint16_t* 16-bit machine instruction or 0 in case of error (errdesc is set with details of the error)
  */
 uint16_t parse_jsr(char *asm_instr, uint16_t instruction_number) {
 
@@ -69,7 +75,7 @@ uint16_t parse_jsr(char *asm_instr, uint16_t instruction_number) {
     machine_instr += (1 << 11);
 
     //LABEL
-    machine_instr += (PCoffset11);
+    machine_instr += PCoffset11;
 
     return do_return(machine_instr, tokens);
 }
