@@ -69,7 +69,7 @@ int is_imm5(char *token, long *imm5) {
     return 1;
 }
 
-uint16_t do_return(uint16_t ret, char **tokens) {    
+uint16_t do_return(uint16_t ret, char **tokens) {
     free(tokens);
     return ret;
 }
@@ -85,6 +85,11 @@ char **instruction_tokens(char *asm_instr, char *instr_name, int num_tokens) {
     char *pch = strtok(asm_instr, delimiters);
     while(pch != NULL) {
         if(i > num_tokens - 1) {
+            if(pch[0] == ';') {
+                //comments at the end of line are ignored
+                return tokens;
+            }
+
             printerr("unexpected token in %s instruction\n", instr_name);
             free(tokens);
             return NULL;

@@ -7,8 +7,8 @@
     HALT
 
 ; label and instruction are in different lines
-LABEL
-    ADD R0,R1,R2
+LABEL ; comment
+    ADD R0,R1,R2 ; comment
 
 
     .END

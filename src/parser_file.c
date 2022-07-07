@@ -8,7 +8,7 @@ static uint16_t parse_halt() {
     return 0xf025;
 }
 
-static uint16_t parse_orig() {    
+static uint16_t parse_orig() {
     //FIXME proper implementation, hardcoded for now
     return 0x3000;
 }
@@ -214,7 +214,8 @@ int compute_symbol_table(FILE *source_file) {
             instruction_counter = parse_orig();
         }
         else if(line_type == COMMENT || line_type == BLANK_LINE) {
-            //ignore line and continue            
+            //ignore line and continue
+            line_holder.partial_line = NULL; //in case the comment was in the same line as a label           
         }
         else if(line_type == LABEL) {
             if(line_holder.partial_line) {
@@ -277,7 +278,7 @@ int compute_symbol_table(FILE *source_file) {
  * @param destination_file File containing the symbol table
  * @return int 0 if process is completed successfully, 1 otherwise (errdesc is set with error details)
  */
-int first_pass_parse(FILE *source_file, FILE *destination_file) {    
+int first_pass_parse(FILE *source_file, FILE *destination_file) {
     if(compute_symbol_table(source_file)) {
         return EXIT_FAILURE;
     }
@@ -357,7 +358,7 @@ int second_pass_parse(FILE *source_file, FILE *destination_file) {
     return EXIT_SUCCESS;
 }
 
-int assemble(FILE *source_file, FILE *symbol_table_file, FILE *object_file) {       
+int assemble(FILE *source_file, FILE *symbol_table_file, FILE *object_file) {
     if(first_pass_parse(source_file, symbol_table_file)) {
         return EXIT_FAILURE;
     }
