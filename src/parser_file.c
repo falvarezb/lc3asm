@@ -13,6 +13,15 @@ static uint16_t parse_orig() {
     return 0x3000;
 }
 
+static void add_labels_if_any_to_symbol_table(char *found_labels[], int *num_found_labels, uint16_t instruction_counter) {
+    for(int i = 0; i < *num_found_labels; i++) {
+        add(found_labels[i], instruction_counter);
+        free(found_labels[i]);
+        found_labels[i] = NULL;        
+    }
+    *num_found_labels = 0;
+}
+
 static int write_machine_instruction(uint16_t machine_instr, FILE *destination_file) {
     char *bytes = (char *)&machine_instr;
     //swap bytes (because of little-endian representation)
@@ -202,10 +211,7 @@ int compute_symbol_table(FILE *source_file) {
         linetype_t line_type = compute_line_type(line);
 
         if(line_type == END_DIRECTIVE) {
-            for(int i = 0; i < num_found_labels; i++) {
-                add(found_labels[i], instruction_counter);
-                free(found_labels[i]);
-            }
+            add_labels_if_any_to_symbol_table(found_labels, &num_found_labels, instruction_counter);
             //stop reading file
             break;
         }
@@ -215,11 +221,11 @@ int compute_symbol_table(FILE *source_file) {
         }
         else if(line_type == COMMENT || line_type == BLANK_LINE) {
             //ignore line and continue
-            line_holder.partial_line = NULL; //in case the comment was in the same line as a label           
+            line_holder.partial_line = NULL; //pre-emptive assignment in case the comment was in the same line as a label           
         }
         else if(line_type == LABEL) {
             if(line_holder.partial_line) {
-                //2 labels in the same line is disallowed
+                //two labels in the same line is disallowed
                 printerr("invalid opcode ('%s')", line);
                 for(int i = 0; i < num_found_labels; i++) {
                     free(found_labels[i]);
@@ -232,19 +238,14 @@ int compute_symbol_table(FILE *source_file) {
             found_labels[num_found_labels++] = strtok(tmpline, delimiters);
             line_holder.partial_line = strtok(NULL, delimiters);
             if(line_holder.partial_line) {
-                //instruction is in the same line as label                                
+                //there are more elements in the same line as label                                
                 read = strlen(line_holder.partial_line);
                 continue;
             }
         }
-        else if(line_type == OPCODE) {
-            for(int i = 0; i < num_found_labels; i++) {
-                add(found_labels[i], instruction_counter);
-                free(found_labels[i]);
-                found_labels[i] = NULL;
-            }
-            num_found_labels = 0;
-            line_holder.partial_line = NULL;
+        else if(line_type == OPCODE) {            
+            add_labels_if_any_to_symbol_table(found_labels, &num_found_labels, instruction_counter);                        
+            line_holder.partial_line = NULL;//pre-emptive assignment in case the instruction was in the same line as a label           
             instruction_counter++;
         }
         else {
