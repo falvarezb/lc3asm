@@ -105,6 +105,9 @@ node_t *next(bool reset) {
 }
 
 void initialize() {
-    for(size_t i = 0; i<DICTSIZE; i++)
-        dict[i] = NULL;
+    node_t *node = next(true);
+    while(node) {
+        delete(node->key);
+        node = next(false);
+    }
 }

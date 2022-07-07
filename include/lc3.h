@@ -24,6 +24,7 @@ int first_pass_parse(FILE *source_file, FILE *destination_file);
 int second_pass_parse(FILE *source_file, FILE *object_file);
 int compute_symbol_table(FILE *source_file);
 int serialize_symbol_table(FILE* destination_file);
+int assemble(FILE *source_file, FILE *symbol_table_file, FILE *object_file);
 
 
 #endif

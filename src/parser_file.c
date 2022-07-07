@@ -8,8 +8,7 @@ static uint16_t parse_halt() {
     return 0xf025;
 }
 
-static uint16_t parse_orig() {
-    printerr(".ORIG");
+static uint16_t parse_orig() {    
     //FIXME proper implementation, hardcoded for now
     return 0x3000;
 }
@@ -31,7 +30,7 @@ static int write_machine_instruction(uint16_t machine_instr, FILE *destination_f
  * @brief Serialize the symbol table as a string and writes it to the given file
  *
  * @param destination_file File where the symbol table is serialized
- * @return int Returns 0 if serialization is successful or 1 if there is a writing error (errdesc is set accordingly)
+ * @return int 0 if serialization is successful or 1 if there is a writing error (errdesc is set with error details)
  */
 int serialize_symbol_table(FILE *destination_file) {
     int num_chars_written;
@@ -176,7 +175,7 @@ typedef struct {
  * - error returned by _getline_
  *
  * @param source_file Source fle containing the asm code
- * @return int Return code: 1 if there is an error, 0 otherwise
+ * @return int 1 if there is an error, 0 otherwise (errdesc is set with the error details)
  */
 int compute_symbol_table(FILE *source_file) {
     lineholder_t line_holder = { .whole_line = NULL, .partial_line = NULL };
@@ -275,13 +274,12 @@ int compute_symbol_table(FILE *source_file) {
  * During the first pass, lines of the source file are parsed to identify labels and create the symbol table.
  *
  * @param source_file Source file with assembly code
- * @param destination_file The string resulting of serializing the symbol table is written to destination_file
- * @return int Return 0 if process is completed successfully, 1 otherwise (errdesc is set accordingly)
+ * @param destination_file File containing the symbol table
+ * @return int 0 if process is completed successfully, 1 otherwise (errdesc is set with error details)
  */
-int first_pass_parse(FILE *source_file, FILE *destination_file) {
-    int result;
-    if((result = compute_symbol_table(source_file))) {
-        return result;
+int first_pass_parse(FILE *source_file, FILE *destination_file) {    
+    if(compute_symbol_table(source_file)) {
+        return EXIT_FAILURE;
     }
     return serialize_symbol_table(destination_file);
 }
@@ -357,6 +355,14 @@ int second_pass_parse(FILE *source_file, FILE *destination_file) {
     }
 
     return EXIT_SUCCESS;
+}
+
+int assemble(FILE *source_file, FILE *symbol_table_file, FILE *object_file) {       
+    if(first_pass_parse(source_file, symbol_table_file)) {
+        return EXIT_FAILURE;
+    }
+    rewind(source_file);
+    return second_pass_parse(source_file, object_file);
 }
 
 
