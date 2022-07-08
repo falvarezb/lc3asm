@@ -32,6 +32,35 @@ int is_register(char *token) {
     return -1;
 }
 
+static bool is_valid_immediate(char *token, long *imm, long min, long max) {
+    char first_ch = *token;
+    if(first_ch == '#') { //decimal literal
+        strtolong(token + 1, &imm);
+        if(imm == NULL) {
+            printerr("immediate %s is not a numeric value\n", token);
+            return 1;
+        }
+        if(*imm < min || *imm > max) {
+            printerr("immediate %s is outside the range [%ld,%ld]\n", token + 1, min, max);
+            return 1;
+        }
+        return 0;
+    }
+    else if(first_ch == 'x') { //hex literal
+        if(sscanf(token + 1, "%lx", imm) < 1) {
+            printerr("error while reading immediate %s\n", token);
+            return 1;
+        }
+        if(*imm < min || *imm > max) {
+            printerr("immediate %s is outside the range [%ld,%ld]\n", token + 1, min, max);
+            return 1;
+        }
+        return 0;
+    }
+    printerr("immediate %s must be decimal or hex\n", token);
+    return 1;
+}
+
 /*
     Parse the token representing the immediate operand and stores its numeric value in imm5
     imm5 is a 5-bit value, range [-16,15]
@@ -41,32 +70,7 @@ int is_register(char *token) {
     Error message is stored in errdesc
 */
 int is_imm5(char *token, long *imm5) {
-    char first_ch = *token;
-    if(first_ch == '#') { //decimal literal
-        strtolong(token + 1, &imm5);
-        if(imm5 == NULL) {
-            printerr("value of imm5 %s is not a numeric value\n", token);
-            return 1;
-        }
-        if(*imm5 < -16 || *imm5 > 15) {
-            printerr("value of operand imm5 %s is outside the range [-16,15]\n", token + 1);
-            return 1;
-        }
-        return 0;
-    }
-    else if(first_ch == 'x') { //hex literal
-        if(sscanf(token + 1, "%lx", imm5) < 1) {
-            printerr("error while reading operand imm5 %s\n", token);
-            return 1;
-        }
-        if(*imm5 < -16 || *imm5 > 15) {
-            printerr("value of operand imm5 %s is outside the range [-16,15]\n", token + 1);
-            return 1;
-        }
-        return 0;
-    }
-    printerr("operand imm5 %s must be decimal or hex\n", token);
-    return 1;
+    return is_valid_immediate(token, imm5, -16, 15);
 }
 
 uint16_t do_return(uint16_t ret, char **tokens) {

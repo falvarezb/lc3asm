@@ -53,7 +53,7 @@ void test_add_wrong_imm5_too_big_dec(void  __attribute__ ((unused)) **state) {
     uint16_t machine_instr = parse_add(asm_instr);
 
     assert_int_equal(machine_instr, 0);
-    assert_string_equal(errdesc, "value of operand imm5 16 is outside the range [-16,15]\n");
+    assert_string_equal(errdesc, "immediate 16 is outside the range [-16,15]\n");
 }
 
 void test_add_wrong_imm5_too_small_dec(void  __attribute__ ((unused)) **state) {
@@ -61,7 +61,7 @@ void test_add_wrong_imm5_too_small_dec(void  __attribute__ ((unused)) **state) {
     uint16_t machine_instr = parse_add(asm_instr);
 
     assert_int_equal(machine_instr, 0);
-    assert_string_equal(errdesc, "value of operand imm5 -17 is outside the range [-16,15]\n");
+    assert_string_equal(errdesc, "immediate -17 is outside the range [-16,15]\n");
 }
 
 void test_add_wrong_imm5_too_big_hex(void  __attribute__ ((unused)) **state) {
@@ -69,7 +69,7 @@ void test_add_wrong_imm5_too_big_hex(void  __attribute__ ((unused)) **state) {
     uint16_t machine_instr = parse_add(asm_instr);
 
     assert_int_equal(machine_instr, 0);
-    assert_string_equal(errdesc, "value of operand imm5 f1 is outside the range [-16,15]\n");
+    assert_string_equal(errdesc, "immediate f1 is outside the range [-16,15]\n");
 }
 
 void test_add_wrong_imm5_too_small_hex(void  __attribute__ ((unused)) **state) {
@@ -77,7 +77,7 @@ void test_add_wrong_imm5_too_small_hex(void  __attribute__ ((unused)) **state) {
     uint16_t machine_instr = parse_add(asm_instr);
 
     assert_int_equal(machine_instr, 0);
-    assert_string_equal(errdesc, "value of operand imm5 -f2 is outside the range [-16,15]\n");
+    assert_string_equal(errdesc, "immediate -f2 is outside the range [-16,15]\n");
 }
 
 void test_add_wrong_imm5_format(void  __attribute__ ((unused)) **state) {
@@ -85,7 +85,7 @@ void test_add_wrong_imm5_format(void  __attribute__ ((unused)) **state) {
     uint16_t machine_instr = parse_add(asm_instr);
 
     assert_int_equal(machine_instr, 0);
-    assert_string_equal(errdesc, "operand imm5 0 must be decimal or hex\n");
+    assert_string_equal(errdesc, "immediate 0 must be decimal or hex\n");
 }
 
 void test_add_wrong_imm5_number(void  __attribute__ ((unused)) **state) {
@@ -93,7 +93,7 @@ void test_add_wrong_imm5_number(void  __attribute__ ((unused)) **state) {
     uint16_t machine_instr = parse_add(asm_instr);
 
     assert_int_equal(machine_instr, 0);
-    assert_string_equal(errdesc, "value of imm5 #y is not a numeric value\n");
+    assert_string_equal(errdesc, "immediate #y is not a numeric value\n");
 }
 
 void test_add_wrong_instruction(void  __attribute__ ((unused)) **state) {
