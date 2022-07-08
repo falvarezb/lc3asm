@@ -1,4 +1,23 @@
-/** @file */
+/**
+ * @file parser_file.c
+ * @brief Parse content of assembly file (.asm) and generate the corresponding symbol table (.sym) and object file (.obj)
+ * @version 0.1
+ * @date 2022-07-08
+ * 
+ * # Assembly syntax
+ *  
+ * Each line in the assembly file can be:
+ * - comment
+ * - label (opcode operands) (comment)
+ * - opcode operands (comment)
+ * 
+ * Notes: 
+ * - opcodes also include pseudo-ops used for trap codes and assembler directives
+ * - values within parentheses are optional
+ * 
+ * 
+ */
+
 #include "../include/lc3.h"
 #include "../include/dict.h"
 
