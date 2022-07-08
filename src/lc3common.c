@@ -32,33 +32,33 @@ int is_register(char *token) {
     return -1;
 }
 
-static bool is_valid_immediate(char *token, long *imm, long min, long max) {
+static int is_valid_immediate(char *token, long *imm, long min, long max) {
     char first_ch = *token;
     if(first_ch == '#') { //decimal literal
         strtolong(token + 1, &imm);
         if(imm == NULL) {
             printerr("immediate %s is not a numeric value\n", token);
-            return 1;
+            return EXIT_FAILURE;
         }
         if(*imm < min || *imm > max) {
             printerr("immediate %s is outside the range [%ld,%ld]\n", token + 1, min, max);
-            return 1;
+            return EXIT_FAILURE;
         }
-        return 0;
+        return EXIT_SUCCESS;
     }
     else if(first_ch == 'x') { //hex literal
         if(sscanf(token + 1, "%lx", imm) < 1) {
             printerr("error while reading immediate %s\n", token);
-            return 1;
+            return EXIT_FAILURE;
         }
         if(*imm < min || *imm > max) {
             printerr("immediate %s is outside the range [%ld,%ld]\n", token + 1, min, max);
-            return 1;
+            return EXIT_FAILURE;
         }
-        return 0;
+        return EXIT_SUCCESS;
     }
     printerr("immediate %s must be decimal or hex\n", token);
-    return 1;
+    return EXIT_FAILURE;
 }
 
 /*
@@ -71,6 +71,10 @@ static bool is_valid_immediate(char *token, long *imm, long min, long max) {
 */
 int is_imm5(char *token, long *imm5) {
     return is_valid_immediate(token, imm5, -16, 15);
+}
+
+int is_valid_memaddr(char *token, long *memaddr) {
+    return is_valid_immediate(token, memaddr, 0, 0xFFFF);
 }
 
 uint16_t do_return(uint16_t ret, char **tokens) {

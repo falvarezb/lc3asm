@@ -27,9 +27,22 @@ static uint16_t parse_halt() {
     return 0xf025;
 }
 
-static uint16_t parse_orig() {
-    //FIXME proper implementation, hardcoded for now
-    return 0x3000;
+static uint16_t parse_orig(const char* line) {    
+    //saving line before it is modified by strtok    
+    char *line_copy = strdup(line);
+
+    char *delimiters = " ";
+    char *token = strtok(line_copy, delimiters);
+    token = strtok(NULL, delimiters);
+    long memaddr;
+    int result = is_valid_memaddr(token, &memaddr);
+    if(result) {
+        free(line_copy); 
+        return 0;
+    }
+
+    free(line_copy);    
+    return memaddr;
 }
 
 static void add_labels_if_any_to_symbol_table(char *found_labels[], int *num_found_labels, uint16_t instruction_counter) {
@@ -236,7 +249,7 @@ int compute_symbol_table(FILE *source_file) {
         }
         else if(line_type == ORIG_DIRECTIVE) {
             //read memory address of first instruction
-            instruction_counter = parse_orig();
+            instruction_counter = parse_orig(line);
         }
         else if(line_type == COMMENT || line_type == BLANK_LINE) {
             //ignore line and continue
@@ -329,7 +342,7 @@ int second_pass_parse(FILE *source_file, FILE *destination_file) {
             continue;
         }
         else if(line_type == ORIG_DIRECTIVE) {
-            machine_instr = parse_orig();
+            machine_instr = parse_orig(line);
             instruction_counter = machine_instr;
             if(write_machine_instruction(machine_instr, destination_file)) {
                 printerr("error writing instruction to object file\n");
