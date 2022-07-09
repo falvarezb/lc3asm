@@ -38,7 +38,7 @@ static uint16_t parse_orig(char *token) {
 
 static void free_tokens(char **tokens, char* line_copy_ptr) {
     free(tokens);
-    free(line_copy_ptr);
+    //free(line_copy_ptr);
 }
 
 static void add_labels_if_any_to_symbol_table(char *found_labels[], int *num_found_labels, uint16_t instruction_counter) {

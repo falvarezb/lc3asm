@@ -17,7 +17,7 @@ int is_imm5(char *token, long *imm5);
 int is_valid_memaddr(char *token, long *memaddr);
 uint16_t do_return(uint16_t ret, char **tokens);
 char **instruction_tokens(char *asm_instr, char *instr_name, int num_tokens);
-char **line_tokens(const char *line, int *num_tokens, char** line_copy_ptr);
+char **line_tokens(char *line, int *num_tokens, char** line_copy_ptr);
 
 
 #endif
