@@ -3,19 +3,19 @@
  * @brief Parse content of assembly file (.asm) and generate the corresponding symbol table (.sym) and object file (.obj)
  * @version 0.1
  * @date 2022-07-08
- * 
+ *
  * # Assembly syntax
- *  
+ *
  * Each line in the assembly file can be:
  * - comment
  * - label (opcode operands) (comment)
  * - opcode operands (comment)
- * 
- * Notes: 
+ *
+ * Notes:
  * - opcodes also include pseudo-ops used for trap codes and assembler directives
  * - values within parentheses are optional
- * 
- * 
+ *
+ *
  */
 
 #include "../include/lc3.h"
@@ -27,21 +27,12 @@ static uint16_t parse_halt() {
     return 0xf025;
 }
 
-static uint16_t parse_orig(const char* line) {    
-    //saving line before it is modified by strtok    
-    char *line_copy = strdup(line);
-
-    char *delimiters = " ";
-    char *token = strtok(line_copy, delimiters);
-    token = strtok(NULL, delimiters);
+static uint16_t parse_orig(char *token) {
     long memaddr;
     int result = is_valid_memaddr(token, &memaddr);
     if(result) {
-        free(line_copy); 
         return 0;
     }
-
-    free(line_copy);    
     return memaddr;
 }
 
@@ -49,7 +40,7 @@ static void add_labels_if_any_to_symbol_table(char *found_labels[], int *num_fou
     for(int i = 0; i < *num_found_labels; i++) {
         add(found_labels[i], instruction_counter);
         free(found_labels[i]);
-        found_labels[i] = NULL;        
+        found_labels[i] = NULL;
     }
     *num_found_labels = 0;
 }
@@ -98,42 +89,36 @@ int serialize_symbol_table(FILE *destination_file) {
  * @param line line of the asm file to be inspected
  * @return linetype_t value indicative of the type of line
  */
-linetype_t compute_line_type(const char *line) {
+linetype_t compute_line_type(const char *first_token) {
 
-    //saving line before it is modified by strtok    
-    char *line_copy = strdup(line);
-
-    char *delimiters = " ";
-    char *assembly_instr = strtok(line_copy, delimiters);
     linetype_t result;
-    if(assembly_instr == NULL || assembly_instr[0] == '\n') {
+    if(first_token[0] == '\n') {
         result = BLANK_LINE;
     }
     else if(
-        strcmp(assembly_instr, "ADD") == 0 ||
-        strcmp(assembly_instr, "AND") == 0 ||
-        strcmp(assembly_instr, "JMP") == 0 ||
-        strcmp(assembly_instr, "JSR") == 0 ||
-        strcmp(assembly_instr, "NOT") == 0 ||
-        strcmp(assembly_instr, "RET") == 0 ||
-        strcmp(assembly_instr, "HALT") == 0
+        strcmp(first_token, "ADD") == 0 ||
+        strcmp(first_token, "AND") == 0 ||
+        strcmp(first_token, "JMP") == 0 ||
+        strcmp(first_token, "JSR") == 0 ||
+        strcmp(first_token, "NOT") == 0 ||
+        strcmp(first_token, "RET") == 0 ||
+        strcmp(first_token, "HALT") == 0
         ) {
         result = OPCODE;
     }
-    else if(strcmp(assembly_instr, ".ORIG") == 0) {
+    else if(strcmp(first_token, ".ORIG") == 0) {
         result = ORIG_DIRECTIVE;
     }
-    else if(strcmp(assembly_instr, ".END") == 0) {
+    else if(strcmp(first_token, ".END") == 0) {
         result = END_DIRECTIVE;
     }
-    else if(assembly_instr[0] == ';') {
+    else if(first_token[0] == ';') {
         result = COMMENT;
     }
     else {
         result = LABEL;
     }
 
-    free(line_copy);
     return result;
 }
 
@@ -145,13 +130,8 @@ linetype_t compute_line_type(const char *line) {
  * @param opcode line of the asm file to be inspected
  * @return opcode_t value indicative of the type of opcode
  */
-opcode_t compute_opcode_type(const char *line) {
+opcode_t compute_opcode_type(const char *assembly_instr) {
 
-    //saving line before it is modified by strtok    
-    char *line_copy = strdup(line);
-
-    char *delimiters = " ";
-    char *assembly_instr = strtok(line_copy, delimiters);
     opcode_t result;
     if(strcmp(assembly_instr, "ADD") == 0) {
         result = ADD;
@@ -174,8 +154,6 @@ opcode_t compute_opcode_type(const char *line) {
     else {
         result = HALT;
     }
-
-    free(line_copy);
     return result;
 }
 
@@ -216,80 +194,98 @@ typedef struct {
  * - error returned by _getline_
  *
  * @param source_file Source fle containing the asm code
- * @return int 1 if there is an error, 0 otherwise (errdesc is set with the error details)
+ * @return int 1 if there is an error, 0 otherwise (errdesc is set with the error details). As a side effect, a file containing the symbol table is created
  */
 int compute_symbol_table(FILE *source_file) {
-    lineholder_t line_holder = { .whole_line = NULL, .partial_line = NULL };
     char *line = NULL;
     size_t len = 0;
+    uint16_t line_counter = 0;
     uint16_t instruction_counter = 0;
     int num_found_labels = 0; //number of found labels for a given instruction; reset to zero when labels are added to the symbol table
     char *found_labels[MAX_NUM_LABELS_PER_INSTRUCTION] = { 0 }; //array containing last found labels; reset to null when labels are added to the symbol table
-    char *tmpline;
 
     errno = 0;
-    ssize_t read = getline(&line_holder.whole_line, &len, source_file);
-    while(read != -1) {
-        //partial line takes precedence as it contains a subset of the whole line that needs to be processed independently
-        if(line_holder.partial_line) {
-            line = line_holder.partial_line;
-        }
-        else {
-            line = line_holder.whole_line;
-            line[read - 1] = '\0'; //remove newline char at the end of the line
-        }
+    ssize_t read;
+    while((read = getline(&line, &len, source_file)) != -1) {
+        line_counter++;
         printf("%s", line);
+        line[read - 1] = '\0'; //remove newline char at the end of the line
+        int num_tokens;
+        char **tokens = line_tokens(line, &num_tokens);
+        if(num_tokens == 0) {
+            continue;
+        }
 
-        linetype_t line_type = compute_line_type(line);
-
+        linetype_t line_type = compute_line_type(tokens[0]);
         if(line_type == END_DIRECTIVE) {
             add_labels_if_any_to_symbol_table(found_labels, &num_found_labels, instruction_counter);
+            //free(tokens[0]);
             //stop reading file
             break;
         }
         else if(line_type == ORIG_DIRECTIVE) {
             //read memory address of first instruction
-            instruction_counter = parse_orig(line);
-        }
-        else if(line_type == COMMENT || line_type == BLANK_LINE) {
-            //ignore line and continue
-            line_holder.partial_line = NULL; //pre-emptive assignment in case the comment was in the same line as a label           
-        }
-        else if(line_type == LABEL) {
-            if(line_holder.partial_line) {
-                //two labels in the same line is disallowed
-                printerr("invalid opcode ('%s')", line);
-                for(int i = 0; i < num_found_labels; i++) {
-                    free(found_labels[i]);
-                }
-                free(line_holder.whole_line);
+            if(num_tokens < 2) {
+                printerr("ERROR (line %d): immediate expected", line_counter);
+                //free(tokens[0]);
                 return EXIT_FAILURE;
             }
-            tmpline = strdup(line);
-            char *delimiters = " ";
-            found_labels[num_found_labels++] = strtok(tmpline, delimiters);
-            line_holder.partial_line = strtok(NULL, delimiters);
-            if(line_holder.partial_line) {
-                //there are more elements in the same line as label                                
-                read = strlen(line_holder.partial_line);
-                continue;
+            instruction_counter = parse_orig(tokens[1]);
+        }
+        else if(line_type == COMMENT || line_type == BLANK_LINE) {
+            //ignore line and continue   
+            continue;                 
+        }
+        else if(line_type == LABEL) {
+            found_labels[num_found_labels++] = tokens[0];
+            if(num_tokens > 1) {
+                linetype_t token_type = compute_line_type(tokens[1]);
+                if(token_type == END_DIRECTIVE) {
+                    add_labels_if_any_to_symbol_table(found_labels, &num_found_labels, instruction_counter);
+                    free(tokens[0]);
+                    //stop reading file
+                    break;
+                }
+                else if(line_type == ORIG_DIRECTIVE) {
+                    //FIXME is this possible?
+                }
+                else if(token_type == COMMENT || token_type == BLANK_LINE) {
+                    //ignore line and continue
+                    continue;
+                }
+                else if(token_type == OPCODE) {
+                    add_labels_if_any_to_symbol_table(found_labels, &num_found_labels, instruction_counter);
+                    instruction_counter++;
+                }
+                else if(line_type == LABEL) {
+                    //two labels in the same line is disallowed
+                    printerr("invalid opcode ('%s')", tokens[1]);
+                    for(int i = 0; i < num_found_labels; i++) {
+                        free(found_labels[i]);
+                    }
+                    //free(tokens[0]);
+                    return EXIT_FAILURE;
+                }
+                else {
+                    //this should never happen as line_type takes values from an enum  
+                    printerr("unknown line type ('%d')", line_type);
+                    free(tokens[0]);
+                    return EXIT_FAILURE;
+                }
             }
         }
-        else if(line_type == OPCODE) {            
-            add_labels_if_any_to_symbol_table(found_labels, &num_found_labels, instruction_counter);                        
-            line_holder.partial_line = NULL;//pre-emptive assignment in case the instruction was in the same line as a label           
+        else if(line_type == OPCODE) {
+            add_labels_if_any_to_symbol_table(found_labels, &num_found_labels, instruction_counter);
             instruction_counter++;
         }
         else {
             //this should never happen as line_type takes values from an enum  
             printerr("unknown line type ('%d')", line_type);
+            free(tokens[0]);
             return EXIT_FAILURE;
         }
 
-        read = getline(&line_holder.whole_line, &len, source_file);
     }
-
-    free(line_holder.whole_line);
 
     //check if getline resulted in error
     if(read == -1 && errno) {
@@ -322,17 +318,22 @@ int second_pass_parse(FILE *source_file, FILE *destination_file) {
     char *line = NULL;
     size_t len = 0;
     ssize_t read;
+    uint16_t line_counter = 0;
     uint16_t instruction_counter; // incremental value that represents the memory address of each instruction
     uint16_t machine_instr = 0; // 16-bit representation of machine instruction, 0 if assembly instruction cannot be parsed
 
     errno = 0;
     while((read = getline(&line, &len, source_file)) != -1) {
+        line_counter++;
         printf("%s", line);
-        //remove newline char at the end of the line
-        line[read - 1] = '\0';
+        line[read - 1] = '\0'; //remove newline char at the end of the line
+        int num_tokens;
+        char **tokens = line_tokens(line, &num_tokens);
+        if(num_tokens == 0) {
+            continue;
+        }
 
-        linetype_t line_type = compute_line_type(line);
-
+        linetype_t line_type = compute_line_type(tokens[0]);
         if(line_type == END_DIRECTIVE) {
             //stop reading file
             break;
@@ -342,7 +343,7 @@ int second_pass_parse(FILE *source_file, FILE *destination_file) {
             continue;
         }
         else if(line_type == ORIG_DIRECTIVE) {
-            machine_instr = parse_orig(line);
+            machine_instr = parse_orig(tokens[1]);
             instruction_counter = machine_instr;
             if(write_machine_instruction(machine_instr, destination_file)) {
                 printerr("error writing instruction to object file\n");
@@ -350,9 +351,13 @@ int second_pass_parse(FILE *source_file, FILE *destination_file) {
             }
         }
         else if(line_type == OPCODE) {
-            opcode_t opcode_type = compute_opcode_type(line);
+            opcode_t opcode_type = compute_opcode_type(tokens[0]);
             if(opcode_type == ADD) {
-                machine_instr = parse_add(line);
+                if(num_tokens < 4) {
+                    printerr("ERROR (line %d): missing ADD operands", line_counter);
+                    return EXIT_FAILURE;
+                }
+                machine_instr = parse_add(tokens[1], tokens[2], tokens[3]);
             }
             else if(opcode_type == AND) {
                 machine_instr = parse_and(line);
@@ -361,7 +366,11 @@ int second_pass_parse(FILE *source_file, FILE *destination_file) {
                 machine_instr = parse_jmp(line);
             }
             else if(opcode_type == JSR) {
-                machine_instr = parse_jsr(line, instruction_counter);
+                if(num_tokens < 2) {
+                    printerr("ERROR (line %d): missing JSR operand", line_counter);
+                    return EXIT_FAILURE;
+                }
+                machine_instr = parse_jsr(tokens[1], instruction_counter);
             }
             else if(opcode_type == NOT) {
                 machine_instr = parse_not(line);
@@ -378,6 +387,7 @@ int second_pass_parse(FILE *source_file, FILE *destination_file) {
             }
             instruction_counter++;
         }
+
     }
 
     free(line);

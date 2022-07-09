@@ -30,32 +30,18 @@ static bool strtolong2(char *str, long *num) {
  * @param instruction_location memory address of the instruction being parsed
  * @return uint16_t* 16-bit machine instruction or 0 in case of error (errdesc is set with details of the error)
  */
-uint16_t parse_jsr(char *asm_instr, uint16_t instruction_location) {
+uint16_t parse_jsr(char *operand, uint16_t instruction_location) {
 
     //PARSING INSTRUCTION TOKENS
-    long PCoffset11;
-    char *instr_name = "JSR";
-    int num_tokens = 2;
-    char **tokens;
-
-    if((tokens = instruction_tokens(asm_instr, instr_name, num_tokens)) == NULL) {        
-        return do_return(0, tokens);
-    }
-
-    //VALIDATING TOKENS
-    if(strcmp(tokens[0], instr_name)) {
-        //this should not happen        
-        printerr("expected %s but found %s\n", instr_name, tokens[0]);        
-        return do_return(0, tokens);
-    }
+    long PCoffset11;    
 
     //label or PCoffset11?
-    if(!strtolong2(tokens[1], &PCoffset11)) {    
+    if(!strtolong2(operand, &PCoffset11)) {    
         //transform label into PCoffset11 by retrieving the memory location corresponding to the label from symbol table
-        node_t *node = lookup(tokens[1]);
+        node_t *node = lookup(operand);
         if(!node) {
-            printerr("Symbol not found ('%s')\n", tokens[1]);            
-            return do_return(0, tokens);
+            printerr("Symbol not found ('%s')\n", operand);            
+            return 0;
         }
         PCoffset11 = node->val - instruction_location - 1;
     }
@@ -63,7 +49,7 @@ uint16_t parse_jsr(char *asm_instr, uint16_t instruction_location) {
         //validate PCoffset11 numerical range
         if(PCoffset11 < -1024 || PCoffset11 > 1023) {
             printerr("value of PCoffset11 %ld is outside the range [-1024, 1023]\n", PCoffset11);            
-            return do_return(0, tokens);
+            return 0;
         }
     }
 
@@ -78,7 +64,7 @@ uint16_t parse_jsr(char *asm_instr, uint16_t instruction_location) {
     //LABEL
     machine_instr += PCoffset11;
 
-    return do_return(machine_instr, tokens);
+    return machine_instr;
 }
 
 
