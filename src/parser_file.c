@@ -36,14 +36,13 @@ static uint16_t parse_orig(char *token) {
     return memaddr;
 }
 
-static void free_tokens(char **tokens, char *line_copy_ptr, bool is_label_line) {
+static void free_tokens(char **tokens, bool is_label_line) {
     if(is_label_line) {
-        free(tokens-1);
+        free(tokens - 1);
     }
     else {
-    free(tokens);
-    }
-    //free(line_copy_ptr);
+        free(tokens);
+    }    
 }
 
 static void add_labels_if_any_to_symbol_table(char *found_labels[], int *num_found_labels, uint16_t instruction_counter) {
@@ -208,8 +207,7 @@ typedef struct {
  */
 int compute_symbol_table(FILE *source_file) {
     //malloc
-    char *line = NULL; //must be freed before returning, it's updated on each line iteration
-    char *line_copy_ptr; //must be freed at the end of each line iteration
+    char *line = NULL; //must be freed before returning, it's updated on each line iteration    
     char **tokens; //must be freed at the end of each line iteration; tokens[i] are pointers to different memory locations in line and do not need to be freed
 
     //automatic
@@ -231,7 +229,7 @@ int compute_symbol_table(FILE *source_file) {
         printf("%s", line);
         line[read - 1] = '\0'; //remove newline char at the end of the line
         int num_tokens;
-        tokens = line_tokens(line, &num_tokens, &line_copy_ptr);
+        tokens = line_tokens(line, &num_tokens);
         if(num_tokens == 0) {
             continue;
         }
@@ -244,7 +242,7 @@ int compute_symbol_table(FILE *source_file) {
                 is_label_line = true;
             }
             else {
-                free_tokens(tokens, line_copy_ptr, is_label_line);
+                free_tokens(tokens, is_label_line);
                 continue;
             }
         }
@@ -252,7 +250,7 @@ int compute_symbol_table(FILE *source_file) {
 
         if(line_type == END_DIRECTIVE) {
             add_labels_if_any_to_symbol_table(found_labels, &num_found_labels, instruction_counter);
-            free_tokens(tokens, line_copy_ptr, is_label_line);
+            free_tokens(tokens, is_label_line);
             //stop reading file
             break;
         }
@@ -260,7 +258,7 @@ int compute_symbol_table(FILE *source_file) {
             //read memory address of first instruction
             if(num_tokens < 2) {
                 printerr("ERROR (line %d): immediate expected", line_counter);
-                free_tokens(tokens, line_copy_ptr, is_label_line);
+                free_tokens(tokens, is_label_line);
                 free(line);
                 return EXIT_FAILURE;
             }
@@ -272,7 +270,7 @@ int compute_symbol_table(FILE *source_file) {
             for(int i = 0; i < num_found_labels; i++) {
                 free(found_labels[i]);
             }
-            free_tokens(tokens, line_copy_ptr, is_label_line);
+            free_tokens(tokens, is_label_line);
             free(line);
             return EXIT_FAILURE;
         }
@@ -280,7 +278,7 @@ int compute_symbol_table(FILE *source_file) {
             add_labels_if_any_to_symbol_table(found_labels, &num_found_labels, instruction_counter);
             instruction_counter++;
         }
-        free_tokens(tokens, line_copy_ptr, is_label_line);
+        free_tokens(tokens, is_label_line);
 
     }
 
@@ -320,14 +318,14 @@ int second_pass_parse(FILE *source_file, FILE *destination_file) {
     uint16_t line_counter = 0;
     uint16_t instruction_counter; // incremental value that represents the memory address of each instruction
     uint16_t machine_instr = 0; // 16-bit representation of machine instruction, 0 if assembly instruction cannot be parsed
-    char *line_copy_ptr;
+
     errno = 0;
     while((read = getline(&line, &len, source_file)) != -1) {
         line_counter++;
         printf("%s", line);
         line[read - 1] = '\0'; //remove newline char at the end of the line
         int num_tokens;
-        char **tokens = line_tokens(line, &num_tokens, &line_copy_ptr);
+        char **tokens = line_tokens(line, &num_tokens);
         if(num_tokens == 0) {
             continue;
         }
@@ -335,19 +333,19 @@ int second_pass_parse(FILE *source_file, FILE *destination_file) {
         linetype_t line_type = compute_line_type(tokens[0]);
         if(line_type == END_DIRECTIVE) {
             //stop reading file
-            free_tokens(tokens, line_copy_ptr, false);
+            free_tokens(tokens, false);
             break;
         }
         else if(line_type == COMMENT || line_type == BLANK_LINE) {
             //ignore line and continue
-            free_tokens(tokens, line_copy_ptr, false);
+            free_tokens(tokens, false);
             continue;
         }
         else if(line_type == ORIG_DIRECTIVE) {
             machine_instr = parse_orig(tokens[1]);
             instruction_counter = machine_instr;
             if(write_machine_instruction(machine_instr, destination_file)) {
-                free_tokens(tokens, line_copy_ptr, false);
+                free_tokens(tokens, false);
                 printerr("error writing instruction to object file\n");
                 return EXIT_FAILURE;
             }
@@ -356,7 +354,7 @@ int second_pass_parse(FILE *source_file, FILE *destination_file) {
             opcode_t opcode_type = compute_opcode_type(tokens[0]);
             if(opcode_type == ADD) {
                 if(num_tokens < 4) {
-                    free_tokens(tokens, line_copy_ptr, false);
+                    free_tokens(tokens, false);
                     printerr("ERROR (line %d): missing ADD operands", line_counter);
                     return EXIT_FAILURE;
                 }
@@ -370,7 +368,7 @@ int second_pass_parse(FILE *source_file, FILE *destination_file) {
             }
             else if(opcode_type == JSR) {
                 if(num_tokens < 2) {
-                    free_tokens(tokens, line_copy_ptr, false);
+                    free_tokens(tokens, false);
                     printerr("ERROR (line %d): missing JSR operand", line_counter);
                     return EXIT_FAILURE;
                 }
@@ -386,13 +384,13 @@ int second_pass_parse(FILE *source_file, FILE *destination_file) {
                 machine_instr = parse_halt();
             }
             if(write_machine_instruction(machine_instr, destination_file)) {
-                free_tokens(tokens, line_copy_ptr, false);
+                free_tokens(tokens, false);
                 printerr("error writing instruction to object file\n");
                 return EXIT_FAILURE;
             }
             instruction_counter++;
         }
-        free_tokens(tokens, line_copy_ptr, false);
+        free_tokens(tokens, false);
     }
 
     free(line);

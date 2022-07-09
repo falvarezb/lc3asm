@@ -120,16 +120,13 @@ char **instruction_tokens(char *asm_instr, char *instr_name, int num_tokens) {
  * @param num_tokens Pointer used to store the number of tokens found
  * @return char** array of pointers to each of the tokens found, size of the array is given by num_tokens
  */
-char **line_tokens(char *line, int *num_tokens, char** line_copy_ptr) {
+char **line_tokens(char *line, int *num_tokens) {
     char **tokens = malloc(MAX_NUM_TOKENS_PER_LINE * sizeof(char *));
     if(tokens == NULL) {
         printerr("out of memory\n");
         return NULL;
     }
 
-    //saving line before it is modified by strtok    
-    //char *line_copy = strdup(line);
-    //*line_copy_ptr = line_copy;
     *num_tokens = 0;
     char *delimiters = " ,";
     char *pch = strtok(line, delimiters);
@@ -139,19 +136,17 @@ char **line_tokens(char *line, int *num_tokens, char** line_copy_ptr) {
     }
 
     if(*num_tokens == 0) {
-        free(tokens);
-        //free(line_copy);
+        free(tokens);        
         return NULL;
     }
 
-    char** final_tokens = realloc(tokens, *num_tokens * sizeof(char *));
-    if(final_tokens == NULL) {
-        printerr("out of memory\n");
-        //free(line_copy);
+    char** resized_tokens = realloc(tokens, *num_tokens * sizeof(char *));
+    if(resized_tokens == NULL) {
+        printerr("out of memory\n");        
         free(tokens);
         return NULL;
     }
     
-    return final_tokens;
+    return resized_tokens;
 }
 
