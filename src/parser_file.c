@@ -325,19 +325,14 @@ int second_pass_parse(FILE *source_file, FILE *destination_file) {
         linetype_t line_type = compute_line_type(tokens[0]);
         if(line_type == END_DIRECTIVE) {
             //stop reading file
-            free_tokens(tokens, false);
+            free(tokens);
             break;
-        }
-        else if(line_type == COMMENT || line_type == BLANK_LINE) {
-            //ignore line and continue
-            free_tokens(tokens, false);
-            continue;
         }
         else if(line_type == ORIG_DIRECTIVE) {
             machine_instr = parse_orig(tokens[1]);
             instruction_counter = machine_instr;
             if(write_machine_instruction(machine_instr, destination_file)) {
-                free_tokens(tokens, false);
+                free(tokens);
                 printerr("error writing instruction to object file\n");
                 return EXIT_FAILURE;
             }
@@ -346,7 +341,7 @@ int second_pass_parse(FILE *source_file, FILE *destination_file) {
             opcode_t opcode_type = compute_opcode_type(tokens[0]);
             if(opcode_type == ADD) {
                 if(num_tokens < 4) {
-                    free_tokens(tokens, false);
+                    free(tokens);
                     printerr("ERROR (line %d): missing ADD operands", line_counter);
                     return EXIT_FAILURE;
                 }
@@ -360,7 +355,7 @@ int second_pass_parse(FILE *source_file, FILE *destination_file) {
             }
             else if(opcode_type == JSR) {
                 if(num_tokens < 2) {
-                    free_tokens(tokens, false);
+                    free(tokens);
                     printerr("ERROR (line %d): missing JSR operand", line_counter);
                     return EXIT_FAILURE;
                 }
@@ -376,13 +371,13 @@ int second_pass_parse(FILE *source_file, FILE *destination_file) {
                 machine_instr = parse_halt();
             }
             if(write_machine_instruction(machine_instr, destination_file)) {
-                free_tokens(tokens, false);
+                free(tokens);
                 printerr("error writing instruction to object file\n");
                 return EXIT_FAILURE;
             }
             instruction_counter++;
         }
-        free_tokens(tokens, false);
+        free(tokens);
     }
 
     free(line);
