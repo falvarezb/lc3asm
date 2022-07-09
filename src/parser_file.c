@@ -203,9 +203,9 @@ typedef struct {
  */
 int compute_symbol_table(FILE *source_file) {
     //malloc
-    char *line = NULL; //must be freed before returning
-    char* line_copy_ptr; //must be freed at the end of each while loop
-    char **tokens; //must be freed at the end of each while loop; tokens[i] are pointers to different memory locations in line_copy_ptr
+    char *line = NULL; //must be freed before returning, it's updated on each line iteration
+    char* line_copy_ptr; //must be freed at the end of each line iteration
+    char **tokens; //must be freed at the end of each line iteration; tokens[i] are pointers to different memory locations in line and do not need to be freed
 
     //automatic
     size_t len = 0;
@@ -230,6 +230,11 @@ int compute_symbol_table(FILE *source_file) {
         }
 
         linetype_t line_type = compute_line_type(tokens[0]);
+        if(line_type == LABEL) {
+            found_labels[num_found_labels++] = strdup(tokens[0]);
+        }
+
+        
         if(line_type == END_DIRECTIVE) {
             add_labels_if_any_to_symbol_table(found_labels, &num_found_labels, instruction_counter);
             free_tokens(tokens, line_copy_ptr);
