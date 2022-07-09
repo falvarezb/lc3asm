@@ -95,6 +95,7 @@ void test_second_pass_with_labels_t2(void  __attribute__((unused)) **state) {
     initialize();
     add("LABEL", 0x3003);
     run_second_pass_test("./test/t2.asm", "./test/t2.obj", "./test/t2.actual.obj");
+    initialize();
 }
 
 void test_symbol_table_t2(void  __attribute__((unused)) **state) {
