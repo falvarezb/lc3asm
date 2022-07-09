@@ -45,6 +45,12 @@ static void free_tokens(char **tokens, bool is_label_line) {
     }    
 }
 
+static int free_and_return(int result, char **tokens, bool is_label_line, char* line) {
+    free_tokens(tokens, is_label_line);
+    free(line);
+    return result;
+}
+
 static void add_labels_if_any_to_symbol_table(char *found_labels[], int *num_found_labels, uint16_t instruction_counter) {
     for(int i = 0; i < *num_found_labels; i++) {
         add(found_labels[i], instruction_counter);
@@ -166,22 +172,6 @@ opcode_t compute_opcode_type(const char *assembly_instr) {
     return result;
 }
 
-
-/**
- * @brief struct with information about the line being parsed
- *
- * At any given time, the line being parsed may be an entire line of the asm
- * file or the portion of a line that comes after a label:
- *
- * - whole_line is handled by the library function 'getline'
- * - partial_line is the next token after a label in the same line
- *
- */
-typedef struct {
-    char *whole_line; /*!< line of the file that is being parsed */
-    char *partial_line; /*!< portion of a label line containing the next word after the label */
-} lineholder_t;
-
 /**
  * @brief Compute the symbol table by creating a dictionary to map labels to instructions.
  *
@@ -206,30 +196,35 @@ typedef struct {
  * @return int 1 if there is an error, 0 otherwise (errdesc is set with the error details). As a side effect, a file containing the symbol table is created
  */
 int compute_symbol_table(FILE *source_file) {
-    //malloc
-    char *line = NULL; //must be freed before returning, it's updated on each line iteration    
-    char **tokens; //must be freed at the end of each line iteration; tokens[i] are pointers to different memory locations in line and do not need to be freed
+    //=== BEGIN pointers to be freed ===
+    //pointer to the line read; freed after finishing reading the file
+    char *line = NULL;
+    //array containing last found labels
+    //since the array is defined on the stack, it does not need to be freed
+    //however, found_labels[i] do as they are a copy of tokens[i]; freed when labels are added to the symbol table
+    char *found_labels[MAX_NUM_LABELS_PER_INSTRUCTION] = { NULL };
+    //=== END pointers to be freed ===
 
-    //automatic
     size_t len = 0;
     uint16_t line_counter = 0;
     uint16_t instruction_counter = 0;
-    int num_found_labels = 0; //number of found labels for a given instruction; reset to zero when labels are added to the symbol table
-
-    //array containing last found labels; reset/freed when labels are added to the symbol table
-    //found_labels[i] are a copy of tokens[i]
-    char *found_labels[MAX_NUM_LABELS_PER_INSTRUCTION] = { NULL };
-    bool is_label_line = false;
+    int num_found_labels = 0; //number of found labels for a given instruction, must be <= MAX_NUM_LABELS_PER_INSTRUCTION    
 
     errno = 0;
     ssize_t read;
     while((read = getline(&line, &len, source_file)) != -1) {
-        is_label_line = false;
-        line_counter++;
         printf("%s", line);
         line[read - 1] = '\0'; //remove newline char at the end of the line
+
+        bool is_label_line = false;
+        line_counter++;
+
         int num_tokens;
-        tokens = line_tokens(line, &num_tokens);
+        //pointer to the array of tokens that the line is split into    
+        //tokens[i] are pointers to different memory locations in `line` and do not need to be freed  
+        //freed after processing the current line; 
+        //when freeing, check if it's been advanced while processing a line with a label        
+        char **tokens = line_tokens(line, &num_tokens);
         if(num_tokens == 0) {
             continue;
         }
@@ -238,11 +233,12 @@ int compute_symbol_table(FILE *source_file) {
         if(line_type == LABEL) {
             found_labels[num_found_labels++] = strdup(tokens[0]);
             if(num_tokens > 1) {
+                //continue processing the rest of the line as there are more elements after the label
                 tokens = tokens + 1;
                 is_label_line = true;
             }
             else {
-                free_tokens(tokens, is_label_line);
+                free(tokens);
                 continue;
             }
         }
@@ -258,9 +254,7 @@ int compute_symbol_table(FILE *source_file) {
             //read memory address of first instruction
             if(num_tokens < 2) {
                 printerr("ERROR (line %d): immediate expected", line_counter);
-                free_tokens(tokens, is_label_line);
-                free(line);
-                return EXIT_FAILURE;
+                return free_and_return(EXIT_FAILURE, tokens, is_label_line, line);
             }
             instruction_counter = parse_orig(tokens[1]);
         }
@@ -270,9 +264,7 @@ int compute_symbol_table(FILE *source_file) {
             for(int i = 0; i < num_found_labels; i++) {
                 free(found_labels[i]);
             }
-            free_tokens(tokens, is_label_line);
-            free(line);
-            return EXIT_FAILURE;
+            return free_and_return(EXIT_FAILURE, tokens, is_label_line, line);
         }
         else if(line_type == OPCODE) {
             add_labels_if_any_to_symbol_table(found_labels, &num_found_labels, instruction_counter);
