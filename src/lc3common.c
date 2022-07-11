@@ -36,8 +36,7 @@ int is_register(char *token) {
 static int is_valid_immediate(char *token, long *imm, long min, long max) {
     char first_ch = *token;
     if(first_ch == '#') { //decimal literal
-        strtolong(token + 1, &imm);
-        if(imm == NULL) {
+        if(!strtolong(token + 1, imm)) {
             printerr("immediate %s is not a numeric value\n", token);
             return EXIT_FAILURE;
         }

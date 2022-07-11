@@ -9,25 +9,6 @@
 #include "../include/lc3.h"
 
 /**
- * @brief Converts string into long and stores the value into num
- * 
- * @param str string representing a number
- * @param num pointer to store resulting number
- * @return bool false if string cannot be converted to a number, true otherwise
- */
-static bool strtolong2(char *str, long *num) {
-    char *pEnd;
-    long l = strtol(str, &pEnd, 10);
-    if(str == pEnd) {
-        return false;
-    }
-    else {
-        *num = l;
-        return true;
-    }
-}
-
-/**
  * @brief Parse an assembly JSR instruction and returns the corresponding machine instruction
  *
  * ## Assembler format
@@ -49,7 +30,7 @@ uint16_t parse_jsr(char *operand, uint16_t instruction_location) {
     long PCoffset11;    
 
     //label or PCoffset11?
-    if(!strtolong2(operand, &PCoffset11)) {    
+    if(!strtolong(operand, &PCoffset11)) {    
         //transform label into PCoffset11 by retrieving the memory location corresponding to the label from symbol table
         node_t *node = lookup(operand);
         if(!node) {

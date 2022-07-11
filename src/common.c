@@ -52,13 +52,21 @@ char *bin(unsigned int decimal) {
     return result;
 }
 
-void strtolong(char *str, long **num) {
+/**
+ * @brief Converts string into long and stores the value into num
+ * 
+ * @param str string representing a number
+ * @param num pointer to store resulting number
+ * @return bool false if string cannot be converted to a number, true otherwise
+ */
+bool strtolong(char *str, long *num) {
     char *pEnd;
     long l = strtol(str, &pEnd, 10);
     if(str == pEnd) {
-        *num = NULL;
+        return false;
     }
     else {
-        **num = l;
+        *num = l;
+        return true;
     }
 }
