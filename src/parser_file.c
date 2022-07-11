@@ -15,7 +15,6 @@
  * - opcodes also include pseudo-ops used for trap codes and assembler directives
  * - values within parentheses are optional
  *
- *
  */
 
 #include "../include/lc3.h"

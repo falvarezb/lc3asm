@@ -1,6 +1,20 @@
+/**
+ * @file parser_jsr.c
+ * @brief 
+ * @version 0.1
+ * @date 2022-07-11
+ * 
+ */
 
 #include "../include/lc3.h"
 
+/**
+ * @brief Converts string into long and stores the value into num
+ * 
+ * @param str string representing a number
+ * @param num pointer to store resulting number
+ * @return bool false if string cannot be converted to a number, true otherwise
+ */
 static bool strtolong2(char *str, long *num) {
     char *pEnd;
     long l = strtol(str, &pEnd, 10);
@@ -16,9 +30,9 @@ static bool strtolong2(char *str, long *num) {
 /**
  * @brief Parse an assembly JSR instruction and returns the corresponding machine instruction
  *
- * Assembler formats:
- * JSR LABEL
- * JSR PCoffset11
+ * ## Assembler format
+ * - JSR LABEL
+ * - JSR PCoffset11
  * 
  * PCoffset11 is an 11-bit value; bits [10:0] of an instruction; used with the JSR opcode to compute the target address of a subroutine call. 
  * Bits [10:0] are taken as an 11-bit 2’s complement integer, sign-extended to 16 bits and then added to the incremented PC to form the target address. 
@@ -26,13 +40,12 @@ static bool strtolong2(char *str, long *num) {
  * 
  * In case of having a label representing a memory address, the corresponding PCoffset11 is worked out.
  *
- * @param asm_instr JSR instruction
+ * @param operand LABEL or PCoffset11
  * @param instruction_location memory address of the instruction being parsed
- * @return uint16_t* 16-bit machine instruction or 0 in case of error (errdesc is set with details of the error)
+ * @return uint16_t 16-bit machine instruction or 0 in case of error (errdesc is set with error details)
  */
 uint16_t parse_jsr(char *operand, uint16_t instruction_location) {
-
-    //PARSING INSTRUCTION TOKENS
+    
     long PCoffset11;    
 
     //label or PCoffset11?
