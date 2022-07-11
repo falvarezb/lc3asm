@@ -23,7 +23,7 @@
 
 #define MAX_NUM_LABELS_PER_INSTRUCTION 10
 
-static uint16_t parse_halt() {
+static uint16_t parse_halt() {    
     return 0xf025;
 }
 
@@ -42,10 +42,10 @@ static void free_tokens(char **tokens, bool is_label_line) {
     }
     else {
         free(tokens);
-    }    
+    }
 }
 
-static int free_and_return(int result, char **tokens, bool is_label_line, char* line) {
+static int free_and_return(int result, char **tokens, bool is_label_line, char *line) {
     free_tokens(tokens, is_label_line);
     free(line);
     return result;
@@ -195,15 +195,13 @@ opcode_t compute_opcode_type(const char *assembly_instr) {
  * @param source_file Source fle containing the asm code
  * @return int 1 if there is an error, 0 otherwise (errdesc is set with the error details). As a side effect, a file containing the symbol table is created
  */
-int compute_symbol_table(FILE *source_file) {
-    //=== BEGIN pointers to be freed ===
+int compute_symbol_table(FILE *source_file) {    
     //pointer to the line read; freed after finishing reading the file
     char *line = NULL;
     //array containing last found labels
     //since the array is defined on the stack, it does not need to be freed
     //however, found_labels[i] do as they are a copy of tokens[i]; freed when labels are added to the symbol table
-    char *found_labels[MAX_NUM_LABELS_PER_INSTRUCTION] = { NULL };
-    //=== END pointers to be freed ===
+    char *found_labels[MAX_NUM_LABELS_PER_INSTRUCTION] = { NULL };    
 
     size_t len = 0;
     uint16_t line_counter = 0;
@@ -236,13 +234,13 @@ int compute_symbol_table(FILE *source_file) {
                 //continue processing the rest of the line as there are more elements after the label
                 tokens = tokens + 1;
                 is_label_line = true;
+                line_type = compute_line_type(tokens[0]);
             }
             else {
                 free(tokens);
                 continue;
             }
         }
-        line_type = compute_line_type(tokens[0]);
 
         if(line_type == END_DIRECTIVE) {
             add_labels_if_any_to_symbol_table(found_labels, &num_found_labels, instruction_counter);
@@ -308,7 +306,7 @@ int second_pass_parse(FILE *source_file, FILE *destination_file) {
     size_t len = 0;
     ssize_t read;
     uint16_t line_counter = 0;
-    uint16_t instruction_counter; // incremental value that represents the memory address of each instruction
+    uint16_t instruction_counter = 0; // incremental value that represents the memory address of each instruction
     uint16_t machine_instr = 0; // 16-bit representation of machine instruction, 0 if assembly instruction cannot be parsed
 
     errno = 0;

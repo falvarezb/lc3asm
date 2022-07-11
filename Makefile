@@ -12,7 +12,7 @@ OUTPUT_DIRS = ${BUILD_DIR} ${LOG_DIR} tools/${BUILD_DIR}
 
 CC = gcc
 CFLAGS = -Og -Wall -Wno-missing-braces -Wextra -Wshadow -Wpedantic -std=c11 -fno-common --coverage
-LDFLAGS =
+LDFLAGS = 
 SOURCE_DIR := src
 OBJS_PROD := $(addprefix $(BUILD_DIR)/, $(patsubst %.c,%.o,$(shell ls $(SOURCE_DIR))))
 SRCS_TEST := test.c parser_add_test.c parser_and_test.c parser_not_test.c parser_ret_test.c parser_jmp_test.c
@@ -28,7 +28,7 @@ ifeq ($(shell uname), Linux)
 	CFLAGS += -D_POSIX_C_SOURCE=200809 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include
 else ifeq ($(shell uname), Darwin)
 	VALGRIND =
-	CFLAGS += -I/usr/local/include/glib-2.0 -I/usr/local/lib/glib-2.0/include
+	CFLAGS += -I/usr/local/include/glib-2.0 -I/usr/local/lib/glib-2.0/include -fsanitize=address -fsanitize=undefined
 endif
 
 

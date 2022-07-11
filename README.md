@@ -41,6 +41,10 @@ Used to disable [common symbols generation](https://stackoverflow.com/questions/
 
 The justification to use this flag is to enforce good practices when defining global variables, namely: define them in exactly one .c file, then declare them as an extern in a header file which then gets included in the required .c files
 
+#### address sanitizer
+
+https://developers.redhat.com/blog/2021/05/05/memory-error-checking-in-c-and-c-comparing-sanitizers-and-valgrind
+
 ## Unit tests
 
 Unit tests are executed with the command:

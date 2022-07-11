@@ -6,8 +6,18 @@
 #include "../include/lc3.h"
 #include "../include/dict.h"
 
-int run_symbol_table_test(const char *asm_file_name) {
+static int setup(void **state) {
+    clearerrdesc();
     initialize();
+    return 0;
+}
+
+static int teardown(void **state) {
+    initialize();
+    return 0;
+}
+
+static int run_symbol_table_test(const char *asm_file_name) {    
     FILE *source_file = fopen(asm_file_name, "r");
 
     int result = compute_symbol_table(source_file);
@@ -15,14 +25,14 @@ int run_symbol_table_test(const char *asm_file_name) {
     return result;
 }
 
-void assert_symbol_table(const char *label, size_t num_instruction) {
+static void assert_symbol_table(const char *label, size_t num_instruction) {
     node_t *node = lookup(label);
     assert_non_null(node);
     assert_int_equal(node->val, num_instruction);
     delete(label);
 }
 
-void run_second_pass_test(char* asm_file_name, char* obj_file_name, char* actual_obj_file_name) {
+static void run_second_pass_test(char* asm_file_name, char* obj_file_name, char* actual_obj_file_name) {
     FILE *source_file = fopen(asm_file_name, "r");
     FILE *actual_obj_file = fopen(actual_obj_file_name, "w");
 
@@ -51,8 +61,7 @@ void run_second_pass_test(char* asm_file_name, char* obj_file_name, char* actual
     fclose(actual_obj_file);
 }
 
-void run_assemble_test(char* asm_file_name, char* actual_symbol_table_file_name, char* obj_file_name, char* actual_obj_file_name) {
-    clearerrdesc();
+static void run_assemble_test(char* asm_file_name, char* actual_symbol_table_file_name, char* obj_file_name, char* actual_obj_file_name) {
     FILE *source_file = fopen(asm_file_name, "r");
     FILE *actual_symbol_table_file = fopen(actual_symbol_table_file_name, "w");
     FILE *actual_obj_file = fopen(actual_obj_file_name, "w");
@@ -81,21 +90,18 @@ void run_assemble_test(char* asm_file_name, char* actual_symbol_table_file_name,
 
     assert_int_equal(read, fread(buf_actual, 1, 2, actual_obj_file));
     fclose(expected_obj_file);
-    fclose(actual_obj_file);
-    initialize();
+    fclose(actual_obj_file);    
 }
 
 ///////////////////////////////////////////////////
 
-void test_second_pass_without_labels_t1(void  __attribute__((unused)) **state) {
+static void test_second_pass_without_labels_t1(void  __attribute__((unused)) **state) {
     run_second_pass_test("./test/t1.asm", "./test/t1.obj", "./test/t1.actual.obj");
 }
 
-void test_second_pass_with_labels_t2(void  __attribute__((unused)) **state) {
-    initialize();
+static void test_second_pass_with_labels_t2(void  __attribute__((unused)) **state) {    
     add("LABEL", 0x3003);
-    run_second_pass_test("./test/t2.asm", "./test/t2.obj", "./test/t2.actual.obj");
-    initialize();
+    run_second_pass_test("./test/t2.asm", "./test/t2.obj", "./test/t2.actual.obj");    
 }
 
 void test_symbol_table_t2(void  __attribute__((unused)) **state) {
@@ -103,12 +109,12 @@ void test_symbol_table_t2(void  __attribute__((unused)) **state) {
     assert_symbol_table("LABEL", 0x3003);
 }
 
-void test_symbol_table_t3(void  __attribute__((unused)) **state) {
+static void test_symbol_table_t3(void  __attribute__((unused)) **state) {
     run_symbol_table_test("./test/t3.asm");
     assert_symbol_table("LABEL", 0x3003);
 }
 
-void test_symbol_table_t4(void  __attribute__((unused)) **state) {
+static void test_symbol_table_t4(void  __attribute__((unused)) **state) {
     run_symbol_table_test("./test/t4.asm");
     assert_symbol_table("LABEL1", 0x3003);
     assert_symbol_table("LABEL2", 0x3001);
@@ -117,13 +123,12 @@ void test_symbol_table_t4(void  __attribute__((unused)) **state) {
     assert_symbol_table("LABEL5", 0x3003);
 }
 
-void test_symbol_table_t5(void  __attribute__((unused)) **state) {
+static void test_symbol_table_t5(void  __attribute__((unused)) **state) {
     assert_int_equal(run_symbol_table_test("./test/t5.asm"), EXIT_FAILURE);
     assert_string_equal(errdesc, "invalid opcode ('LABEL2')");
 }
 
-void test_symbol_table_serialization(void  __attribute__((unused)) **state) {
-    initialize();
+static void test_symbol_table_serialization(void  __attribute__((unused)) **state) {    
     add("LABEL", 0x3003);
     FILE *actual_sym_file = fopen("./test/t2.actual.sym", "w");
     serialize_symbol_table(actual_sym_file);
@@ -136,12 +141,13 @@ void test_symbol_table_serialization(void  __attribute__((unused)) **state) {
     size_t num_lines = 1;
     char *line_expected = NULL;
     char *line_actual = NULL;
-    size_t len = 0;
+    size_t len_expected = 0;
+    size_t len_actual = 0;
     ssize_t read_expected;
-    while((read_expected = getline(&line_expected, &len, expected_sym_file)) != -1) {
+    while((read_expected = getline(&line_expected, &len_expected, expected_sym_file)) != -1) {
         printf("line checked: %zu\n", num_lines);
         ssize_t read_actual;
-        if((read_actual = getline(&line_actual, &len, actual_sym_file)) != -1) {
+        if((read_actual = getline(&line_actual, &len_actual, actual_sym_file)) != -1) {
             assert_true(strcmp(line_expected, line_actual) == 0);
             num_lines++;
         }
@@ -153,13 +159,10 @@ void test_symbol_table_serialization(void  __attribute__((unused)) **state) {
     fclose(expected_sym_file);
     fclose(actual_sym_file);
     free(line_expected);
-    free(line_actual);
-    node_t *label = lookup("LABEL");
-    delete(label->key);
+    free(line_actual);    
 }
 
-void test_symbol_table_serialization_failure(void  __attribute__((unused)) **state) {
-    initialize();
+static void test_symbol_table_serialization_failure(void  __attribute__((unused)) **state) {    
     node_t *label = add("LABEL", 0x3003);
     FILE *actual_sym_file = fopen("./test/t2.actual.sym", "r");
     int result = serialize_symbol_table(actual_sym_file);
@@ -171,28 +174,27 @@ void test_symbol_table_serialization_failure(void  __attribute__((unused)) **sta
     delete(label->key);
 }
 
-void test_assemble_without_labels_t1(void  __attribute__((unused)) **state) {
+static void test_assemble_without_labels_t1(void  __attribute__((unused)) **state) {
     run_assemble_test("./test/t1.asm", "./test/t1.actual.sym", "./test/t1.obj", "./test/t1.actual.obj");    
 }
 
-void test_assemble_with_labels_t2(void  __attribute__((unused)) **state) {
-    initialize();
+static void test_assemble_with_labels_t2(void  __attribute__((unused)) **state) {    
     run_assemble_test("./test/t2.asm", "./test/t2.actual.sym", "./test/t2.obj", "./test/t2.actual.obj");
 }
 
 
 int main(int argc, char const *argv[]) {
     const struct CMUnitTest tests[] = {
-        cmocka_unit_test(test_second_pass_without_labels_t1),
-        cmocka_unit_test(test_second_pass_with_labels_t2),
-        cmocka_unit_test(test_symbol_table_t2),
-        cmocka_unit_test(test_symbol_table_t3),
-        cmocka_unit_test(test_symbol_table_t4),
-        cmocka_unit_test(test_symbol_table_t5),
-        cmocka_unit_test(test_symbol_table_serialization),
-        cmocka_unit_test(test_symbol_table_serialization_failure),
-        cmocka_unit_test(test_assemble_without_labels_t1),
-        cmocka_unit_test(test_assemble_with_labels_t2)
+        cmocka_unit_test_setup_teardown(test_second_pass_without_labels_t1, setup, teardown),
+        cmocka_unit_test_setup_teardown(test_second_pass_with_labels_t2, setup, teardown),
+        cmocka_unit_test_setup_teardown(test_symbol_table_t2, setup, teardown),
+        cmocka_unit_test_setup_teardown(test_symbol_table_t3, setup, teardown),
+        cmocka_unit_test_setup_teardown(test_symbol_table_t4, setup, teardown),
+        cmocka_unit_test_setup_teardown(test_symbol_table_t5, setup, teardown),
+        cmocka_unit_test_setup_teardown(test_symbol_table_serialization, setup, teardown),
+        cmocka_unit_test_setup_teardown(test_symbol_table_serialization_failure, setup, teardown),
+        cmocka_unit_test_setup_teardown(test_assemble_without_labels_t1, setup, teardown),
+        cmocka_unit_test_setup_teardown(test_assemble_with_labels_t2, setup, teardown)
     };
     return cmocka_run_group_tests(tests, NULL, NULL);
 }
