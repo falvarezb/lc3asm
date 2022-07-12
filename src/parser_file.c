@@ -28,8 +28,7 @@ static uint16_t parse_halt() {
 
 static uint16_t parse_orig(char *token) {
     long memaddr;
-    int result = is_valid_memaddr(token, &memaddr);
-    if(result) {
+    if(is_valid_memaddr(token, &memaddr)) {
         return 0;
     }
     return memaddr;
@@ -96,11 +95,9 @@ int serialize_symbol_table(FILE *destination_file) {
 }
 
 /**
- * @brief Determine the type of the given line
+ * @brief Determine the type of a line based on the value of the first token
  *
- * The possible types are determined by the values of enum linetype_t
- *
- * @param line line of the asm file to be inspected
+ * @param first_token first token of the line being parsed
  * @return linetype_t value indicative of the type of line
  */
 linetype_t compute_line_type(const char *first_token) {
@@ -137,32 +134,30 @@ linetype_t compute_line_type(const char *first_token) {
 }
 
 /**
- * @brief Determine the opcode type of the instruction in the given line
+ * @brief Determine the opcode of an instruction
  *
- * The possible types are determined by the values of enum opcode_t
- *
- * @param opcode line of the asm file to be inspected
+ * @param opcode opcode to be analyzed
  * @return opcode_t value indicative of the type of opcode
  */
-opcode_t compute_opcode_type(const char *assembly_instr) {
+opcode_t compute_opcode_type(const char *opcode) {
 
     opcode_t result;
-    if(strcmp(assembly_instr, "ADD") == 0) {
+    if(strcmp(opcode, "ADD") == 0) {
         result = ADD;
     }
-    else if(strcmp(assembly_instr, "AND") == 0) {
+    else if(strcmp(opcode, "AND") == 0) {
         result = AND;
     }
-    else if(strcmp(assembly_instr, "JMP") == 0) {
+    else if(strcmp(opcode, "JMP") == 0) {
         result = JMP;
     }
-    else if(strcmp(assembly_instr, "JSR") == 0) {
+    else if(strcmp(opcode, "JSR") == 0) {
         result = JSR;
     }
-    else if(strcmp(assembly_instr, "NOT") == 0) {
+    else if(strcmp(opcode, "NOT") == 0) {
         result = NOT;
     }
-    else if(strcmp(assembly_instr, "RET") == 0) {
+    else if(strcmp(opcode, "RET") == 0) {
         result = RET;
     }
     else {
@@ -231,7 +226,7 @@ int compute_symbol_table(FILE *source_file) {
             found_labels[num_found_labels++] = strdup(tokens[0]);
             if(num_tokens > 1) {
                 //continue processing the rest of the line as there are more elements after the label
-                tokens = tokens + 1;
+                tokens++;
                 is_label_line = true;
                 line_type = compute_line_type(tokens[0]);
             }
