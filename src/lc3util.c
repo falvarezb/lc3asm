@@ -1,4 +1,4 @@
-#include "../include/lc3common.h"
+#include "../include/lc3util.h"
 #define LC3_WORD_SIZE 16 // bits
 
 /*
