@@ -8,6 +8,9 @@ uint16_t parse_not(char *instr);
 uint16_t parse_ret(char *instr);
 uint16_t parse_jmp(char *instr);
 uint16_t parse_jsr(char *operand, uint16_t instruction_number);
+uint16_t halt();
+uint16_t orig(char *token);
+
 int first_pass_parse(FILE *source_file, FILE *destination_file);
 int second_pass_parse(FILE *source_file, FILE *object_file);
 int compute_symbol_table(FILE *source_file);

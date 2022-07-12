@@ -18,21 +18,8 @@
  */
 
 #include "../include/lc3.h"
-#include "../include/dict.h"
 
 #define MAX_NUM_LABELS_PER_INSTRUCTION 10
-
-static uint16_t parse_halt() {    
-    return 0xf025;
-}
-
-static uint16_t parse_orig(char *token) {
-    long memaddr;
-    if(is_valid_memaddr(token, &memaddr)) {
-        return 0;
-    }
-    return memaddr;
-}
 
 static void free_tokens(char **tokens, bool is_label_line) {
     if(is_label_line) {
@@ -248,7 +235,7 @@ int compute_symbol_table(FILE *source_file) {
                 printerr("ERROR (line %d): immediate expected", line_counter);
                 return free_and_return(EXIT_FAILURE, tokens, is_label_line, line);
             }
-            instruction_counter = parse_orig(tokens[1]);
+            instruction_counter = orig(tokens[1]);
         }
         else if(line_type == LABEL) {
             //two labels in the same line is disallowed
@@ -321,7 +308,7 @@ int second_pass_parse(FILE *source_file, FILE *destination_file) {
             break;
         }
         else if(line_type == ORIG_DIRECTIVE) {
-            machine_instr = parse_orig(tokens[1]);
+            machine_instr = orig(tokens[1]);
             instruction_counter = machine_instr;
             if(write_machine_instruction(machine_instr, destination_file)) {
                 free(tokens);
@@ -360,7 +347,7 @@ int second_pass_parse(FILE *source_file, FILE *destination_file) {
                 machine_instr = parse_ret(line);
             }
             else {
-                machine_instr = parse_halt();
+                machine_instr = halt();
             }
             if(write_machine_instruction(machine_instr, destination_file)) {
                 free(tokens);

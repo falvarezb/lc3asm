@@ -1,32 +1,43 @@
+/**
+ * @file lc3util.c
+ * @brief functions common to the parsing of different instructions and directives
+ * @version 0.1
+ * @date 2022-07-12
+ * 
+ */
+
 #include "../include/lc3util.h"
 #define LC3_WORD_SIZE 16 // bits
 
-/*
-    Returns numeric value of the register or -1 if 'token' is not a register
-*/
-int is_register(char *token) {
-    if(strcmp(token, "R0") == 0) {
+/**
+ * @brief Returns numeric value of the register or -1 if `str` is not a register
+ * 
+ * @param str 
+ * @return int 
+ */
+int is_register(char *str) {
+    if(strcmp(str, "R0") == 0) {
         return 0;
     }
-    else if(strcmp(token, "R1") == 0) {
+    else if(strcmp(str, "R1") == 0) {
         return 1;
     }
-    else if(strcmp(token, "R2") == 0) {
+    else if(strcmp(str, "R2") == 0) {
         return 2;
     }
-    else if(strcmp(token, "R3") == 0) {
+    else if(strcmp(str, "R3") == 0) {
         return 3;
     }
-    else if(strcmp(token, "R4") == 0) {
+    else if(strcmp(str, "R4") == 0) {
         return 4;
     }
-    else if(strcmp(token, "R5") == 0) {
+    else if(strcmp(str, "R5") == 0) {
         return 5;
     }
-    else if(strcmp(token, "R6") == 0) {
+    else if(strcmp(str, "R6") == 0) {
         return 6;
     }
-    else if(strcmp(token, "R7") == 0) {
+    else if(strcmp(str, "R7") == 0) {
         return 7;
     }
     return -1;
@@ -60,20 +71,22 @@ static int is_valid_immediate(char *token, long *imm, long min, long max) {
     return EXIT_FAILURE;
 }
 
-/*
-    Parse the token representing the immediate operand and stores its numeric value in imm5
-    imm5 is a 5-bit value, range [-16,15]
-    imm5 can be expressed in decimal and hex notation
-
-    Returns 0 if parsing is successful, else 1
-    Error message is stored in errdesc
-*/
-int is_imm5(char *token, long *imm5) {
-    return is_valid_immediate(token, imm5, -16, 15);
+/**
+ * @brief Transforms the given string into imm5
+ * 
+ * imm5 is a 5-bit value, range [-16,15]
+ * it can be expressed in decimal and hex notation
+ * 
+ * @param str string to be parsed
+ * @param imm5 immediate value resulting of transforming str
+ * @return int 0 if parsing is successful, else 1 (errdesc is set with error details)
+ */
+int is_imm5(char *str, long *imm5) {
+    return is_valid_immediate(str, imm5, -16, 15);
 }
 
-int is_valid_memaddr(char *token, long *memaddr) {
-    return is_valid_immediate(token, memaddr, 0, 0xFFFF);
+int is_valid_memaddr(char *str, long *memaddr) {
+    return is_valid_immediate(str, memaddr, 0, 0xFFFF);
 }
 
 uint16_t do_return(uint16_t ret, char **tokens) {
