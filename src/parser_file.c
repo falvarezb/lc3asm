@@ -30,9 +30,10 @@ static void free_tokens(char **tokens, bool is_label_line) {
     }
 }
 
-static int free_and_return(int result, char **tokens, bool is_label_line, char *line) {
+static int free_and_return(int result, char **tokens, bool is_label_line, char *line, FILE *file) {
     free_tokens(tokens, is_label_line);
     free(line);
+    fclose(file);
     return result;
 }
 
@@ -64,20 +65,28 @@ static int write_machine_instruction(uint16_t machine_instr, FILE *destination_f
  * @param destination_file File where the symbol table is serialized
  * @return int 0 if serialization is successful or 1 if there is a writing error (errdesc is set with error details)
  */
-int serialize_symbol_table(FILE *destination_file) {
+int serialize_symbol_table(const char *symbol_table_file_name) {
+    FILE *destination_file = fopen(symbol_table_file_name, "w");
+    if(!destination_file) {
+        printerr("error when writing serialized symbol table to file");
+        return EXIT_FAILURE;
+    }
     int num_chars_written;
     if((num_chars_written = fprintf(destination_file, "// Symbol table\n// Scope level 0:\n//	Symbol Name       Page Address\n//	----------------  ------------\n")) < 0) {
+        fclose(destination_file);
         printerr("error when writing serialized symbol table to file");
         return EXIT_FAILURE;
     }
     node_t *node = next(true);
     while(node) {
         if((num_chars_written = fprintf(destination_file, "//	%s             %hx\n", node->key, node->val) < 0)) {
+            fclose(destination_file);
             printerr("error when writing serialized symbol table to file");
             return EXIT_FAILURE;
         }
         node = next(false);
     }
+    fclose(destination_file);
     return EXIT_SUCCESS;
 }
 
@@ -176,7 +185,7 @@ opcode_t compute_opcode_type(const char *opcode) {
  * @param source_file Source fle containing the asm code
  * @return int 1 if there is an error, 0 otherwise (errdesc is set with the error details). As a side effect, a file containing the symbol table is created
  */
-int compute_symbol_table(FILE *source_file) {    
+int compute_symbol_table(const char *assembly_file_name) {    
     //pointer to the line read; freed after finishing reading the file
     char *line = NULL;
     //array containing last found labels
@@ -191,6 +200,7 @@ int compute_symbol_table(FILE *source_file) {
 
     errno = 0;
     ssize_t read;
+    FILE *source_file = fopen(assembly_file_name, "r");
     while((read = getline(&line, &len, source_file)) != -1) {
         printf("%s", line);
         line[read - 1] = '\0'; //remove newline char at the end of the line
@@ -233,7 +243,7 @@ int compute_symbol_table(FILE *source_file) {
             //read memory address of first instruction
             if(num_tokens < 2) {
                 printerr("ERROR (line %d): immediate expected", line_counter);
-                return free_and_return(EXIT_FAILURE, tokens, is_label_line, line);
+                return free_and_return(EXIT_FAILURE, tokens, is_label_line, line, source_file);
             }
             instruction_counter = orig(tokens[1]);
         }
@@ -243,7 +253,7 @@ int compute_symbol_table(FILE *source_file) {
             for(int i = 0; i < num_found_labels; i++) {
                 free(found_labels[i]);
             }
-            return free_and_return(EXIT_FAILURE, tokens, is_label_line, line);
+            return free_and_return(EXIT_FAILURE, tokens, is_label_line, line, source_file);
         }
         else if(line_type == OPCODE) {
             add_labels_if_any_to_symbol_table(found_labels, &num_found_labels, instruction_counter);
@@ -254,6 +264,7 @@ int compute_symbol_table(FILE *source_file) {
     }
 
     free(line);
+    fclose(source_file);
 
     //check if getline resulted in error
     if(read == -1 && errno) {
@@ -275,20 +286,22 @@ int compute_symbol_table(FILE *source_file) {
  * @param destination_file File containing the symbol table
  * @return int 0 if process is completed successfully, 1 otherwise (errdesc is set with error details)
  */
-int first_pass_parse(FILE *source_file, FILE *destination_file) {
-    if(compute_symbol_table(source_file)) {
+int first_pass_parse(const char *assembly_file_name, const char *symbol_table_file_name) {
+    if(compute_symbol_table(assembly_file_name)) {
         return EXIT_FAILURE;
     }
-    return serialize_symbol_table(destination_file);
+    return serialize_symbol_table(symbol_table_file_name);
 }
 
-int second_pass_parse(FILE *source_file, FILE *destination_file) {
+int second_pass_parse(const char *assembly_file_name, const char *object_file_name) {
     char *line = NULL;
     size_t len = 0;
     ssize_t read;
     uint16_t line_counter = 0;
     uint16_t instruction_counter = 0; // incremental value that represents the memory address of each instruction
     uint16_t machine_instr = 0; // 16-bit representation of machine instruction, 0 if assembly instruction cannot be parsed
+    FILE *source_file = fopen(assembly_file_name, "r");
+    FILE *destination_file = fopen(object_file_name, "w");
 
     errno = 0;
     while((read = getline(&line, &len, source_file)) != -1) {
@@ -311,6 +324,8 @@ int second_pass_parse(FILE *source_file, FILE *destination_file) {
             machine_instr = orig(tokens[1]);
             instruction_counter = machine_instr;
             if(write_machine_instruction(machine_instr, destination_file)) {
+                fclose(source_file);
+                fclose(destination_file);
                 free(tokens);
                 printerr("error writing instruction to object file\n");
                 return EXIT_FAILURE;
@@ -320,6 +335,8 @@ int second_pass_parse(FILE *source_file, FILE *destination_file) {
             opcode_t opcode_type = compute_opcode_type(tokens[0]);
             if(opcode_type == ADD) {
                 if(num_tokens < 4) {
+                    fclose(source_file);
+                    fclose(destination_file);
                     free(tokens);
                     printerr("ERROR (line %d): missing ADD operands", line_counter);
                     return EXIT_FAILURE;
@@ -334,6 +351,8 @@ int second_pass_parse(FILE *source_file, FILE *destination_file) {
             }
             else if(opcode_type == JSR) {
                 if(num_tokens < 2) {
+                    fclose(source_file);
+                    fclose(destination_file);
                     free(tokens);
                     printerr("ERROR (line %d): missing JSR operand", line_counter);
                     return EXIT_FAILURE;
@@ -350,6 +369,8 @@ int second_pass_parse(FILE *source_file, FILE *destination_file) {
                 machine_instr = halt();
             }
             if(write_machine_instruction(machine_instr, destination_file)) {
+                fclose(source_file);
+                fclose(destination_file);
                 free(tokens);
                 printerr("error writing instruction to object file\n");
                 return EXIT_FAILURE;
@@ -360,6 +381,8 @@ int second_pass_parse(FILE *source_file, FILE *destination_file) {
     }
 
     free(line);
+    fclose(source_file);
+    fclose(destination_file);
 
     //check if getline resulted in error
     if(read == -1 && errno) {
@@ -370,12 +393,12 @@ int second_pass_parse(FILE *source_file, FILE *destination_file) {
     return EXIT_SUCCESS;
 }
 
-int assemble(FILE *source_file, FILE *symbol_table_file, FILE *object_file) {
-    if(first_pass_parse(source_file, symbol_table_file)) {
+int assemble(const char *assembly_file_name, const char *symbol_table_file_name, const char *object_file_name) {
+    if(first_pass_parse(assembly_file_name, symbol_table_file_name)) {
         return EXIT_FAILURE;
     }
-    rewind(source_file);
-    return second_pass_parse(source_file, object_file);
+    
+    return second_pass_parse(assembly_file_name, object_file_name);
 }
 
 

@@ -11,11 +11,11 @@ uint16_t parse_jsr(char *operand, uint16_t instruction_number);
 uint16_t halt();
 uint16_t orig(char *token);
 
-int first_pass_parse(FILE *source_file, FILE *destination_file);
-int second_pass_parse(FILE *source_file, FILE *object_file);
-int compute_symbol_table(FILE *source_file);
-int serialize_symbol_table(FILE* destination_file);
-int assemble(FILE *source_file, FILE *symbol_table_file, FILE *object_file);
+int first_pass_parse(const char *assembly_file_name, const char *symbol_table_file_name);
+int second_pass_parse(const char *assembly_file_name, const char *object_file_name);
+int compute_symbol_table(const char *assembly_file_name);
+int serialize_symbol_table(const char* symbol_table_file_name);
+int assemble(const char *assembly_file_name, const char *symbol_table_file_name, const char *object_file_name);
 
 
 #endif
