@@ -20,5 +20,6 @@ char *bin(unsigned int decimal);
 int printerr(char *format, ...);
 void clearerrdesc();
 bool strtolong(char *str, long *num);
+char **split_tokens(char *str, int *num_tokens, const char *delimiters);
 
 #endif

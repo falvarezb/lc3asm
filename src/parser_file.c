@@ -216,7 +216,7 @@ int compute_symbol_table(FILE *source_file) {
         //tokens[i] are pointers to different memory locations in `line` and do not need to be freed  
         //freed after processing the current line; 
         //when freeing, check if it's been advanced while processing a line with a label        
-        char **tokens = line_tokens(line, &num_tokens);
+        char **tokens = split_tokens(line, &num_tokens, " ,");
         if(num_tokens == 0) {
             continue;
         }
@@ -309,7 +309,7 @@ int second_pass_parse(FILE *source_file, FILE *destination_file) {
         printf("%s", line);
         line[read - 1] = '\0'; //remove newline char at the end of the line
         int num_tokens;
-        char **tokens = line_tokens(line, &num_tokens);
+        char **tokens = split_tokens(line, &num_tokens, " ,");
         if(num_tokens == 0) {
             continue;
         }

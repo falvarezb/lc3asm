@@ -1,6 +1,5 @@
 #include "../include/lc3common.h"
 #define LC3_WORD_SIZE 16 // bits
-#define MAX_NUM_TOKENS_PER_LINE 200
 
 /*
     Returns numeric value of the register or -1 if 'token' is not a register
@@ -107,45 +106,5 @@ char **instruction_tokens(char *asm_instr, char *instr_name, int num_tokens) {
         pch = strtok(NULL, delimiters);
     }
     return tokens;
-}
-
-/**
- * @brief Parse the given line to extract the different tokens
- * 
- * Tokens are delimited by whitespaces and commas. 
- * An array of pointers to each of the tokens is returned
- * 
- * @param line Line to parse
- * @param num_tokens Pointer used to store the number of tokens found
- * @return char** array of pointers to each of the tokens found, size of the array is given by num_tokens
- */
-char **line_tokens(char *line, int *num_tokens) {
-    char **tokens = malloc(MAX_NUM_TOKENS_PER_LINE * sizeof(char *));
-    if(tokens == NULL) {
-        printerr("out of memory\n");
-        return NULL;
-    }
-
-    *num_tokens = 0;
-    char *delimiters = " ,";
-    char *pch = strtok(line, delimiters);
-    while(pch != NULL) {
-        tokens[(*num_tokens)++] = pch;
-        pch = strtok(NULL, delimiters);
-    }
-
-    if(*num_tokens == 0) {
-        free(tokens);        
-        return NULL;
-    }
-
-    char** resized_tokens = realloc(tokens, *num_tokens * sizeof(char *));
-    if(resized_tokens == NULL) {
-        printerr("out of memory\n");        
-        free(tokens);
-        return NULL;
-    }
-    
-    return resized_tokens;
 }
 

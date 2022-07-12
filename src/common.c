@@ -1,3 +1,11 @@
+/**
+ * @file common.c
+ * @brief Generic util functions
+ * @version 0.1
+ * @date 2022-07-12
+ * 
+ */
+
 #include "../include/common.h"
 #define ERR_DESC_LENGTH 200
 char errdesc[ERR_DESC_LENGTH];
@@ -70,3 +78,47 @@ bool strtolong(char *str, long *num) {
         return true;
     }
 }
+
+/**
+ * @brief Splits the given string into tokens
+ * 
+ * This function generates an array of pointers, each pointing to the location of `str` corresponding to the
+ * beginning of that token.
+ * Beware that `str` is mangled.
+ * 
+ * Tokens are delimited by the characters in `delimiters`.
+ * 
+ * @param str string to parse
+ * @param num_tokens pointer used to store the number of tokens found
+ * @return char** array of pointers to each of the tokens found, size of the array is given by num_tokens
+ */
+char **split_tokens(char *str, int *num_tokens, const char *delimiters) {
+    const int max_num_tokens = 200;
+    char **tokens = malloc(max_num_tokens * sizeof(char *));
+    if(tokens == NULL) {
+        printerr("out of memory\n");
+        return NULL;
+    }
+
+    *num_tokens = 0;    
+    char *pch = strtok(str, delimiters);
+    while(pch != NULL) {
+        tokens[(*num_tokens)++] = pch;
+        pch = strtok(NULL, delimiters);
+    }
+
+    if(*num_tokens == 0) {
+        free(tokens);        
+        return NULL;
+    }
+
+    char** resized_tokens = realloc(tokens, *num_tokens * sizeof(char *));
+    if(resized_tokens == NULL) {
+        printerr("out of memory\n");        
+        free(tokens);
+        return NULL;
+    }
+    
+    return resized_tokens;
+}
+
