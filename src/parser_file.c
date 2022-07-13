@@ -243,7 +243,7 @@ int compute_symbol_table(const char *assembly_file_name) {
         else if(line_type == ORIG_DIRECTIVE) {
             //read memory address of first instruction
             if(num_tokens < 2) {
-                printerr("ERROR (line %d): immediate expected", line_counter);
+                printerr("ERROR (line %d): Immediate expected", line_counter);
                 return free_and_return(EXIT_FAILURE, tokens, is_label_line, line, source_file);
             }
             if((instruction_counter = orig(tokens[1])) == 0) {

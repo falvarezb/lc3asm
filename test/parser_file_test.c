@@ -174,6 +174,12 @@ static void test_first_pass_without_orig_t7(void  __attribute__((unused)) **stat
     assert_string_equal(errdesc, "ERROR (line 4): Instruction not preceeded by a .orig directive");
 }
 
+static void test_first_pass_missing_orig_address_t8(void  __attribute__((unused)) **state) {    
+    int result = first_pass_parse("./test/t8.asm", "does not matter");
+    assert_int_equal(result, 1);
+    assert_string_equal(errdesc, "ERROR (line 4): Immediate expected");
+}
+
 
 int main(int argc, char const *argv[]) {
     const struct CMUnitTest tests[] = {
@@ -188,7 +194,8 @@ int main(int argc, char const *argv[]) {
         cmocka_unit_test_setup_teardown(test_assemble_without_labels_t1, setup, teardown),
         cmocka_unit_test_setup_teardown(test_assemble_with_labels_t2, setup, teardown),
         cmocka_unit_test_setup_teardown(test_first_pass_wrong_orig_address_t6, setup, teardown),
-        cmocka_unit_test_setup_teardown(test_first_pass_without_orig_t7, setup, teardown)
+        cmocka_unit_test_setup_teardown(test_first_pass_without_orig_t7, setup, teardown),
+        cmocka_unit_test_setup_teardown(test_first_pass_missing_orig_address_t8, setup, teardown)
     };
     return cmocka_run_group_tests(tests, NULL, NULL);
 }
