@@ -12,9 +12,9 @@ uint16_t halt() {
     return 0xf025;
 }
 
-uint16_t orig(char *token) {
+uint16_t orig(char *str) {
     long memaddr;
-    if(is_valid_memaddr(token, &memaddr)) {
+    if(is_valid_memaddr(str, &memaddr)) {
         return 0;
     }
     return memaddr;

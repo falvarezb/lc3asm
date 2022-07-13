@@ -22,11 +22,6 @@ static int run_symbol_table_test(const char *asm_file_name) {
     return result;
 }
 
-static int run_first_pass_test(const char *asm_file_name, const char *symbol_table_file_name) {        
-    int result = first_pass_parse(asm_file_name, symbol_table_file_name);    
-    return result;
-}
-
 static void assert_symbol_table(const char *label, size_t num_instruction) {
     node_t *node = lookup(label);
     assert_non_null(node);
@@ -168,8 +163,10 @@ static void test_assemble_with_labels_t2(void  __attribute__((unused)) **state) 
 }
 
 static void test_first_pass_without_orig_t6(void  __attribute__((unused)) **state) {    
-    int result = run_first_pass_test("./test/t6.asm", "does not matter");
+    int result = first_pass_parse("./test/t6.asm", "does not matter");
     assert_int_equal(result, 1);
+    //assert_string_equal(errdesc, "ERROR (line 5): Instruction not preceeded by a .orig directive");
+    assert_string_equal(errdesc, "immediate operand (545677767) outside of range (0 to 65535)");
 }
 
 
@@ -184,8 +181,8 @@ int main(int argc, char const *argv[]) {
         cmocka_unit_test_setup_teardown(test_symbol_table_serialization, setup, teardown),
         cmocka_unit_test_setup_teardown(test_symbol_table_serialization_failure, setup, teardown),
         cmocka_unit_test_setup_teardown(test_assemble_without_labels_t1, setup, teardown),
-        cmocka_unit_test_setup_teardown(test_assemble_with_labels_t2, setup, teardown)
-        //cmocka_unit_test_setup_teardown(test_first_pass_without_orig_t6, setup, teardown)
+        cmocka_unit_test_setup_teardown(test_assemble_with_labels_t2, setup, teardown),
+        cmocka_unit_test_setup_teardown(test_first_pass_without_orig_t6, setup, teardown)
     };
     return cmocka_run_group_tests(tests, NULL, NULL);
 }

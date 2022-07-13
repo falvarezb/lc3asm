@@ -245,7 +245,9 @@ int compute_symbol_table(const char *assembly_file_name) {
                 printerr("ERROR (line %d): immediate expected", line_counter);
                 return free_and_return(EXIT_FAILURE, tokens, is_label_line, line, source_file);
             }
-            instruction_counter = orig(tokens[1]);
+            if((instruction_counter = orig(tokens[1])) == 0) {
+                return free_and_return(EXIT_FAILURE, tokens, is_label_line, line, source_file);
+            }
         }
         else if(line_type == LABEL) {
             //two labels in the same line is disallowed
