@@ -13,6 +13,7 @@
 #include <assert.h>
 #include <unistd.h>
 
+#define ERR_DESC_LENGTH 200
 extern char errdesc[];
 
 void error_exit(const char *format, const char *text);

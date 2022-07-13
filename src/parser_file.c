@@ -37,6 +37,19 @@ static int free_and_return(int result, char **tokens, bool is_label_line, char *
     return result;
 }
 
+static int compute_symbol_table_return(int result, char **tokens, bool is_label_line, char *line, FILE *file, char *format, ...) {
+    if(format) {
+        va_list ap;
+        va_start(ap, format);
+        vsnprintf(errdesc, ERR_DESC_LENGTH, format, ap);
+        va_end(ap);
+    }
+    free_tokens(tokens, is_label_line);
+    free(line);
+    fclose(file);
+    return result;
+}
+
 static void add_labels_if_any_to_symbol_table(char *found_labels[], int *num_found_labels, uint16_t instruction_counter) {
     for(int i = 0; i < *num_found_labels; i++) {
         add(found_labels[i], instruction_counter);
@@ -185,19 +198,19 @@ opcode_t compute_opcode_type(const char *opcode) {
  * @param source_file Source fle containing the asm code
  * @return int 1 if there is an error, 0 otherwise (errdesc is set with the error details). As a side effect, a file containing the symbol table is created
  */
-int compute_symbol_table(const char *assembly_file_name) {    
+int compute_symbol_table(const char *assembly_file_name) {
     //pointer to the line read; freed after finishing reading the file
     char *line = NULL;
     //array containing last found labels
     //since the array is defined on the stack, it does not need to be freed
     //however, found_labels[i] do as they are a copy of tokens[i]; freed when labels are added to the symbol table
-    char *found_labels[MAX_NUM_LABELS_PER_INSTRUCTION] = { NULL };    
+    char *found_labels[MAX_NUM_LABELS_PER_INSTRUCTION] = { NULL };
 
     size_t len = 0;
     uint16_t line_counter = 0;
     uint16_t instruction_counter = 0;
     int num_found_labels = 0; //number of found labels for a given instruction, must be <= MAX_NUM_LABELS_PER_INSTRUCTION 
-    bool orig_found = false;   
+    bool orig_found = false;
 
     errno = 0;
     ssize_t read;
@@ -243,27 +256,24 @@ int compute_symbol_table(const char *assembly_file_name) {
         else if(line_type == ORIG_DIRECTIVE) {
             //read memory address of first instruction
             if(num_tokens < 2) {
-                seterrdesc("ERROR (line %d): Immediate expected", line_counter);
-                return free_and_return(EXIT_FAILURE, tokens, is_label_line, line, source_file);
+                return compute_symbol_table_return(EXIT_FAILURE, tokens, is_label_line, line, source_file, "ERROR (line %d): Immediate expected", line_counter);
             }
             if((instruction_counter = orig(tokens[1])) == 0) {
-                return free_and_return(EXIT_FAILURE, tokens, is_label_line, line, source_file);
+                return compute_symbol_table_return(EXIT_FAILURE, tokens, is_label_line, line, source_file, NULL);
             }
             orig_found = true;
         }
         else if(line_type == LABEL) {
-            //two labels in the same line is disallowed
-            seterrdesc("invalid opcode ('%s')", tokens[0]);
+            //two labels in the same line is disallowed            
             for(int i = 0; i < num_found_labels; i++) {
                 free(found_labels[i]);
             }
-            return free_and_return(EXIT_FAILURE, tokens, is_label_line, line, source_file);
+            return compute_symbol_table_return(EXIT_FAILURE, tokens, is_label_line, line, source_file, "invalid opcode ('%s')", tokens[0]);
         }
         else if(line_type == OPCODE) {
             add_labels_if_any_to_symbol_table(found_labels, &num_found_labels, instruction_counter);
-            if(!orig_found) {
-                seterrdesc("ERROR (line %d): Instruction not preceeded by a .orig directive", line_counter);
-                return free_and_return(EXIT_FAILURE, tokens, is_label_line, line, source_file);
+            if(!orig_found) {                
+                return compute_symbol_table_return(EXIT_FAILURE, tokens, is_label_line, line, source_file, "ERROR (line %d): Instruction not preceeded by a .orig directive", line_counter);
             }
             instruction_counter++;
         }
@@ -405,7 +415,7 @@ int assemble(const char *assembly_file_name, const char *symbol_table_file_name,
     if(first_pass_parse(assembly_file_name, symbol_table_file_name)) {
         return EXIT_FAILURE;
     }
-    
+
     return second_pass_parse(assembly_file_name, object_file_name);
 }
 

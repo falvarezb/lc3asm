@@ -44,37 +44,37 @@ void test_add_wrong_register_SR1(void  __attribute__ ((unused)) **state) {
 void test_add_wrong_imm5_too_big_dec(void  __attribute__ ((unused)) **state) {    
     uint16_t machine_instr = parse_add("R0","R1","#16");
     assert_int_equal(machine_instr, 0);
-    assert_string_equal(errdesc, "immediate 16 is outside the range [-16,15]\n");
+    assert_string_equal(errdesc, "immediate operand (16) outside of range (-16 to 15)");
 }
 
 void test_add_wrong_imm5_too_small_dec(void  __attribute__ ((unused)) **state) {    
     uint16_t machine_instr = parse_add("R0","R1","#-17");
     assert_int_equal(machine_instr, 0);
-    assert_string_equal(errdesc, "immediate -17 is outside the range [-16,15]\n");
+    assert_string_equal(errdesc, "immediate operand (-17) outside of range (-16 to 15)");
 }
 
 void test_add_wrong_imm5_too_big_hex(void  __attribute__ ((unused)) **state) {    
     uint16_t machine_instr = parse_add("R0","R1","xf1");
     assert_int_equal(machine_instr, 0);
-    assert_string_equal(errdesc, "immediate f1 is outside the range [-16,15]\n");
+    assert_string_equal(errdesc, "immediate operand (f1) outside of range (-16 to 15)");
 }
 
 void test_add_wrong_imm5_too_small_hex(void  __attribute__ ((unused)) **state) {    
     uint16_t machine_instr = parse_add("R0","R1","x-f2");
     assert_int_equal(machine_instr, 0);
-    assert_string_equal(errdesc, "immediate -f2 is outside the range [-16,15]\n");
+    assert_string_equal(errdesc, "immediate operand (-f2) outside of range (-16 to 15)");
 }
 
 void test_add_wrong_imm5_format(void  __attribute__ ((unused)) **state) {    
     uint16_t machine_instr = parse_add("R0","R1","0");
     assert_int_equal(machine_instr, 0);
-    assert_string_equal(errdesc, "immediate 0 must be decimal or hex\n");
+    assert_string_equal(errdesc, "immediate 0 must be decimal or hex");
 }
 
 void test_add_wrong_imm5_number(void  __attribute__ ((unused)) **state) {    
     uint16_t machine_instr = parse_add("R0","R1","#y");
     assert_int_equal(machine_instr, 0);
-    assert_string_equal(errdesc, "immediate #y is not a numeric value\n");
+    assert_string_equal(errdesc, "immediate #y is not a numeric value");
 }
 
 
