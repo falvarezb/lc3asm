@@ -25,17 +25,17 @@ uint16_t parse_not(char *asm_instr) {
     //VALIDATING TOKENS
     if(strcmp(tokens[0], "NOT")) {
         //this should not happen        
-        printerr("expected NOT but found %s\n", tokens[0]);
+        seterrdesc("expected NOT but found %s\n", tokens[0]);
         return do_return(0, tokens);
     }
 
     if((DR = is_register(tokens[1])) == -1) {        
-        printerr("expected register but found %s\n", tokens[1]);
+        seterrdesc("expected register but found %s\n", tokens[1]);
         return do_return(0, tokens);
     }
 
     if((SR = is_register(tokens[2])) == -1) {
-        printerr("expected register but found %s\n", tokens[2]);
+        seterrdesc("expected register but found %s\n", tokens[2]);
         return do_return(0, tokens);       
     }
 

@@ -47,27 +47,27 @@ static int is_valid_immediate(char *token, long *imm, long min, long max) {
     char first_ch = *token;
     if(first_ch == '#') { //decimal literal
         if(!strtolong(token + 1, imm)) {
-            printerr("immediate %s is not a numeric value", token);
+            seterrdesc("immediate %s is not a numeric value", token);
             return EXIT_FAILURE;
         }
         if(*imm < min || *imm > max) {
-            printerr("immediate operand (%s) outside of range (%ld to %ld)", token + 1, min, max);
+            seterrdesc("immediate operand (%s) outside of range (%ld to %ld)", token + 1, min, max);
             return EXIT_FAILURE;
         }
         return EXIT_SUCCESS;
     }
     else if(first_ch == 'x') { //hex literal
         if(sscanf(token + 1, "%lx", imm) < 1) {
-            printerr("error while reading immediate %s", token);
+            seterrdesc("error while reading immediate %s", token);
             return EXIT_FAILURE;
         }
         if(*imm < min || *imm > max) {
-            printerr("immediate operand (%s) outside of range (%ld to %ld)", token + 1, min, max);
+            seterrdesc("immediate operand (%s) outside of range (%ld to %ld)", token + 1, min, max);
             return EXIT_FAILURE;
         }
         return EXIT_SUCCESS;
     }
-    printerr("immediate %s must be decimal or hex", token);
+    seterrdesc("immediate %s must be decimal or hex", token);
     return EXIT_FAILURE;
 }
 
@@ -97,7 +97,7 @@ uint16_t do_return(uint16_t ret, char **tokens) {
 char **instruction_tokens(char *asm_instr, char *instr_name, int num_tokens) {
     char **tokens = malloc(num_tokens * sizeof(char *));
     if(tokens == NULL) {
-        printerr("out of memory\n");
+        seterrdesc("out of memory\n");
         return NULL;
     }
     int i = 0;
@@ -110,7 +110,7 @@ char **instruction_tokens(char *asm_instr, char *instr_name, int num_tokens) {
                 return tokens;
             }
 
-            printerr("unexpected token in %s instruction\n", instr_name);
+            seterrdesc("unexpected token in %s instruction\n", instr_name);
             free(tokens);
             return NULL;
         }

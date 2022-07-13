@@ -24,7 +24,7 @@ uint16_t parse_ret(char *asm_instr) {
     //VALDATING TOKENS
     if(strcmp(tokens[0], "RET")) {
         //this should not happen        
-        printerr("expected RET but found %s\n", tokens[0]);
+        seterrdesc("expected RET but found %s\n", tokens[0]);
         return do_return(0, tokens);
     }
 

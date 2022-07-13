@@ -34,12 +34,12 @@ uint16_t parse_add(char *operand1, char* operand2, char* operand3) {
     //VALIDATING OPERANDS
 
     if((DR = is_register(operand1)) == -1) {        
-        printerr("expected register but found %s\n", operand1);
+        seterrdesc("expected register but found %s\n", operand1);
         return 0;
     }
 
     if((SR1 = is_register(operand2)) == -1) {
-        printerr("expected register but found %s\n", operand2);
+        seterrdesc("expected register but found %s\n", operand2);
         return 0;       
     }
 

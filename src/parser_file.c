@@ -68,20 +68,20 @@ static int write_machine_instruction(uint16_t machine_instr, FILE *destination_f
 int serialize_symbol_table(const char *symbol_table_file_name) {
     FILE *destination_file = fopen(symbol_table_file_name, "w");
     if(!destination_file) {
-        printerr("error when writing serialized symbol table to file");
+        seterrdesc("error when writing serialized symbol table to file");
         return EXIT_FAILURE;
     }
     int num_chars_written;
     if((num_chars_written = fprintf(destination_file, "// Symbol table\n// Scope level 0:\n//	Symbol Name       Page Address\n//	----------------  ------------\n")) < 0) {
         fclose(destination_file);
-        printerr("error when writing serialized symbol table to file");
+        seterrdesc("error when writing serialized symbol table to file");
         return EXIT_FAILURE;
     }
     node_t *node = next(true);
     while(node) {
         if((num_chars_written = fprintf(destination_file, "//	%s             %hx\n", node->key, node->val) < 0)) {
             fclose(destination_file);
-            printerr("error when writing serialized symbol table to file");
+            seterrdesc("error when writing serialized symbol table to file");
             return EXIT_FAILURE;
         }
         node = next(false);
@@ -243,7 +243,7 @@ int compute_symbol_table(const char *assembly_file_name) {
         else if(line_type == ORIG_DIRECTIVE) {
             //read memory address of first instruction
             if(num_tokens < 2) {
-                printerr("ERROR (line %d): Immediate expected", line_counter);
+                seterrdesc("ERROR (line %d): Immediate expected", line_counter);
                 return free_and_return(EXIT_FAILURE, tokens, is_label_line, line, source_file);
             }
             if((instruction_counter = orig(tokens[1])) == 0) {
@@ -253,7 +253,7 @@ int compute_symbol_table(const char *assembly_file_name) {
         }
         else if(line_type == LABEL) {
             //two labels in the same line is disallowed
-            printerr("invalid opcode ('%s')", tokens[0]);
+            seterrdesc("invalid opcode ('%s')", tokens[0]);
             for(int i = 0; i < num_found_labels; i++) {
                 free(found_labels[i]);
             }
@@ -262,7 +262,7 @@ int compute_symbol_table(const char *assembly_file_name) {
         else if(line_type == OPCODE) {
             add_labels_if_any_to_symbol_table(found_labels, &num_found_labels, instruction_counter);
             if(!orig_found) {
-                printerr("ERROR (line %d): Instruction not preceeded by a .orig directive", line_counter);
+                seterrdesc("ERROR (line %d): Instruction not preceeded by a .orig directive", line_counter);
                 return free_and_return(EXIT_FAILURE, tokens, is_label_line, line, source_file);
             }
             instruction_counter++;
@@ -276,7 +276,7 @@ int compute_symbol_table(const char *assembly_file_name) {
 
     //check if getline resulted in error
     if(read == -1 && errno) {
-        printerr("getLine error %d\n", errno);
+        seterrdesc("getLine error %d\n", errno);
         return EXIT_FAILURE;
     }
 
@@ -335,7 +335,7 @@ int second_pass_parse(const char *assembly_file_name, const char *object_file_na
                 fclose(source_file);
                 fclose(destination_file);
                 free(tokens);
-                printerr("error writing instruction to object file\n");
+                seterrdesc("error writing instruction to object file\n");
                 return EXIT_FAILURE;
             }
         }
@@ -346,7 +346,7 @@ int second_pass_parse(const char *assembly_file_name, const char *object_file_na
                     fclose(source_file);
                     fclose(destination_file);
                     free(tokens);
-                    printerr("ERROR (line %d): missing ADD operands", line_counter);
+                    seterrdesc("ERROR (line %d): missing ADD operands", line_counter);
                     return EXIT_FAILURE;
                 }
                 machine_instr = parse_add(tokens[1], tokens[2], tokens[3]);
@@ -362,7 +362,7 @@ int second_pass_parse(const char *assembly_file_name, const char *object_file_na
                     fclose(source_file);
                     fclose(destination_file);
                     free(tokens);
-                    printerr("ERROR (line %d): missing JSR operand", line_counter);
+                    seterrdesc("ERROR (line %d): missing JSR operand", line_counter);
                     return EXIT_FAILURE;
                 }
                 machine_instr = parse_jsr(tokens[1], instruction_counter);
@@ -380,7 +380,7 @@ int second_pass_parse(const char *assembly_file_name, const char *object_file_na
                 fclose(source_file);
                 fclose(destination_file);
                 free(tokens);
-                printerr("error writing instruction to object file\n");
+                seterrdesc("error writing instruction to object file\n");
                 return EXIT_FAILURE;
             }
             instruction_counter++;
@@ -394,7 +394,7 @@ int second_pass_parse(const char *assembly_file_name, const char *object_file_na
 
     //check if getline resulted in error
     if(read == -1 && errno) {
-        printerr("getLine error %d\n", errno);
+        seterrdesc("getLine error %d\n", errno);
         return EXIT_FAILURE;
     }
 

@@ -28,7 +28,7 @@ void error_exit(const char *format, const char *text) {
  * @param ... format specifiers
  * @return int return value of vsnprintf
  */ 
-int printerr(char *format, ...) {
+int seterrdesc(char *format, ...) {
     va_list ap;
     va_start(ap, format);
     int result = vsnprintf(errdesc, ERR_DESC_LENGTH, format, ap);
@@ -96,7 +96,7 @@ char **split_tokens(char *str, int *num_tokens, const char *delimiters) {
     const int max_num_tokens = 200;
     char **tokens = malloc(max_num_tokens * sizeof(char *));
     if(tokens == NULL) {
-        printerr("out of memory\n");
+        seterrdesc("out of memory\n");
         return NULL;
     }
 
@@ -114,7 +114,7 @@ char **split_tokens(char *str, int *num_tokens, const char *delimiters) {
 
     char** resized_tokens = realloc(tokens, *num_tokens * sizeof(char *));
     if(resized_tokens == NULL) {
-        printerr("out of memory\n");        
+        seterrdesc("out of memory\n");        
         free(tokens);
         return NULL;
     }

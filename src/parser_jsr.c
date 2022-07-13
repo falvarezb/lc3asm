@@ -34,7 +34,7 @@ uint16_t parse_jsr(char *operand, uint16_t instruction_location) {
         //transform label into PCoffset11 by retrieving the memory location corresponding to the label from symbol table
         node_t *node = lookup(operand);
         if(!node) {
-            printerr("Symbol not found ('%s')\n", operand);            
+            seterrdesc("Symbol not found ('%s')\n", operand);            
             return 0;
         }
         PCoffset11 = node->val - instruction_location - 1;
@@ -42,7 +42,7 @@ uint16_t parse_jsr(char *operand, uint16_t instruction_location) {
     else {
         //validate PCoffset11 numerical range
         if(PCoffset11 < -1024 || PCoffset11 > 1023) {
-            printerr("value of PCoffset11 %ld is outside the range [-1024, 1023]\n", PCoffset11);            
+            seterrdesc("value of PCoffset11 %ld is outside the range [-1024, 1023]\n", PCoffset11);            
             return 0;
         }
     }

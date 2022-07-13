@@ -25,12 +25,12 @@ uint16_t parse_jmp(char *asm_instr) {
     //VALIDATING TOKENS
     if(strcmp(tokens[0], instr_name)) {
         //this should not happen        
-        printerr("expected %s but found %s\n", instr_name, tokens[0]);
+        seterrdesc("expected %s but found %s\n", instr_name, tokens[0]);
         return do_return(0, tokens);
     }
 
     if((BaseR = is_register(tokens[1])) == -1) {
-        printerr("expected register but found %s\n", tokens[1]);
+        seterrdesc("expected register but found %s\n", tokens[1]);
         return do_return(0, tokens);
     }
 

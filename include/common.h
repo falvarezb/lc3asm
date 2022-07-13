@@ -17,7 +17,7 @@ extern char errdesc[];
 
 void error_exit(const char *format, const char *text);
 char *bin(unsigned int decimal);
-int printerr(char *format, ...);
+int seterrdesc(char *format, ...);
 void clearerrdesc();
 bool strtolong(char *str, long *num);
 char **split_tokens(char *str, int *num_tokens, const char *delimiters);
