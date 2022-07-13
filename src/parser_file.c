@@ -196,7 +196,8 @@ int compute_symbol_table(const char *assembly_file_name) {
     size_t len = 0;
     uint16_t line_counter = 0;
     uint16_t instruction_counter = 0;
-    int num_found_labels = 0; //number of found labels for a given instruction, must be <= MAX_NUM_LABELS_PER_INSTRUCTION    
+    int num_found_labels = 0; //number of found labels for a given instruction, must be <= MAX_NUM_LABELS_PER_INSTRUCTION 
+    bool orig_found = false;   
 
     errno = 0;
     ssize_t read;
@@ -248,6 +249,7 @@ int compute_symbol_table(const char *assembly_file_name) {
             if((instruction_counter = orig(tokens[1])) == 0) {
                 return free_and_return(EXIT_FAILURE, tokens, is_label_line, line, source_file);
             }
+            orig_found = true;
         }
         else if(line_type == LABEL) {
             //two labels in the same line is disallowed
@@ -259,6 +261,10 @@ int compute_symbol_table(const char *assembly_file_name) {
         }
         else if(line_type == OPCODE) {
             add_labels_if_any_to_symbol_table(found_labels, &num_found_labels, instruction_counter);
+            if(!orig_found) {
+                printerr("ERROR (line %d): Instruction not preceeded by a .orig directive", line_counter);
+                return free_and_return(EXIT_FAILURE, tokens, is_label_line, line, source_file);
+            }
             instruction_counter++;
         }
         free_tokens(tokens, is_label_line);
