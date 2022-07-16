@@ -53,8 +53,8 @@ static void run_second_pass_test(char* asm_file_name, char* obj_file_name, char*
     fclose(actual_obj_file);
 }
 
-static void run_assemble_test(char* asm_file_name, char* actual_symbol_table_file_name, char* obj_file_name, char* actual_obj_file_name) {    
-    assemble(asm_file_name, actual_symbol_table_file_name, actual_obj_file_name);
+static void run_assemble_test(char* asm_file_name, char* obj_file_name, char* actual_obj_file_name) {    
+    assemble(asm_file_name);
     printf("\nmyerror:%s\n", errdesc);
 
     FILE *expected_obj_file = fopen(obj_file_name, "r");
@@ -155,11 +155,11 @@ static void test_symbol_table_serialization_failure(void  __attribute__((unused)
 }
 
 static void test_assemble_without_labels_t1(void  __attribute__((unused)) **state) {
-    run_assemble_test("./test/t1.asm", "./test/t1.actual.sym", "./test/t1.obj", "./test/t1.actual.obj");    
+    run_assemble_test("./test/t1.asm", "./test/t1.obj", "./test/t1.actual.obj");    
 }
 
 static void test_assemble_with_labels_t2(void  __attribute__((unused)) **state) {    
-    run_assemble_test("./test/t2.asm", "./test/t2.actual.sym", "./test/t2.obj", "./test/t2.actual.obj");
+    run_assemble_test("./test/t2.asm", "./test/t2.obj", "./test/t2.actual.obj");
 }
 
 static void test_first_pass_wrong_orig_address_t6(void  __attribute__((unused)) **state) {    
@@ -181,13 +181,13 @@ static void test_first_pass_missing_orig_address_t8(void  __attribute__((unused)
 }
 
 static void test_missing_assembly_file(void  __attribute__((unused)) **state) {    
-    int result = assemble("./test/test/random.asm", "does not matter", "does not matter");
+    int result = assemble("./test/test/random.asm");
     assert_int_equal(result, 1);
     assert_string_equal(errdesc, "ERROR: Couldn't read file (./test/test/random.asm)");
 }
 
 static void test_wrong_assembly_file_extension(void  __attribute__((unused)) **state) {    
-    int result = assemble("./test/t2.copy", "does not matter", "does not matter");
+    int result = assemble("./test/t2.copy");
     assert_int_equal(result, 1);
     assert_string_equal(errdesc, "ERROR: Input file must have .asm suffix ('./test/t2.copy')");
 }

@@ -15,7 +15,7 @@ int first_pass_parse(const char *assembly_file_name, const char *symbol_table_fi
 int second_pass_parse(const char *assembly_file_name, const char *object_file_name);
 int compute_symbol_table(const char *assembly_file_name);
 int serialize_symbol_table(const char* symbol_table_file_name);
-int assemble(const char *assembly_file_name, const char *symbol_table_file_name, const char *object_file_name);
+int assemble(const char *assembly_file_name);
 
 
 #endif

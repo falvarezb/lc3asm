@@ -405,7 +405,7 @@ int second_pass_parse(const char *assembly_file_name, const char *object_file_na
     return EXIT_SUCCESS;
 }
 
-int assemble(const char *assembly_file_name, const char *symbol_table_file_name, const char *object_file_name) {
+int assemble(const char *assembly_file_name) {
     char* assemby_file_name_dup = strdup(assembly_file_name);
     char* file_extension = split_by_last_delimiter(assemby_file_name_dup, '.');
     if(strcmp(file_extension, "asm") != 0) {
@@ -417,14 +417,14 @@ int assemble(const char *assembly_file_name, const char *symbol_table_file_name,
     strcat(symbol_table_file_name2, ".sym");
 
 
-    if(first_pass_parse(assembly_file_name, symbol_table_file_name)) {
+    if(first_pass_parse(assembly_file_name, symbol_table_file_name2)) {
         return EXIT_FAILURE;
     }
 
     char object_file_name2[strlen(assemby_file_name_dup) + 4];
     strcat(object_file_name2, assemby_file_name_dup);
     strcat(object_file_name2, ".obj");
-    return second_pass_parse(assembly_file_name, object_file_name);
+    return second_pass_parse(assembly_file_name, object_file_name2);
 }
 
 
