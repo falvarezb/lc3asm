@@ -115,12 +115,12 @@ static void test_symbol_table_t5(void  __attribute__((unused)) **state) {
 
 static void test_symbol_table_serialization(void  __attribute__((unused)) **state) {    
     add("LABEL", 0x3003);
-    const char *actual_sym_file_name = "./test/t2.actual.sym";
+    const char *actual_sym_file_name = "./test/t2.sym";
     serialize_symbol_table(actual_sym_file_name);    
 
     //test symbol table serialization
-    FILE *expected_sym_file = fopen("./test/t2.sym", "r");
-    FILE *actual_sym_file = fopen("./test/t2.actual.sym", "r");
+    FILE *expected_sym_file = fopen("./test/t2.expected.sym", "r");
+    FILE *actual_sym_file = fopen("./test/t2.sym", "r");
 
     size_t num_lines = 1;
     char *line_expected = NULL;
@@ -148,7 +148,7 @@ static void test_symbol_table_serialization(void  __attribute__((unused)) **stat
 
 static void test_symbol_table_serialization_failure(void  __attribute__((unused)) **state) {    
     add("LABEL", 0x3003);
-    char *actual_sym_file_name = "./test/test/t2.actual.sym";
+    char *actual_sym_file_name = "./test/test/t2.sym";
     int result = serialize_symbol_table(actual_sym_file_name);
     assert_string_equal(errdesc, "error when writing serialized symbol table to file");    
     assert_int_equal(result, 1);        
