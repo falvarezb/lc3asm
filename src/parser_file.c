@@ -43,7 +43,7 @@ static int exit_compute_symbol_table(int result, char **tokens, bool is_label_li
     return result;
 }
 
-static int exit_second_pass(int result, FILE *source_file, FILE *destination_file, char** tokens, const char* format, ...) {
+static int exit_second_pass(int result, FILE *source_file, FILE *destination_file, char **tokens, const char *format, ...) {
     if(format) {
         va_list ap;
         va_start(ap, format);
@@ -406,14 +406,15 @@ int second_pass_parse(const char *assembly_file_name, const char *object_file_na
 }
 
 int assemble(const char *assembly_file_name) {
-    char* assemby_file_name_dup = strdup(assembly_file_name);
-    char* file_extension = split_by_last_delimiter(assemby_file_name_dup, '.');
+    //determine .sym and .obj file names
+    char *assemby_file_name_dup = strdup(assembly_file_name);
+    char *file_extension = split_by_last_delimiter(assemby_file_name_dup, '.');
     if(strcmp(file_extension, "asm") != 0) {
         free(assemby_file_name_dup);
         seterrdesc("ERROR: Input file must have .asm suffix ('%s')", assembly_file_name);
         return EXIT_FAILURE;
     }
-    char symbol_table_file_name2[strlen(assemby_file_name_dup) + strlen(".sym") + 1];    
+    char symbol_table_file_name2[strlen(assemby_file_name_dup) + strlen(".sym") + 1];
     strcpy(symbol_table_file_name2, assemby_file_name_dup);
     strcat(symbol_table_file_name2, ".sym");
 
