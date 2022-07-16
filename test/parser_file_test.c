@@ -186,6 +186,12 @@ static void test_missing_assembly_file(void  __attribute__((unused)) **state) {
     assert_string_equal(errdesc, "ERROR: Couldn't read file (./test/test/random.asm)");
 }
 
+static void test_wrong_assembly_file_extension(void  __attribute__((unused)) **state) {    
+    int result = assemble("./test/t2.copy", "does not matter", "does not matter");
+    assert_int_equal(result, 1);
+    assert_string_equal(errdesc, "ERROR: Input file must have .asm suffix ('./test/t2.copy')");
+}
+
 
 int main(int argc, char const *argv[]) {
     const struct CMUnitTest tests[] = {
@@ -202,7 +208,8 @@ int main(int argc, char const *argv[]) {
         cmocka_unit_test_setup_teardown(test_first_pass_wrong_orig_address_t6, setup, teardown),
         cmocka_unit_test_setup_teardown(test_first_pass_missing_orig_t7, setup, teardown),
         cmocka_unit_test_setup_teardown(test_first_pass_missing_orig_address_t8, setup, teardown),
-        cmocka_unit_test_setup_teardown(test_missing_assembly_file, setup, teardown)
+        cmocka_unit_test_setup_teardown(test_missing_assembly_file, setup, teardown),
+        cmocka_unit_test_setup_teardown(test_wrong_assembly_file_extension, setup, teardown)
     };
     return cmocka_run_group_tests(tests, NULL, NULL);
 }

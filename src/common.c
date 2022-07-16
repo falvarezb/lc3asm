@@ -3,7 +3,7 @@
  * @brief Generic util functions
  * @version 0.1
  * @date 2022-07-12
- * 
+ *
  */
 
 #include "../include/common.h"
@@ -26,7 +26,7 @@ void error_exit(const char *format, const char *text) {
  * @param format
  * @param ... format specifiers
  * @return int return value of vsnprintf
- */ 
+ */
 int seterrdesc(char *format, ...) {
     va_list ap;
     va_start(ap, format);
@@ -35,7 +35,7 @@ int seterrdesc(char *format, ...) {
     return result;
 }
 
-void clearerrdesc() {    
+void clearerrdesc() {
     errdesc[0] = '\0';
 }
 
@@ -61,7 +61,7 @@ char *bin(unsigned int decimal) {
 
 /**
  * @brief Converts string into long and stores the value into num
- * 
+ *
  * @param str string representing a number
  * @param num pointer to store resulting number
  * @return bool false if string cannot be converted to a number, true otherwise
@@ -80,13 +80,13 @@ bool strtolong(char *str, long *num) {
 
 /**
  * @brief Splits the given string into tokens
- * 
+ *
  * This function generates an array of pointers, each pointing to the location of `str` corresponding to the
  * beginning of that token.
  * Beware that `str` is mangled.
- * 
+ *
  * Tokens are delimited by the characters in `delimiters`.
- * 
+ *
  * @param str string to parse
  * @param num_tokens pointer used to store the number of tokens found
  * @return char** array of pointers to each of the tokens found, size of the array is given by num_tokens
@@ -99,7 +99,7 @@ char **split_tokens(char *str, int *num_tokens, const char *delimiters) {
         return NULL;
     }
 
-    *num_tokens = 0;    
+    *num_tokens = 0;
     char *pch = strtok(str, delimiters);
     while(pch != NULL) {
         tokens[(*num_tokens)++] = pch;
@@ -107,17 +107,28 @@ char **split_tokens(char *str, int *num_tokens, const char *delimiters) {
     }
 
     if(*num_tokens == 0) {
-        free(tokens);        
-        return NULL;
-    }
-
-    char** resized_tokens = realloc(tokens, *num_tokens * sizeof(char *));
-    if(resized_tokens == NULL) {
-        seterrdesc("out of memory\n");        
         free(tokens);
         return NULL;
     }
-    
+
+    char **resized_tokens = realloc(tokens, *num_tokens * sizeof(char *));
+    if(resized_tokens == NULL) {
+        seterrdesc("out of memory\n");
+        free(tokens);
+        return NULL;
+    }
+
     return resized_tokens;
+}
+
+char *split_by_last_delimiter(char *str, char delimiter) {
+    size_t last_delimiter_position = strlen(str);
+    for(size_t i = 0; i < strlen(str); i++) {
+        if(str[i] == delimiter) {
+            last_delimiter_position = i;
+        }
+    }
+    
+    return last_delimiter_position == strlen(str) ? NULL : str + (last_delimiter_position + 1);
 }
 
