@@ -11,6 +11,9 @@
 !test/t3.sym
 !test/t4.sym
 !*.expected.obj
+#operating system
+!lc3os.obj
+!lc3os.sym
 
 # Linker output
 *.ilk
