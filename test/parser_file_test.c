@@ -29,10 +29,10 @@ static void assert_symbol_table(const char *label, size_t num_instruction) {
     delete(label);
 }
 
-static void run_second_pass_test(char* asm_file_name, char* obj_file_name, char* actual_obj_file_name) {
+static void run_second_pass_test(char* asm_file_name, char* expected_obj_file_name, char* actual_obj_file_name) {
     second_pass_parse(asm_file_name, actual_obj_file_name);    
 
-    FILE *expected_obj_file = fopen(obj_file_name, "r");
+    FILE *expected_obj_file = fopen(expected_obj_file_name, "r");
     FILE *actual_obj_file = fopen(actual_obj_file_name, "r");
 
     char buf_expected[2];
@@ -53,11 +53,11 @@ static void run_second_pass_test(char* asm_file_name, char* obj_file_name, char*
     fclose(actual_obj_file);
 }
 
-static void run_assemble_test(char* asm_file_name, char* obj_file_name, char* actual_obj_file_name) {    
+static void run_assemble_test(char* asm_file_name, char* expected_obj_file_name, char* actual_obj_file_name) {    
     assemble(asm_file_name);
     printf("\nmyerror:%s\n", errdesc);
 
-    FILE *expected_obj_file = fopen(obj_file_name, "r");
+    FILE *expected_obj_file = fopen(expected_obj_file_name, "r");
     FILE *actual_obj_file = fopen(actual_obj_file_name, "r");
 
     char buf_expected[2];
@@ -81,12 +81,12 @@ static void run_assemble_test(char* asm_file_name, char* obj_file_name, char* ac
 ///////////////////////////////////////////////////
 
 static void test_second_pass_without_labels_t1(void  __attribute__((unused)) **state) {
-    run_second_pass_test("./test/t1.asm", "./test/t1.obj", "./test/t1.actual.obj");
+    run_second_pass_test("./test/t1.asm", "./test/t1.expected.obj", "./test/t1.obj");
 }
 
 static void test_second_pass_with_labels_t2(void  __attribute__((unused)) **state) {    
     add("LABEL", 0x3003);
-    run_second_pass_test("./test/t2.asm", "./test/t2.obj", "./test/t2.actual.obj");    
+    run_second_pass_test("./test/t2.asm", "./test/t2.expected.obj", "./test/t2.obj");    
 }
 
 void test_symbol_table_t2(void  __attribute__((unused)) **state) {
@@ -155,11 +155,11 @@ static void test_symbol_table_serialization_failure(void  __attribute__((unused)
 }
 
 static void test_assemble_without_labels_t1(void  __attribute__((unused)) **state) {
-    run_assemble_test("./test/t1.asm", "./test/t1.obj", "./test/t1.actual.obj");    
+    run_assemble_test("./test/t1.asm", "./test/t1.expected.obj", "./test/t1.obj");    
 }
 
 static void test_assemble_with_labels_t2(void  __attribute__((unused)) **state) {    
-    run_assemble_test("./test/t2.asm", "./test/t2.obj", "./test/t2.actual.obj");
+    run_assemble_test("./test/t2.asm", "./test/t2.expected.obj", "./test/t2.obj");
 }
 
 static void test_first_pass_wrong_orig_address_t6(void  __attribute__((unused)) **state) {    
