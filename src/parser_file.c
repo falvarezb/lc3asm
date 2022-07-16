@@ -221,6 +221,10 @@ int compute_symbol_table(const char *assembly_file_name) {
     errno = 0;
     ssize_t read;
     FILE *source_file = fopen(assembly_file_name, "r");
+    if(!source_file) {
+        seterrdesc("ERROR: Couldn't read file (%s)", assembly_file_name);
+        return EXIT_FAILURE;
+    }
     while((read = getline(&line, &len, source_file)) != -1) {
         printf("%s", line);
         line[read - 1] = '\0'; //remove newline char at the end of the line
