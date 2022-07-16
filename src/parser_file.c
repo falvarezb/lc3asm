@@ -30,14 +30,7 @@ static void free_tokens(char **tokens, bool is_label_line) {
     }
 }
 
-static int free_and_return(int result, char **tokens, bool is_label_line, char *line, FILE *file) {
-    free_tokens(tokens, is_label_line);
-    free(line);
-    fclose(file);
-    return result;
-}
-
-static int compute_symbol_table_return(int result, char **tokens, bool is_label_line, char *line, FILE *file, char *format, ...) {
+static int exit_compute_symbol_table(int result, char **tokens, bool is_label_line, char *line, FILE *file, const char *format, ...) {
     if(format) {
         va_list ap;
         va_start(ap, format);
@@ -48,6 +41,19 @@ static int compute_symbol_table_return(int result, char **tokens, bool is_label_
     free(line);
     fclose(file);
     return result;
+}
+
+static int exit_second_pass(int result, FILE *source_file, FILE *destination_file, char** tokens, const char* format, ...) {
+    if(format) {
+        va_list ap;
+        va_start(ap, format);
+        vsnprintf(errdesc, ERR_DESC_LENGTH, format, ap);
+        va_end(ap);
+    }
+    fclose(source_file);
+    fclose(destination_file);
+    free(tokens);
+    return EXIT_FAILURE;
 }
 
 static void add_labels_if_any_to_symbol_table(char *found_labels[], int *num_found_labels, uint16_t instruction_counter) {
@@ -256,10 +262,10 @@ int compute_symbol_table(const char *assembly_file_name) {
         else if(line_type == ORIG_DIRECTIVE) {
             //read memory address of first instruction
             if(num_tokens < 2) {
-                return compute_symbol_table_return(EXIT_FAILURE, tokens, is_label_line, line, source_file, "ERROR (line %d): Immediate expected", line_counter);
+                return exit_compute_symbol_table(EXIT_FAILURE, tokens, is_label_line, line, source_file, "ERROR (line %d): Immediate expected", line_counter);
             }
             if((instruction_counter = orig(tokens[1])) == 0) {
-                return compute_symbol_table_return(EXIT_FAILURE, tokens, is_label_line, line, source_file, NULL);
+                return exit_compute_symbol_table(EXIT_FAILURE, tokens, is_label_line, line, source_file, NULL);
             }
             orig_found = true;
         }
@@ -268,12 +274,12 @@ int compute_symbol_table(const char *assembly_file_name) {
             for(int i = 0; i < num_found_labels; i++) {
                 free(found_labels[i]);
             }
-            return compute_symbol_table_return(EXIT_FAILURE, tokens, is_label_line, line, source_file, "invalid opcode ('%s')", tokens[0]);
+            return exit_compute_symbol_table(EXIT_FAILURE, tokens, is_label_line, line, source_file, "invalid opcode ('%s')", tokens[0]);
         }
         else if(line_type == OPCODE) {
             add_labels_if_any_to_symbol_table(found_labels, &num_found_labels, instruction_counter);
-            if(!orig_found) {                
-                return compute_symbol_table_return(EXIT_FAILURE, tokens, is_label_line, line, source_file, "ERROR (line %d): Instruction not preceeded by a .orig directive", line_counter);
+            if(!orig_found) {
+                return exit_compute_symbol_table(EXIT_FAILURE, tokens, is_label_line, line, source_file, "ERROR (line %d): Instruction not preceeded by a .orig directive", line_counter);
             }
             instruction_counter++;
         }
@@ -342,22 +348,14 @@ int second_pass_parse(const char *assembly_file_name, const char *object_file_na
             machine_instr = orig(tokens[1]);
             instruction_counter = machine_instr;
             if(write_machine_instruction(machine_instr, destination_file)) {
-                fclose(source_file);
-                fclose(destination_file);
-                free(tokens);
-                seterrdesc("error writing instruction to object file\n");
-                return EXIT_FAILURE;
+                return exit_second_pass(EXIT_FAILURE, source_file, destination_file, tokens, "error writing instruction to object file");
             }
         }
         else if(line_type == OPCODE) {
             opcode_t opcode_type = compute_opcode_type(tokens[0]);
             if(opcode_type == ADD) {
                 if(num_tokens < 4) {
-                    fclose(source_file);
-                    fclose(destination_file);
-                    free(tokens);
-                    seterrdesc("ERROR (line %d): missing ADD operands", line_counter);
-                    return EXIT_FAILURE;
+                    return exit_second_pass(EXIT_FAILURE, source_file, destination_file, tokens, "ERROR (line %d): missing ADD operands", line_counter);
                 }
                 machine_instr = parse_add(tokens[1], tokens[2], tokens[3]);
             }
@@ -369,11 +367,7 @@ int second_pass_parse(const char *assembly_file_name, const char *object_file_na
             }
             else if(opcode_type == JSR) {
                 if(num_tokens < 2) {
-                    fclose(source_file);
-                    fclose(destination_file);
-                    free(tokens);
-                    seterrdesc("ERROR (line %d): missing JSR operand", line_counter);
-                    return EXIT_FAILURE;
+                    return exit_second_pass(EXIT_FAILURE, source_file, destination_file, tokens, "ERROR (line %d): missing JSR operand", line_counter);
                 }
                 machine_instr = parse_jsr(tokens[1], instruction_counter);
             }
@@ -387,11 +381,7 @@ int second_pass_parse(const char *assembly_file_name, const char *object_file_na
                 machine_instr = halt();
             }
             if(write_machine_instruction(machine_instr, destination_file)) {
-                fclose(source_file);
-                fclose(destination_file);
-                free(tokens);
-                seterrdesc("error writing instruction to object file\n");
-                return EXIT_FAILURE;
+                return exit_second_pass(EXIT_FAILURE, source_file, destination_file, tokens, "error writing instruction to object file");
             }
             instruction_counter++;
         }
