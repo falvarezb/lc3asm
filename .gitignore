@@ -7,8 +7,6 @@
 *.obj
 *.elf
 *.sym
-!test/t3.sym
-!test/t4.sym
 !*.expected.sym
 !*.expected.obj
 #operating system
