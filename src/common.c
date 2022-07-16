@@ -121,6 +121,17 @@ char **split_tokens(char *str, int *num_tokens, const char *delimiters) {
     return resized_tokens;
 }
 
+/**
+ * @brief Split a string into 2 tokens by the last occurrence of the given delimiter
+ * 
+ * The last occurrence of the delimiter is replaced with '\0' so that the original `str`
+ * becomes the first token.
+ * A pointer to the first character of the second token is returned.
+ * 
+ * @param str string to be tokenized (during the processing, `str` is mangled)
+ * @param delimiter 
+ * @return char* pointer to the second token 
+ */
 char *split_by_last_delimiter(char *str, char delimiter) {
     size_t last_delimiter_position = strlen(str);
     for(size_t i = 0; i < strlen(str); i++) {
@@ -128,7 +139,12 @@ char *split_by_last_delimiter(char *str, char delimiter) {
             last_delimiter_position = i;
         }
     }
-    
-    return last_delimiter_position == strlen(str) ? NULL : str + (last_delimiter_position + 1);
+    if(last_delimiter_position == strlen(str)){
+        return NULL;
+    }
+    else {
+        str[last_delimiter_position] = '\0';
+        return str + (last_delimiter_position + 1);
+    }    
 }
 

@@ -147,6 +147,8 @@
                 "-lcmocka",
                 "-lglib-2.0",
                 "-fno-common",
+                "-fsanitize=address",
+                "-fsanitize=undefined",
                 "-o",
                 "${workspaceFolder}/out/test.out"
             ],
