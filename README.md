@@ -99,3 +99,15 @@ The folder `tools` contains some utilities to aid with the development of this a
 
 __STDC_VERSION__
 macro whose value indicates which standard is supported by the compiler
+
+## Shared objects
+
+cmocka for unit testing
+brew install cmocka
+
+another library for unit testing
+glib2.0
+sudo apt-get update
+sudo apt-get install libglib2.0-dev
+
+
