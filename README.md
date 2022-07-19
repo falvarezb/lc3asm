@@ -111,3 +111,16 @@ sudo apt-get update
 sudo apt-get install libglib2.0-dev
 
 
+## Implementation notes
+
+Each line of the assembly file corresponding to an instruction/directive is:
+
+- converted into a 16-bit integer
+- stored in a memory address (each memory address is 16-bit long)
+
+The number of memory addresses is 2**16, therefore a memory address direction can also be stored in a memory address
+(making it possible to have pointers)
+
+The offset of the memory address is determined by the operand of the .ORIG directive. Given `.ORIG n`, the first instruction in the file is stored on memory address `n`, the second one on `n+1` and so on.
+
+It's worth noticing that instructions and values (allocated by directives) can be intermingled in memory.
