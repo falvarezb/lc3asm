@@ -21,6 +21,11 @@ typedef struct split_t {
     char *after;
 } split_t;
 
+typedef struct error_t {
+    int code;
+    char *desc;
+} error_t;
+
 void error_exit(const char *format, const char *text);
 char *bin(unsigned int decimal);
 int seterrdesc(char *format, ...);
@@ -28,5 +33,7 @@ void clearerrdesc();
 bool strtolong(char *str, long *num);
 char **split_tokens(char *str, int *num_tokens, const char *delimiters);
 char *split_by_last_delimiter(char *str, char delimiter);
+error_t err(int exit_code, char *format, ...);
+void free_err(error_t err);
 
 #endif

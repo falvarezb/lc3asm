@@ -39,6 +39,23 @@ void clearerrdesc() {
     errdesc[0] = '\0';
 }
 
+error_t err(int exit_code, char *format, ...) {
+    size_t errdesc_length = ERR_DESC_LENGTH;
+    char *errdesc = malloc(errdesc_length * sizeof(char));
+    va_list ap;
+    va_start(ap, format);
+    int result = vsnprintf(errdesc, errdesc_length, format, ap);
+    va_end(ap);
+    if(result < 0 || result > errdesc_length) {
+        printf("error when creating 'errdesc'");
+    }
+    return (error_t){.code = exit_code, .desc = errdesc};
+}
+
+void free_err(error_t err) {
+    free(err.desc);
+}
+
 /**
  * @brief Calculate binary representation of a decimal number
  *
@@ -82,14 +99,14 @@ bool strtolong(char *str, long *num) {
  * @brief Splits the given string into tokens
  *
  * This function generates an array of pointers, each pointing to the location of `str` corresponding to the
- * beginning of that token.
- * Beware that `str` is mangled.
- *
- * Tokens are delimited by the characters in `delimiters`.
+ * beginning of that token. Tokens are delimited by the characters in `delimiters`.
+ * 
+ * Since `str` is mangled, it should not be used after this function. The tokens are available as long
+ * as `str` remains allocated.
  *
  * @param str string to parse
  * @param num_tokens pointer used to store the number of tokens found
- * @return char** array of pointers to each of the tokens found, size of the array is given by num_tokens
+ * @return char** array of pointers to each of the tokens or null if no tokens are found (size of the array is given by num_tokens)
  */
 char **split_tokens(char *str, int *num_tokens, const char *delimiters) {
     const int max_num_tokens = 200;

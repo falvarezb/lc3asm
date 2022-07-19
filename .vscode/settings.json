@@ -15,6 +15,7 @@
         "stdio.h": "c",
         "lc3test.h": "c",
         "cmocka.h": "c",
-        "stdarg.h": "c"
+        "stdarg.h": "c",
+        "lc3util.h": "c"
     }
 }

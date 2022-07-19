@@ -85,8 +85,8 @@ int is_imm5(char *str, long *imm5) {
     return is_valid_immediate(str, imm5, -16, 15);
 }
 
-int is_valid_memaddr(char *str, long *memaddr) {
-    return is_valid_immediate(str, memaddr, 0, 0xFFFF);
+int is_valid_16bit_int(char *str, long *n) {
+    return is_valid_immediate(str, n, 0, 0xFFFF);
 }
 
 uint16_t do_return(uint16_t ret, char **tokens) {

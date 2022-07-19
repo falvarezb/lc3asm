@@ -20,7 +20,7 @@ uint16_t halt() {
  */
 uint16_t orig(char *str) {
     long memaddr;
-    if(is_valid_memaddr(str, &memaddr)) {
+    if(is_valid_16bit_int(str, &memaddr)) {
         return 0;
     }
     return memaddr;
@@ -32,8 +32,9 @@ uint16_t orig(char *str) {
  * `.FILL n` allocate one word and initialize with value n
  * 
  * @param str operand representing the value to be allocated
- * @return uint16_t numeric representation of the value or 0 if it cannot be parsed to a number
+ * @param n pointer to store the numeric representation of the operand
+ * @return error_t
  */
-// uint16_t fill(char *str, ) {
-
-// }
+error_t fill(char *str, uint16_t* n) {
+    return (error_t){.code = EXIT_SUCCESS, .desc = NULL};
+}

@@ -144,7 +144,7 @@
                 "${workspaceFolder}/src/directives.c",       
                 // "-I/usr/local/include/glib-2.0",
                 // "-I/usr/local/lib/glib-2.0/include",              
-                //"-lcmocka", //linking with the dynamic version of the library
+                "-lcmocka", //linking with the dynamic version of the library
                 //"/usr/local/Cellar/cmocka/1.1.5/lib/libcmocka-static.a", //linking with the static version of the library
                 //"-lglib-2.0",
                 "-fno-common",
