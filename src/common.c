@@ -58,6 +58,10 @@ exit_t do_exit(int exit_code, char *format, ...) {
     return (exit_t) { .code = exit_code, .desc = errdesc };
 }
 
+exit_t success() {
+    return do_exit(EXIT_SUCCESS, NULL);
+}
+
 void free_err(exit_t err) {
     if(err.desc)
         free(err.desc);

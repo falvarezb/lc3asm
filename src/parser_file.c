@@ -30,30 +30,58 @@ static void free_tokens(char **tokens, bool is_label_line) {
     }
 }
 
-static int exit_compute_symbol_table(int result, char **tokens, bool is_label_line, char *line, FILE *file, const char *format, ...) {
-    if(format) {
-        va_list ap;
-        va_start(ap, format);
-        vsnprintf(errdesc, ERR_DESC_LENGTH, format, ap);
-        va_end(ap);
-    }
+static void free_compute_symbol_table(char **tokens, bool is_label_line, char *line, FILE *file) {
     free_tokens(tokens, is_label_line);
     free(line);
-    fclose(file);
-    return result;
+    fclose(file);        
 }
 
-static int exit_second_pass(int result, FILE *source_file, FILE *destination_file, char **tokens, const char *format, ...) {
+static exit_t exit_compute_symbol_table(int exit_code, char **tokens, bool is_label_line, char *line, FILE *file, char *format, ...) {
+    size_t errdesc_length = ERR_DESC_LENGTH;
+    char *errdesc;
     if(format) {
+        errdesc = malloc(errdesc_length * sizeof(char));
         va_list ap;
         va_start(ap, format);
-        vsnprintf(errdesc, ERR_DESC_LENGTH, format, ap);
+        int result = vsnprintf(errdesc, errdesc_length, format, ap);
         va_end(ap);
+        if(result < 0 || result > errdesc_length) {
+            printf("error when creating 'errdesc'");
+        }
     }
+    else {
+        errdesc = NULL;
+    }
+    
+    free_compute_symbol_table(tokens, is_label_line, line, file); 
+    return (exit_t) { .code = exit_code, .desc = errdesc };
+}
+
+static void free_second_pass(FILE *source_file, FILE *destination_file, char **tokens) {
     fclose(source_file);
     fclose(destination_file);
-    free(tokens);
-    return EXIT_FAILURE;
+    free(tokens);    
+}
+
+static exit_t exit_second_pass(int exit_code, FILE *source_file, FILE *destination_file, char **tokens, char *format, ...) {
+    size_t errdesc_length = ERR_DESC_LENGTH;
+    char *errdesc;
+    if(format) {
+        errdesc = malloc(errdesc_length * sizeof(char));
+        va_list ap;
+        va_start(ap, format);
+        int result = vsnprintf(errdesc, errdesc_length, format, ap);
+        va_end(ap);
+        if(result < 0 || result > errdesc_length) {
+            printf("error when creating 'errdesc'");
+        }
+    }
+    else {
+        errdesc = NULL;
+    }
+
+    free_second_pass(source_file, destination_file, tokens) ;
+    return (exit_t) { .code = exit_code, .desc = errdesc };
 }
 
 static void add_labels_if_any_to_symbol_table(char *found_labels[], int *num_found_labels, uint16_t instruction_counter) {
@@ -84,29 +112,26 @@ static int write_machine_instruction(uint16_t machine_instr, FILE *destination_f
  * @param destination_file File where the symbol table is serialized
  * @return int 0 if serialization is successful or 1 if there is a writing error (errdesc is set with error details)
  */
-int serialize_symbol_table(const char *symbol_table_file_name) {
+exit_t serialize_symbol_table(const char *symbol_table_file_name) {
     FILE *destination_file = fopen(symbol_table_file_name, "w");
     if(!destination_file) {
-        seterrdesc("error when writing serialized symbol table to file");
-        return EXIT_FAILURE;
+        return do_exit(EXIT_FAILURE, "error when writing serialized symbol table to file");        
     }
     int num_chars_written;
     if((num_chars_written = fprintf(destination_file, "// Symbol table\n// Scope level 0:\n//	Symbol Name       Page Address\n//	----------------  ------------\n")) < 0) {
         fclose(destination_file);
-        seterrdesc("error when writing serialized symbol table to file");
-        return EXIT_FAILURE;
+        return do_exit(EXIT_FAILURE,"error when writing serialized symbol table to file");     
     }
     node_t *node = next(true);
     while(node) {
         if((num_chars_written = fprintf(destination_file, "//	%s             %hx\n", node->key, node->val) < 0)) {
             fclose(destination_file);
-            seterrdesc("error when writing serialized symbol table to file");
-            return EXIT_FAILURE;
+            return do_exit(EXIT_FAILURE,"error when writing serialized symbol table to file");            
         }
         node = next(false);
     }
     fclose(destination_file);
-    return EXIT_SUCCESS;
+    return success();
 }
 
 /**
@@ -204,7 +229,7 @@ opcode_t compute_opcode_type(const char *opcode) {
  * @param source_file Source fle containing the asm code
  * @return int 1 if there is an error, 0 otherwise (errdesc is set with the error details). As a side effect, a file containing the symbol table is created
  */
-int compute_symbol_table(const char *assembly_file_name) {
+exit_t compute_symbol_table(const char *assembly_file_name) {
     //pointer to the line read; freed after finishing reading the file
     char *line = NULL;
     //array containing last found labels
@@ -217,13 +242,13 @@ int compute_symbol_table(const char *assembly_file_name) {
     uint16_t instruction_counter = 0;
     int num_found_labels = 0; //number of found labels for a given instruction, must be <= MAX_NUM_LABELS_PER_INSTRUCTION 
     bool orig_found = false;
+    exit_t result;
 
     errno = 0;
     ssize_t read;
     FILE *source_file = fopen(assembly_file_name, "r");
     if(!source_file) {
-        seterrdesc("ERROR: Couldn't read file (%s)", assembly_file_name);
-        return EXIT_FAILURE;
+        return do_exit(EXIT_FAILURE,"ERROR: Couldn't read file (%s)", assembly_file_name);        
     }
     while((read = getline(&line, &len, source_file)) != -1) {
         printf("%s", line);
@@ -266,10 +291,11 @@ int compute_symbol_table(const char *assembly_file_name) {
         else if(line_type == ORIG_DIRECTIVE) {
             //read memory address of first instruction
             if(num_tokens < 2) {
-                return exit_compute_symbol_table(EXIT_FAILURE, tokens, is_label_line, line, source_file, "ERROR (line %d): Immediate expected", line_counter);
+                return exit_compute_symbol_table(EXIT_FAILURE,tokens, is_label_line, line, source_file,"ERROR (line %d): Immediate expected", line_counter);                
             }
-            if((instruction_counter = orig(tokens[1])) == 0) {
-                return exit_compute_symbol_table(EXIT_FAILURE, tokens, is_label_line, line, source_file, NULL);
+            if((result = orig(tokens[1], &instruction_counter)).code) {
+                free_compute_symbol_table(tokens, is_label_line, line, source_file);
+                return result;
             }
             orig_found = true;
         }
@@ -278,12 +304,12 @@ int compute_symbol_table(const char *assembly_file_name) {
             for(int i = 0; i < num_found_labels; i++) {
                 free(found_labels[i]);
             }
-            return exit_compute_symbol_table(EXIT_FAILURE, tokens, is_label_line, line, source_file, "invalid opcode ('%s')", tokens[0]);
+            return exit_compute_symbol_table(EXIT_FAILURE,tokens, is_label_line, line, source_file,"invalid opcode ('%s')", tokens[0]);
         }
         else if(line_type == OPCODE) {
             add_labels_if_any_to_symbol_table(found_labels, &num_found_labels, instruction_counter);
             if(!orig_found) {
-                return exit_compute_symbol_table(EXIT_FAILURE, tokens, is_label_line, line, source_file, "ERROR (line %d): Instruction not preceeded by a .orig directive", line_counter);
+                return exit_compute_symbol_table(EXIT_FAILURE,tokens, is_label_line, line, source_file,"ERROR (line %d): Instruction not preceeded by a .orig directive", line_counter);                
             }
             instruction_counter++;
         }
@@ -296,11 +322,10 @@ int compute_symbol_table(const char *assembly_file_name) {
 
     //check if getline resulted in error
     if(read == -1 && errno) {
-        seterrdesc("getLine error %d\n", errno);
-        return EXIT_FAILURE;
+        return do_exit(EXIT_FAILURE, "getLine error %d\n", errno);        
     }
 
-    return EXIT_SUCCESS;
+    return success();
 }
 
 
@@ -314,14 +339,15 @@ int compute_symbol_table(const char *assembly_file_name) {
  * @param destination_file File containing the symbol table
  * @return int 0 if process is completed successfully, 1 otherwise (errdesc is set with error details)
  */
-int first_pass_parse(const char *assembly_file_name, const char *symbol_table_file_name) {
-    if(compute_symbol_table(assembly_file_name)) {
-        return EXIT_FAILURE;
+exit_t first_pass_parse(const char *assembly_file_name, const char *symbol_table_file_name) {
+    exit_t result = compute_symbol_table(assembly_file_name);
+    if((result = compute_symbol_table(assembly_file_name)).code) {
+        return result;
     }
     return serialize_symbol_table(symbol_table_file_name);
 }
 
-int second_pass_parse(const char *assembly_file_name, const char *object_file_name) {
+exit_t second_pass_parse(const char *assembly_file_name, const char *object_file_name) {
     char *line = NULL;
     size_t len = 0;
     ssize_t read;
@@ -330,6 +356,7 @@ int second_pass_parse(const char *assembly_file_name, const char *object_file_na
     uint16_t machine_instr = 0; // 16-bit representation of machine instruction, 0 if assembly instruction cannot be parsed
     FILE *source_file = fopen(assembly_file_name, "r");
     FILE *destination_file = fopen(object_file_name, "w");
+    exit_t result;
 
     errno = 0;
     while((read = getline(&line, &len, source_file)) != -1) {
@@ -349,43 +376,49 @@ int second_pass_parse(const char *assembly_file_name, const char *object_file_na
             break;
         }
         else if(line_type == ORIG_DIRECTIVE) {
-            machine_instr = orig(tokens[1]);
+            orig(tokens[1], &machine_instr);
             instruction_counter = machine_instr;
             if(write_machine_instruction(machine_instr, destination_file)) {
-                return exit_second_pass(EXIT_FAILURE, source_file, destination_file, tokens, "error writing instruction to object file");
+                free_second_pass(source_file, destination_file, tokens);
+                return do_exit(EXIT_FAILURE, "error writing instruction to object file");
             }
         }
         else if(line_type == OPCODE) {
             opcode_t opcode_type = compute_opcode_type(tokens[0]);
             if(opcode_type == ADD) {
                 if(num_tokens < 4) {
-                    return exit_second_pass(EXIT_FAILURE, source_file, destination_file, tokens, "ERROR (line %d): missing ADD operands", line_counter);
+                    return exit_second_pass(EXIT_FAILURE,source_file, destination_file, tokens,"ERROR (line %d): missing ADD operands", line_counter);                    
                 }
-                machine_instr = parse_add(tokens[1], tokens[2], tokens[3]);
+                result = parse_add(tokens[1], tokens[2], tokens[3],&machine_instr);
             }
             else if(opcode_type == AND) {
-                machine_instr = parse_and(line);
+                result  = parse_and(line,&machine_instr);
             }
             else if(opcode_type == JMP) {
-                machine_instr = parse_jmp(line);
+                result = parse_jmp(line,&machine_instr);
             }
             else if(opcode_type == JSR) {
                 if(num_tokens < 2) {
-                    return exit_second_pass(EXIT_FAILURE, source_file, destination_file, tokens, "ERROR (line %d): missing JSR operand", line_counter);
+                    return exit_second_pass(EXIT_FAILURE,source_file, destination_file, tokens,"ERROR (line %d): missing JSR operand", line_counter);                    
                 }
-                machine_instr = parse_jsr(tokens[1], instruction_counter);
+                result = parse_jsr(tokens[1], instruction_counter, &machine_instr);
             }
             else if(opcode_type == NOT) {
-                machine_instr = parse_not(line);
+                result = parse_not(line,&machine_instr);
             }
             else if(opcode_type == RET) {
-                machine_instr = parse_ret(line);
+                result = parse_ret(line,&machine_instr);
             }
             else {
-                machine_instr = halt();
+                result = halt(&machine_instr);
             }
+
+            if(result.code) {
+                free_second_pass(source_file, destination_file, tokens);
+                return result;
+            }       
             if(write_machine_instruction(machine_instr, destination_file)) {
-                return exit_second_pass(EXIT_FAILURE, source_file, destination_file, tokens, "error writing instruction to object file");
+                return exit_second_pass(EXIT_FAILURE, source_file, destination_file, tokens,"error writing instruction to object file");                
             }
             instruction_counter++;
         }
@@ -398,21 +431,19 @@ int second_pass_parse(const char *assembly_file_name, const char *object_file_na
 
     //check if getline resulted in error
     if(read == -1 && errno) {
-        seterrdesc("getLine error %d\n", errno);
-        return EXIT_FAILURE;
+        return do_exit(EXIT_FAILURE,"getLine error %d\n", errno);        
     }
 
-    return EXIT_SUCCESS;
+    return success();
 }
 
-int assemble(const char *assembly_file_name) {
+exit_t assemble(const char *assembly_file_name) {
     //determine .sym and .obj file names
     char *assemby_file_name_dup = strdup(assembly_file_name);
     char *file_extension = split_by_last_delimiter(assemby_file_name_dup, '.');
     if(strcmp(file_extension, "asm") != 0) {
         free(assemby_file_name_dup);
-        seterrdesc("ERROR: Input file must have .asm suffix ('%s')", assembly_file_name);
-        return EXIT_FAILURE;
+        return do_exit(EXIT_FAILURE, "ERROR: Input file must have .asm suffix ('%s')", assembly_file_name);        
     }
     char symbol_table_file_name2[strlen(assemby_file_name_dup) + strlen(".sym") + 1];
     strcpy(symbol_table_file_name2, assemby_file_name_dup);
@@ -423,9 +454,9 @@ int assemble(const char *assembly_file_name) {
     strcat(object_file_name2, ".obj");
     free(assemby_file_name_dup);
 
-
-    if(first_pass_parse(assembly_file_name, symbol_table_file_name2)) {
-        return EXIT_FAILURE;
+    exit_t result = first_pass_parse(assembly_file_name, symbol_table_file_name2);
+    if(result.code) {
+        return result;
     }
 
     return second_pass_parse(assembly_file_name, object_file_name2);

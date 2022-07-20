@@ -8,8 +8,9 @@
 
 #include "../include/lc3.h"
 
-uint16_t halt() {    
-    return 0xf025;
+exit_t halt(uint16_t *machine_instr) {   
+    *machine_instr =  0xf025;
+    return success();
 }
 
 /**
@@ -18,12 +19,8 @@ uint16_t halt() {
  * @param str operand representing starting address of the program
  * @return uint16_t numeric representation of the address or 0 if it cannot be parsed to a number
  */
-uint16_t orig(char *str) {
-    long memaddr;
-    if(is_valid_16bit_int(str, &memaddr)) {
-        return 0;
-    }
-    return memaddr;
+exit_t orig(char *str, uint16_t *memaddr) {    
+    return is_valid_16bit_int(str, memaddr);
 }
 
 /**

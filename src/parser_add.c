@@ -29,7 +29,7 @@
 exit_t parse_add(char *operand1, char* operand2, char* operand3, uint16_t *machine_instruction) {
     
     int DR, SR1, SR2;
-    long imm5;    
+    uint16_t imm5;    
 
     //VALIDATING OPERANDS
 

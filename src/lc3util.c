@@ -43,24 +43,27 @@ int is_register(char *str) {
     return -1;
 }
 
-static exit_t is_valid_immediate(char *token, long *imm, long min, long max) {
+static exit_t is_valid_immediate(char *token, uint16_t *imm, long min, long max) {
+    long tmp;
     char first_ch = *token;
     if(first_ch == '#') { //decimal literal
-        if(!strtolong(token + 1, imm)) {
+        if(!strtolong(token + 1, &tmp)) {
             return do_exit(EXIT_FAILURE, "immediate %s is not a numeric value", token);
         }
-        if(*imm < min || *imm > max) {
+        if(tmp < min || tmp > max) {
             return do_exit(EXIT_FAILURE, "immediate operand (%s) outside of range (%ld to %ld)", token + 1, min, max);            
         }
+        *imm = (uint16_t)tmp;
         return do_exit(EXIT_SUCCESS, NULL);
     }
     else if(first_ch == 'x') { //hex literal
-        if(sscanf(token + 1, "%lx", imm) < 1) {
+        if(sscanf(token + 1, "%lx", &tmp) < 1) {
             return do_exit(EXIT_FAILURE, "error while reading immediate %s", token);            
         }
-        if(*imm < min || *imm > max) {
+        if(tmp < min || tmp > max) {
             return do_exit(EXIT_FAILURE, "immediate operand (%s) outside of range (%ld to %ld)", token + 1, min, max);            
         }
+        *imm = (uint16_t)tmp;
         return do_exit(EXIT_SUCCESS, NULL);
     }
     return do_exit(EXIT_FAILURE, "immediate %s must be decimal or hex", token);    
@@ -76,11 +79,11 @@ static exit_t is_valid_immediate(char *token, long *imm, long min, long max) {
  * @param imm5 immediate value resulting of transforming str
  * @return int 0 if parsing is successful, else 1 (errdesc is set with error details)
  */
-exit_t is_imm5(char *str, long *imm5) {
+exit_t is_imm5(char *str, uint16_t *imm5) {
     return is_valid_immediate(str, imm5, -16, 15);
 }
 
-exit_t is_valid_16bit_int(char *str, long *n) {
+exit_t is_valid_16bit_int(char *str, uint16_t *n) {
     return is_valid_immediate(str, n, 0, 0xFFFF);
 }
 

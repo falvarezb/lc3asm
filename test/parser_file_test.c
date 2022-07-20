@@ -17,11 +17,6 @@ static int teardown(void **state) {
     return 0;
 }
 
-static int run_symbol_table_test(const char *asm_file_name) {        
-    int result = compute_symbol_table(asm_file_name);    
-    return result;
-}
-
 static void assert_symbol_table(const char *label, size_t num_instruction) {
     node_t *node = lookup(label);
     assert_non_null(node);
@@ -90,17 +85,17 @@ static void test_second_pass_with_labels_t2(void  __attribute__((unused)) **stat
 }
 
 void test_symbol_table_t2(void  __attribute__((unused)) **state) {
-    run_symbol_table_test("./test/t2.asm");
+    compute_symbol_table("./test/t2.asm");
     assert_symbol_table("LABEL", 0x3003);
 }
 
 static void test_symbol_table_t3(void  __attribute__((unused)) **state) {
-    run_symbol_table_test("./test/t3.asm");
+    compute_symbol_table("./test/t3.asm");
     assert_symbol_table("LABEL", 0x3003);
 }
 
 static void test_symbol_table_t4(void  __attribute__((unused)) **state) {
-    run_symbol_table_test("./test/t4.asm");
+    compute_symbol_table("./test/t4.asm");
     assert_symbol_table("LABEL1", 0x3003);
     assert_symbol_table("LABEL2", 0x3001);
     assert_symbol_table("LABEL3", 0x3002);
@@ -109,8 +104,9 @@ static void test_symbol_table_t4(void  __attribute__((unused)) **state) {
 }
 
 static void test_symbol_table_t5(void  __attribute__((unused)) **state) {
-    assert_int_equal(run_symbol_table_test("./test/t5.asm"), EXIT_FAILURE);
-    assert_string_equal(errdesc, "invalid opcode ('LABEL2')");
+    exit_t result = compute_symbol_table("./test/t5.asm");
+    assert_int_equal(result.code, EXIT_FAILURE);
+    assert_string_equal(result.desc, "invalid opcode ('LABEL2')");
 }
 
 static void test_symbol_table_serialization(void  __attribute__((unused)) **state) {    
@@ -149,9 +145,9 @@ static void test_symbol_table_serialization(void  __attribute__((unused)) **stat
 static void test_symbol_table_serialization_failure(void  __attribute__((unused)) **state) {    
     add("LABEL", 0x3003);
     char *actual_sym_file_name = "./test/test/t2.sym";
-    int result = serialize_symbol_table(actual_sym_file_name);
-    assert_string_equal(errdesc, "error when writing serialized symbol table to file");    
-    assert_int_equal(result, 1);        
+    exit_t result = serialize_symbol_table(actual_sym_file_name);
+    assert_string_equal(result.desc, "error when writing serialized symbol table to file");    
+    assert_int_equal(result.code, 1);        
 }
 
 static void test_assemble_without_labels_t1(void  __attribute__((unused)) **state) {
@@ -163,33 +159,33 @@ static void test_assemble_with_labels_t2(void  __attribute__((unused)) **state) 
 }
 
 static void test_first_pass_wrong_orig_address_t6(void  __attribute__((unused)) **state) {    
-    int result = first_pass_parse("./test/t6.asm", "does not matter");
-    assert_int_equal(result, 1);    
-    assert_string_equal(errdesc, "immediate operand (545677767) outside of range (0 to 65535)");
+    exit_t result = first_pass_parse("./test/t6.asm", "does not matter");
+    assert_int_equal(result.code, 1);    
+    assert_string_equal(result.desc, "immediate operand (545677767) outside of range (0 to 65535)");
 }
 
 static void test_first_pass_missing_orig_t7(void  __attribute__((unused)) **state) {    
-    int result = first_pass_parse("./test/t7.asm", "does not matter");
-    assert_int_equal(result, 1);
-    assert_string_equal(errdesc, "ERROR (line 4): Instruction not preceeded by a .orig directive");
+    exit_t result = first_pass_parse("./test/t7.asm", "does not matter");
+    assert_int_equal(result.code, 1);
+    assert_string_equal(result.desc, "ERROR (line 4): Instruction not preceeded by a .orig directive");
 }
 
 static void test_first_pass_missing_orig_address_t8(void  __attribute__((unused)) **state) {    
-    int result = first_pass_parse("./test/t8.asm", "does not matter");
-    assert_int_equal(result, 1);
-    assert_string_equal(errdesc, "ERROR (line 4): Immediate expected");
+    exit_t result = first_pass_parse("./test/t8.asm", "does not matter");
+    assert_int_equal(result.code, 1);
+    assert_string_equal(result.desc, "ERROR (line 4): Immediate expected");
 }
 
 static void test_missing_assembly_file(void  __attribute__((unused)) **state) {    
-    int result = assemble("./test/test/random.asm");
-    assert_int_equal(result, 1);
-    assert_string_equal(errdesc, "ERROR: Couldn't read file (./test/test/random.asm)");
+    exit_t result = assemble("./test/test/random.asm");
+    assert_int_equal(result.code, 1);
+    assert_string_equal(result.desc, "ERROR: Couldn't read file (./test/test/random.asm)");
 }
 
 static void test_wrong_assembly_file_extension(void  __attribute__((unused)) **state) {    
-    int result = assemble("./test/t2.copy");
-    assert_int_equal(result, 1);
-    assert_string_equal(errdesc, "ERROR: Input file must have .asm suffix ('./test/t2.copy')");
+    exit_t result = assemble("./test/t2.copy");
+    assert_int_equal(result.code, 1);
+    assert_string_equal(result.desc, "ERROR: Input file must have .asm suffix ('./test/t2.copy')");
 }
 
 

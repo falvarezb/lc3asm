@@ -25,7 +25,7 @@
  * @param instruction_location memory address of the instruction being parsed
  * @return uint16_t 16-bit machine instruction or 0 in case of error (errdesc is set with error details)
  */
-uint16_t parse_jsr(char *operand, uint16_t instruction_location) {
+exit_t parse_jsr(char *operand, uint16_t instruction_location, uint16_t *machine_instr) {
     
     long PCoffset11;    
 
@@ -34,31 +34,29 @@ uint16_t parse_jsr(char *operand, uint16_t instruction_location) {
         //transform label into PCoffset11 by retrieving the memory location corresponding to the label from symbol table
         node_t *node = lookup(operand);
         if(!node) {
-            seterrdesc("Symbol not found ('%s')\n", operand);            
-            return 0;
+            return do_exit(EXIT_FAILURE,"Symbol not found ('%s')", operand);                        
         }
         PCoffset11 = node->val - instruction_location - 1;
     }
     else {
         //validate PCoffset11 numerical range
         if(PCoffset11 < -1024 || PCoffset11 > 1023) {
-            seterrdesc("value of PCoffset11 %ld is outside the range [-1024, 1023]\n", PCoffset11);            
-            return 0;
+            return do_exit(EXIT_FAILURE, "value of PCoffset11 %ld is outside the range [-1024, 1023]", PCoffset11);                        
         }
     }
 
     //CONVERTING TO BINARY REPRESENTATION
 
     //ops code: 0100
-    uint16_t machine_instr = 4 << 12;
+    *machine_instr = 4 << 12;
 
     //bit[11]
-    machine_instr += (1 << 11);
+    *machine_instr += (1 << 11);
 
     //LABEL
-    machine_instr += PCoffset11;
+    *machine_instr += PCoffset11;
 
-    return machine_instr;
+    return success();
 }
 
 
