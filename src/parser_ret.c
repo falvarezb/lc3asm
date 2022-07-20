@@ -10,7 +10,7 @@
  * @param asm_instr RET instruction
  * @return uint16_t* 16 bits representation of the instruction or 0 in case of error
  */
-uint16_t parse_ret(char *asm_instr) {
+exit_t parse_ret(char *asm_instr, uint16_t *machine_instr) {
 
     //PARSING INSTRUCTION TOKENS    
     char *instr_name = "RET";
@@ -18,21 +18,16 @@ uint16_t parse_ret(char *asm_instr) {
     char **tokens;    
 
     if((tokens = instruction_tokens(asm_instr, instr_name, num_tokens)) == NULL) {
-        return do_return(0, tokens);
+        return do_exit(EXIT_FAILURE, "unexpected token in RET instruction");
     }
 
     //VALDATING TOKENS
-    if(strcmp(tokens[0], "RET")) {
-        //this should not happen        
-        seterrdesc("expected RET but found %s\n", tokens[0]);
-        return do_return(0, tokens);
-    }
 
     //CONVERTING TO BINARY REPRESENTATION
 
     //instruction: 1100 000 111 000000
-    uint16_t machine_instr = 49600;
-    return do_return(machine_instr, tokens);
+    *machine_instr = 49600;
+    return do_exit(EXIT_SUCCESS, NULL);  
 }
 
 
