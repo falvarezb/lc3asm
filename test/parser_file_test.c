@@ -24,8 +24,8 @@ static void assert_symbol_table(const char *label, size_t num_instruction) {
     delete(label);
 }
 
-static void run_second_pass_test(char* asm_file_name, char* expected_obj_file_name, char* actual_obj_file_name) {
-    second_pass_parse(asm_file_name, actual_obj_file_name);    
+static void run_second_pass_test(char *asm_file_name, char *expected_obj_file_name, char *actual_obj_file_name) {
+    second_pass_parse(asm_file_name, actual_obj_file_name);
 
     FILE *expected_obj_file = fopen(expected_obj_file_name, "r");
     FILE *actual_obj_file = fopen(actual_obj_file_name, "r");
@@ -48,7 +48,7 @@ static void run_second_pass_test(char* asm_file_name, char* expected_obj_file_na
     fclose(actual_obj_file);
 }
 
-static void run_assemble_test(char* asm_file_name, char* expected_obj_file_name, char* actual_obj_file_name) {    
+static void run_assemble_test(char *asm_file_name, char *expected_obj_file_name, char *actual_obj_file_name) {
     assemble(asm_file_name);
     printf("\nmyerror:%s\n", errdesc);
 
@@ -70,7 +70,7 @@ static void run_assemble_test(char* asm_file_name, char* expected_obj_file_name,
 
     assert_int_equal(read, fread(buf_actual, 1, 2, actual_obj_file));
     fclose(expected_obj_file);
-    fclose(actual_obj_file);    
+    fclose(actual_obj_file);
 }
 
 ///////////////////////////////////////////////////
@@ -79,9 +79,9 @@ static void test_second_pass_without_labels_t1(void  __attribute__((unused)) **s
     run_second_pass_test("./test/t1.asm", "./test/t1.expected.obj", "./test/t1.obj");
 }
 
-static void test_second_pass_with_labels_t2(void  __attribute__((unused)) **state) {    
+static void test_second_pass_with_labels_t2(void  __attribute__((unused)) **state) {
     add("LABEL", 0x3003);
-    run_second_pass_test("./test/t2.asm", "./test/t2.expected.obj", "./test/t2.obj");    
+    run_second_pass_test("./test/t2.asm", "./test/t2.expected.obj", "./test/t2.obj");
 }
 
 void test_symbol_table_t2(void  __attribute__((unused)) **state) {
@@ -109,10 +109,10 @@ static void test_symbol_table_t5(void  __attribute__((unused)) **state) {
     assert_string_equal(result.desc, "invalid opcode ('LABEL2')");
 }
 
-static void test_symbol_table_serialization(void  __attribute__((unused)) **state) {    
+static void test_symbol_table_serialization(void  __attribute__((unused)) **state) {
     add("LABEL", 0x3003);
     const char *actual_sym_file_name = "./test/t2.sym";
-    serialize_symbol_table(actual_sym_file_name);    
+    serialize_symbol_table(actual_sym_file_name);
 
     //test symbol table serialization
     FILE *expected_sym_file = fopen("./test/t2.expected.sym", "r");
@@ -139,50 +139,50 @@ static void test_symbol_table_serialization(void  __attribute__((unused)) **stat
     fclose(expected_sym_file);
     fclose(actual_sym_file);
     free(line_expected);
-    free(line_actual);    
+    free(line_actual);
 }
 
-static void test_symbol_table_serialization_failure(void  __attribute__((unused)) **state) {    
+static void test_symbol_table_serialization_failure(void  __attribute__((unused)) **state) {
     add("LABEL", 0x3003);
     char *actual_sym_file_name = "./test/test/t2.sym";
     exit_t result = serialize_symbol_table(actual_sym_file_name);
-    assert_string_equal(result.desc, "error when writing serialized symbol table to file");    
-    assert_int_equal(result.code, 1);        
+    assert_string_equal(result.desc, "error when writing serialized symbol table to file");
+    assert_int_equal(result.code, 1);
 }
 
 static void test_assemble_without_labels_t1(void  __attribute__((unused)) **state) {
-    run_assemble_test("./test/t1.asm", "./test/t1.expected.obj", "./test/t1.obj");    
+    run_assemble_test("./test/t1.asm", "./test/t1.expected.obj", "./test/t1.obj");
 }
 
-static void test_assemble_with_labels_t2(void  __attribute__((unused)) **state) {    
+static void test_assemble_with_labels_t2(void  __attribute__((unused)) **state) {
     run_assemble_test("./test/t2.asm", "./test/t2.expected.obj", "./test/t2.obj");
 }
 
-static void test_first_pass_wrong_orig_address_t6(void  __attribute__((unused)) **state) {    
+static void test_first_pass_wrong_orig_address_t6(void  __attribute__((unused)) **state) {
     exit_t result = first_pass_parse("./test/t6.asm", "does not matter");
-    assert_int_equal(result.code, 1);    
+    assert_int_equal(result.code, 1);
     assert_string_equal(result.desc, "immediate operand (545677767) outside of range (0 to 65535)");
 }
 
-static void test_first_pass_missing_orig_t7(void  __attribute__((unused)) **state) {    
+static void test_first_pass_missing_orig_t7(void  __attribute__((unused)) **state) {
     exit_t result = first_pass_parse("./test/t7.asm", "does not matter");
     assert_int_equal(result.code, 1);
     assert_string_equal(result.desc, "ERROR (line 4): Instruction not preceeded by a .orig directive");
 }
 
-static void test_first_pass_missing_orig_address_t8(void  __attribute__((unused)) **state) {    
+static void test_first_pass_missing_orig_address_t8(void  __attribute__((unused)) **state) {
     exit_t result = first_pass_parse("./test/t8.asm", "does not matter");
     assert_int_equal(result.code, 1);
     assert_string_equal(result.desc, "ERROR (line 4): Immediate expected");
 }
 
-static void test_missing_assembly_file(void  __attribute__((unused)) **state) {    
+static void test_missing_assembly_file(void  __attribute__((unused)) **state) {
     exit_t result = assemble("./test/test/random.asm");
     assert_int_equal(result.code, 1);
     assert_string_equal(result.desc, "ERROR: Couldn't read file (./test/test/random.asm)");
 }
 
-static void test_wrong_assembly_file_extension(void  __attribute__((unused)) **state) {    
+static void test_wrong_assembly_file_extension(void  __attribute__((unused)) **state) {
     exit_t result = assemble("./test/t2.copy");
     assert_int_equal(result.code, 1);
     assert_string_equal(result.desc, "ERROR: Input file must have .asm suffix ('./test/t2.copy')");
