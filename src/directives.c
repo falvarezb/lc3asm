@@ -35,6 +35,6 @@ uint16_t orig(char *str) {
  * @param n pointer to store the numeric representation of the operand
  * @return error_t
  */
-error_t fill(char *str, uint16_t* n) {
-    return (error_t){.code = EXIT_SUCCESS, .desc = NULL};
+exit_t fill(char *str, uint16_t* n) {
+    return (exit_t){.code = EXIT_SUCCESS, .desc = NULL};
 }

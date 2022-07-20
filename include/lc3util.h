@@ -13,8 +13,8 @@ typedef enum {
 } opcode_t;
 
 int is_register(char *token);
-int is_imm5(char *str, long *imm5);
-int is_valid_16bit_int(char *str, long *n);
+exit_t is_imm5(char *str, long *imm5);
+exit_t is_valid_16bit_int(char *str, long *n);
 uint16_t do_return(uint16_t ret, char **tokens);
 char **instruction_tokens(char *asm_instr, char *instr_name, int num_tokens);
 

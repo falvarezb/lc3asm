@@ -43,32 +43,27 @@ int is_register(char *str) {
     return -1;
 }
 
-static int is_valid_immediate(char *token, long *imm, long min, long max) {
+static exit_t is_valid_immediate(char *token, long *imm, long min, long max) {
     char first_ch = *token;
     if(first_ch == '#') { //decimal literal
         if(!strtolong(token + 1, imm)) {
-            seterrdesc("immediate %s is not a numeric value", token);
-            return EXIT_FAILURE;
+            return do_exit(EXIT_FAILURE, "immediate %s is not a numeric value", token);
         }
         if(*imm < min || *imm > max) {
-            seterrdesc("immediate operand (%s) outside of range (%ld to %ld)", token + 1, min, max);
-            return EXIT_FAILURE;
+            return do_exit(EXIT_FAILURE, "immediate operand (%s) outside of range (%ld to %ld)", token + 1, min, max);            
         }
-        return EXIT_SUCCESS;
+        return do_exit(EXIT_SUCCESS, NULL);
     }
     else if(first_ch == 'x') { //hex literal
         if(sscanf(token + 1, "%lx", imm) < 1) {
-            seterrdesc("error while reading immediate %s", token);
-            return EXIT_FAILURE;
+            return do_exit(EXIT_FAILURE, "error while reading immediate %s", token);            
         }
         if(*imm < min || *imm > max) {
-            seterrdesc("immediate operand (%s) outside of range (%ld to %ld)", token + 1, min, max);
-            return EXIT_FAILURE;
+            return do_exit(EXIT_FAILURE, "immediate operand (%s) outside of range (%ld to %ld)", token + 1, min, max);            
         }
-        return EXIT_SUCCESS;
+        return do_exit(EXIT_SUCCESS, NULL);
     }
-    seterrdesc("immediate %s must be decimal or hex", token);
-    return EXIT_FAILURE;
+    return do_exit(EXIT_FAILURE, "immediate %s must be decimal or hex", token);    
 }
 
 /**
@@ -81,11 +76,11 @@ static int is_valid_immediate(char *token, long *imm, long min, long max) {
  * @param imm5 immediate value resulting of transforming str
  * @return int 0 if parsing is successful, else 1 (errdesc is set with error details)
  */
-int is_imm5(char *str, long *imm5) {
+exit_t is_imm5(char *str, long *imm5) {
     return is_valid_immediate(str, imm5, -16, 15);
 }
 
-int is_valid_16bit_int(char *str, long *n) {
+exit_t is_valid_16bit_int(char *str, long *n) {
     return is_valid_immediate(str, n, 0, 0xFFFF);
 }
 
