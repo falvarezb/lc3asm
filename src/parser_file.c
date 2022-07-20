@@ -341,7 +341,7 @@ exit_t compute_symbol_table(const char *assembly_file_name) {
  */
 exit_t first_pass_parse(const char *assembly_file_name, const char *symbol_table_file_name) {
     exit_t result = compute_symbol_table(assembly_file_name);
-    if((result = compute_symbol_table(assembly_file_name)).code) {
+    if(result.code) {
         return result;
     }
     return serialize_symbol_table(symbol_table_file_name);

@@ -107,6 +107,7 @@ static void test_symbol_table_t5(void  __attribute__((unused)) **state) {
     exit_t result = compute_symbol_table("./test/t5.asm");
     assert_int_equal(result.code, EXIT_FAILURE);
     assert_string_equal(result.desc, "invalid opcode ('LABEL2')");
+    free(result.desc);
 }
 
 static void test_symbol_table_serialization(void  __attribute__((unused)) **state) {
@@ -148,6 +149,7 @@ static void test_symbol_table_serialization_failure(void  __attribute__((unused)
     exit_t result = serialize_symbol_table(actual_sym_file_name);
     assert_string_equal(result.desc, "error when writing serialized symbol table to file");
     assert_int_equal(result.code, 1);
+    free(result.desc);
 }
 
 static void test_assemble_without_labels_t1(void  __attribute__((unused)) **state) {
@@ -162,30 +164,35 @@ static void test_first_pass_wrong_orig_address_t6(void  __attribute__((unused)) 
     exit_t result = first_pass_parse("./test/t6.asm", "does not matter");
     assert_int_equal(result.code, 1);
     assert_string_equal(result.desc, "ERROR (line 4): Immediate operand (545677767) outside of range (0 to 65535)");
+    free(result.desc);
 }
 
 static void test_first_pass_missing_orig_t7(void  __attribute__((unused)) **state) {
     exit_t result = first_pass_parse("./test/t7.asm", "does not matter");
     assert_int_equal(result.code, 1);
     assert_string_equal(result.desc, "ERROR (line 4): Instruction not preceeded by a .orig directive");
+    free(result.desc);
 }
 
 static void test_first_pass_missing_orig_address_t8(void  __attribute__((unused)) **state) {
     exit_t result = first_pass_parse("./test/t8.asm", "does not matter");
     assert_int_equal(result.code, 1);
     assert_string_equal(result.desc, "ERROR (line 4): Immediate expected");
+    free(result.desc);
 }
 
 static void test_missing_assembly_file(void  __attribute__((unused)) **state) {
     exit_t result = assemble("./test/test/random.asm");
     assert_int_equal(result.code, 1);
     assert_string_equal(result.desc, "ERROR: Couldn't read file (./test/test/random.asm)");
+    free(result.desc);
 }
 
 static void test_wrong_assembly_file_extension(void  __attribute__((unused)) **state) {
     exit_t result = assemble("./test/t2.copy");
     assert_int_equal(result.code, 1);
     assert_string_equal(result.desc, "ERROR: Input file must have .asm suffix ('./test/t2.copy')");
+    free(result.desc);
 }
 
 

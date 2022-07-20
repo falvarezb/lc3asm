@@ -37,6 +37,7 @@ void test_add_wrong_register_DR(void  __attribute__((unused)) **state) {
     exit_t result = parse_add("R8", "R1", "xa", &machine_instr, 0);
     assert_int_equal(result.code, 1);
     assert_string_equal(result.desc, "expected register but found R8\n");
+    free(result.desc);
 }
 
 void test_add_wrong_register_SR1(void  __attribute__((unused)) **state) {
