@@ -6,7 +6,7 @@ exit_t parse_add(char *operand1, char* operand2, char* operand3, uint16_t *machi
 exit_t parse_and(char *asm_instr, uint16_t *machine_instr);
 uint16_t parse_not(char *instr);
 uint16_t parse_ret(char *instr);
-uint16_t parse_jmp(char *instr);
+exit_t parse_jmp(char *asm_instr, uint16_t *machine_instr);
 uint16_t parse_jsr(char *operand, uint16_t instruction_number);
 uint16_t halt();
 uint16_t orig(char *token);
