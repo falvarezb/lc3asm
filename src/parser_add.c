@@ -26,7 +26,7 @@
  * @param operand3 SR2 or imm5
  * @return uint16_t 16-bit machine instruction or 0 in case of error (errdesc is set with error details)
  */
-exit_t parse_add(char *operand1, char* operand2, char* operand3, uint16_t *machine_instruction) {
+exit_t parse_add(char *operand1, char* operand2, char* operand3, uint16_t *machine_instruction, uint16_t line_counter) {
     
     int DR, SR1, SR2;
     uint16_t imm5;    
@@ -59,7 +59,7 @@ exit_t parse_add(char *operand1, char* operand2, char* operand3, uint16_t *machi
         *machine_instruction += SR2;
     }
     else {
-        exit_t result = is_imm5(operand3, &imm5);
+        exit_t result = is_imm5(operand3, &imm5,line_counter);
         if(result.code){
             return result;
         }

@@ -161,7 +161,7 @@ static void test_assemble_with_labels_t2(void  __attribute__((unused)) **state) 
 static void test_first_pass_wrong_orig_address_t6(void  __attribute__((unused)) **state) {
     exit_t result = first_pass_parse("./test/t6.asm", "does not matter");
     assert_int_equal(result.code, 1);
-    assert_string_equal(result.desc, "immediate operand (545677767) outside of range (0 to 65535)");
+    assert_string_equal(result.desc, "ERROR (line 4): Immediate operand (545677767) outside of range (0 to 65535)");
 }
 
 static void test_first_pass_missing_orig_t7(void  __attribute__((unused)) **state) {

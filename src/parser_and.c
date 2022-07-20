@@ -11,11 +11,11 @@
  * @param asm_instr AND instruction
  * @return uint16_t* 16 bits representation of the instruction or 0 in case of error
  */
-exit_t parse_and(char *asm_instr, uint16_t *machine_instr) {
+exit_t parse_and(char *asm_instr, uint16_t *machine_instr, uint16_t line_counter) {
 
     //PARSING INSTRUCTION TOKENS
     int DR, SR1, SR2;
-    long imm5;
+    uint16_t imm5;
     char *instr_name = "AND";
     int num_tokens = 4;
     char **tokens;    
@@ -52,7 +52,7 @@ exit_t parse_and(char *asm_instr, uint16_t *machine_instr) {
         *machine_instr += SR2;
     }
     else {
-        exit_t result = is_imm5(tokens[3], &imm5);
+        exit_t result = is_imm5(tokens[3], &imm5, line_counter);
         if(result.code){
             return result;
         }

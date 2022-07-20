@@ -293,7 +293,7 @@ exit_t compute_symbol_table(const char *assembly_file_name) {
             if(num_tokens < 2) {
                 return exit_compute_symbol_table(EXIT_FAILURE,tokens, is_label_line, line, source_file,"ERROR (line %d): Immediate expected", line_counter);                
             }
-            if((result = orig(tokens[1], &instruction_counter)).code) {
+            if((result = orig(tokens[1], &instruction_counter, line_counter)).code) {
                 free_compute_symbol_table(tokens, is_label_line, line, source_file);
                 return result;
             }
@@ -376,7 +376,7 @@ exit_t second_pass_parse(const char *assembly_file_name, const char *object_file
             break;
         }
         else if(line_type == ORIG_DIRECTIVE) {
-            orig(tokens[1], &machine_instr);
+            orig(tokens[1], &machine_instr, line_counter);
             instruction_counter = machine_instr;
             if(write_machine_instruction(machine_instr, destination_file)) {
                 free_second_pass(source_file, destination_file, tokens);
@@ -389,10 +389,10 @@ exit_t second_pass_parse(const char *assembly_file_name, const char *object_file
                 if(num_tokens < 4) {
                     return exit_second_pass(EXIT_FAILURE,source_file, destination_file, tokens,"ERROR (line %d): missing ADD operands", line_counter);                    
                 }
-                result = parse_add(tokens[1], tokens[2], tokens[3],&machine_instr);
+                result = parse_add(tokens[1], tokens[2], tokens[3],&machine_instr, line_counter);
             }
             else if(opcode_type == AND) {
-                result  = parse_and(line,&machine_instr);
+                result  = parse_and(line,&machine_instr, line_counter);
             }
             else if(opcode_type == JMP) {
                 result = parse_jmp(line,&machine_instr);
