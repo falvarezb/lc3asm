@@ -2,30 +2,26 @@
 #include "../include/lc3.h"
 
 /**
- * @brief
+ * @brief Parse an assembly JMP instruction and returns the corresponding machine instruction
  *
- * Assembler formats:
- * JMP BaseR
+ * ## Assembly format
+ * - JMP BaseR
+ * 
+ * BaseR is a Base Register; one of R0..R7, used in conjunction with a six-bit offset to compute Base+offset addresses
  *
- * @param asm_instr JMP instruction
- * @return uint16_t* 16 bits representation of the instruction or 0 in case of error
+ * @param operand BaseR
+ * @param machine_instruction 16-bit machine instruction (in case of error, it has undefined value)
+ * @param line_counter line number of the assembly file
+ * @return exit_t
  */
-exit_t parse_jmp(char *asm_instr, uint16_t *machine_instr) {
-
-    //PARSING INSTRUCTION TOKENS
+exit_t parse_jmp(char *operand, uint16_t *machine_instr, uint16_t line_counter) {
+    
     int BaseR;
-    char *instr_name = "JMP";
-    int num_tokens = 2;
-    char **tokens;    
 
-    if((tokens = instruction_tokens(asm_instr, instr_name, num_tokens)) == NULL) {
-        return do_exit(EXIT_FAILURE, "unexpected token in JMP instruction");
-    }
+    //VALIDATING OPERAND
 
-    //VALIDATING TOKENS
-
-    if((BaseR = is_register(tokens[1])) == -1) {
-        return do_exit(EXIT_FAILURE,"expected register but found %s", tokens[1]);       
+    if((BaseR = is_register(operand)) == -1) {
+        return do_exit(EXIT_FAILURE,"ERROR (line %d): Expected register but found %s", line_counter, operand);       
     }
 
     //CONVERTING TO BINARY REPRESENTATION

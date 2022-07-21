@@ -398,7 +398,7 @@ exit_t second_pass_parse(const char *assembly_file_name, const char *object_file
                 result = parse_add(tokens[1], tokens[2], tokens[3], &machine_instr, line_counter);
             }
             else if(opcode_type == JMP) {
-                result = parse_jmp(line, &machine_instr);
+                result = parse_jmp(line, &machine_instr,line_counter);
             }
             else if(opcode_type == JSR) {
                 if(num_tokens < 2) {

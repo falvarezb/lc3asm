@@ -11,7 +11,7 @@
 /**
  * @brief Parse an assembly JSR instruction and returns the corresponding machine instruction
  *
- * ## Assembler format
+ * ## Assembly format
  * - JSR LABEL
  * - JSR PCoffset11
  * 
@@ -19,7 +19,9 @@
  * Bits [10:0] are taken as an 11-bit 2’s complement integer, sign-extended to 16 bits and then added to the incremented PC to form the target address. 
  * Range −1024..1023.
  * 
- * In case of having a label representing a memory address, the corresponding PCoffset11 is worked out.
+ * LABEL is an assembly language construct that identifies a location symbolically (i.e., by means
+ * of a name, rather than its 16-bit address).
+ * In case of having a label, the corresponding PCoffset11 is worked out.
  *
  * @param operand LABEL or PCoffset11
  * @param instruction_counter instruction number in the assembly file
