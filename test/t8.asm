@@ -1,8 +1,8 @@
 ;
 ;   comment
 ;          
-    .ORIG x3000
-    LD R0,#1    
+    .ORIG
+    ADD R0,R0,#1    
     HALT
 
 
