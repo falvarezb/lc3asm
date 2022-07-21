@@ -392,7 +392,10 @@ exit_t second_pass_parse(const char *assembly_file_name, const char *object_file
                 result = parse_add(tokens[1], tokens[2], tokens[3],&machine_instr, line_counter);
             }
             else if(opcode_type == AND) {
-                result  = parse_and(line,&machine_instr, line_counter);
+                if(num_tokens < 4) {
+                    return exit_second_pass(EXIT_FAILURE,source_file, destination_file, tokens,"ERROR (line %d): missing AND operands", line_counter);                    
+                }
+                result = parse_add(tokens[1], tokens[2], tokens[3],&machine_instr, line_counter);
             }
             else if(opcode_type == JMP) {
                 result = parse_jmp(line,&machine_instr);

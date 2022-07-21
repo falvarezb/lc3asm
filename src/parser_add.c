@@ -24,9 +24,11 @@
  * @param operand1 DR
  * @param operand2 SR1
  * @param operand3 SR2 or imm5
- * @return uint16_t 16-bit machine instruction or 0 in case of error (errdesc is set with error details)
+ * @param machine_instr 16-bit machine instruction (in case of error, it has undefined value)
+ * @param line_counter line number of the assembly file
+ * @return exit_t
  */
-exit_t parse_add(char *operand1, char* operand2, char* operand3, uint16_t *machine_instruction, uint16_t line_counter) {
+exit_t parse_add(char *operand1, char* operand2, char* operand3, uint16_t *machine_instr, uint16_t line_counter) {
     
     int DR, SR1, SR2;
     uint16_t imm5;    
@@ -45,26 +47,26 @@ exit_t parse_add(char *operand1, char* operand2, char* operand3, uint16_t *machi
     //CONVERTING TO BINARY REPRESENTATION
 
     //ops code: 0001
-    *machine_instruction = 1 << 12;
+    *machine_instr = 1 << 12;
 
     //DR
     DR = DR << 9;
-    *machine_instruction += DR;
+    *machine_instr += DR;
 
     //SR1
     SR1 = SR1 << 6;
-    *machine_instruction += SR1;
+    *machine_instr += SR1;
 
     if((SR2 = is_register(operand3)) > -1){
-        *machine_instruction += SR2;
+        *machine_instr += SR2;
     }
     else {
         exit_t result = is_imm5(operand3, &imm5,line_counter);
         if(result.code){
             return result;
         }
-        *machine_instruction += (1 << 5);
-        *machine_instruction += imm5;
+        *machine_instr += (1 << 5);
+        *machine_instr += imm5;
     }
 
     return do_exit(EXIT_SUCCESS, NULL);    

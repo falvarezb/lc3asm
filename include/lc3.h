@@ -2,8 +2,8 @@
 #define FAB_LC3
 #include "lc3util.h"
 
-exit_t parse_add(char *operand1, char* operand2, char* operand3, uint16_t *machine_instruction, uint16_t line_counter);
-exit_t parse_and(char *asm_instr, uint16_t *machine_instr, uint16_t line_counter);
+exit_t parse_add(char *operand1, char* operand2, char* operand3, uint16_t *machine_instr, uint16_t line_counter);
+exit_t parse_and(char *operand1, char* operand2, char* operand3, uint16_t *machine_instr, uint16_t line_counter);
 exit_t parse_not(char *asm_instr, uint16_t *machine_instr);
 exit_t parse_ret(char *asm_instr, uint16_t *machine_instr);
 exit_t parse_jmp(char *asm_instr, uint16_t *machine_instr);
