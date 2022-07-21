@@ -15,11 +15,11 @@
  * - JSR LABEL
  * - JSR PCoffset11
  * 
- * PCoffset11 is an 11-bit value; bits [10:0] of an instruction; used with the JSR opcode to compute the target address of a subroutine call. 
+ * PCoffset11: 11-bit value; bits [10:0] of an instruction; used with the JSR opcode to compute the target address of a subroutine call. 
  * Bits [10:0] are taken as an 11-bit 2’s complement integer, sign-extended to 16 bits and then added to the incremented PC to form the target address. 
  * Range −1024..1023.
  * 
- * LABEL is an assembly language construct that identifies a location symbolically (i.e., by means
+ * LABEL: assembly language construct that identifies a location symbolically (i.e., by means
  * of a name, rather than its 16-bit address).
  * In case of having a label, the corresponding PCoffset11 is worked out.
  *
