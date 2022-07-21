@@ -10,7 +10,7 @@
  * BaseR is a Base Register; one of R0..R7, used in conjunction with a six-bit offset to compute Base+offset addresses
  *
  * @param operand BaseR
- * @param machine_instruction 16-bit machine instruction (in case of error, it has undefined value)
+ * @param machine_instr 16-bit machine instruction (in case of error, it has undefined value)
  * @param line_counter line number of the assembly file
  * @return exit_t
  */

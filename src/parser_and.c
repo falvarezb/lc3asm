@@ -17,7 +17,7 @@
  * @param operand1 DR
  * @param operand2 SR1
  * @param operand3 SR2 or imm5
- * @param machine_instruction 16-bit machine instruction (in case of error, it has undefined value)
+ * @param machine_instr 16-bit machine instruction (in case of error, it has undefined value)
  * @param line_counter line number of the assembly file
  * @return exit_t
  */

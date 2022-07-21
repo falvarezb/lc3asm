@@ -413,7 +413,7 @@ exit_t second_pass_parse(const char *assembly_file_name, const char *object_file
                 result = parse_not(tokens[1], tokens[2], &machine_instr, line_counter);
             }
             else if(opcode_type == RET) {
-                result = parse_ret(line, &machine_instr);
+                result = parse_ret(&machine_instr);
             }
             else {
                 result = halt(&machine_instr);
