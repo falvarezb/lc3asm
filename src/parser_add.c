@@ -36,11 +36,11 @@ exit_t parse_add(char *operand1, char* operand2, char* operand3, uint16_t *machi
     //VALIDATING OPERANDS
 
     if((DR = is_register(operand1)) == -1) {        
-        return do_exit(EXIT_FAILURE, "expected register but found %s\n", operand1);        
+        return do_exit(EXIT_FAILURE, "ERROR (line %d): Expected register but found %s", line_counter, operand1);        
     }
 
     if((SR1 = is_register(operand2)) == -1) {
-        return do_exit(EXIT_FAILURE, "expected register but found %s\n", operand2);
+        return do_exit(EXIT_FAILURE, "ERROR (line %d): Expected register but found %s", line_counter, operand2);
     }
 
 

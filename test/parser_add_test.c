@@ -36,7 +36,7 @@ void test_add_wrong_register_DR(void  __attribute__((unused)) **state) {
     uint16_t machine_instr;
     exit_t result = parse_add("R8", "R1", "xa", &machine_instr, 0);
     assert_int_equal(result.code, 1);
-    assert_string_equal(result.desc, "expected register but found R8\n");
+    assert_string_equal(result.desc, "ERROR (line 0): Expected register but found R8");
     free(result.desc);
 }
 
@@ -44,7 +44,7 @@ void test_add_wrong_register_SR1(void  __attribute__((unused)) **state) {
     uint16_t machine_instr;
     exit_t result = parse_add("R0", "SR1", "xa", &machine_instr, 0);
     assert_int_equal(result.code, 1);
-    assert_string_equal(result.desc, "expected register but found SR1\n");
+    assert_string_equal(result.desc, "ERROR (line 0): Expected register but found SR1");
 }
 
 void test_add_wrong_imm5_too_big_dec(void  __attribute__((unused)) **state) {

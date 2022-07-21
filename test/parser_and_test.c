@@ -37,7 +37,7 @@ void test_and_wrong_register_DR(void  __attribute__((unused)) **state) {
     exit_t result = parse_and("R8","R1","xa", &machine_instr, 0);
 
     assert_int_equal(result.code, 1);
-    assert_string_equal(result.desc, "ERROR (line 0): expected register but found R8");
+    assert_string_equal(result.desc, "ERROR (line 0): Expected register but found R8");
 }
 
 void test_and_wrong_register_SR1(void  __attribute__((unused)) **state) {    
@@ -45,7 +45,7 @@ void test_and_wrong_register_SR1(void  __attribute__((unused)) **state) {
     exit_t result = parse_and("R0","SR1","xa", &machine_instr, 0);
 
     assert_int_equal(result.code, 1);
-    assert_string_equal(result.desc, "ERROR (line 0): expected register but found SR1");
+    assert_string_equal(result.desc, "ERROR (line 0): Expected register but found SR1");
 }
 
 void test_and_wrong_imm5_too_big_dec(void  __attribute__((unused)) **state) {    
