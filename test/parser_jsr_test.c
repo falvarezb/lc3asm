@@ -7,7 +7,7 @@
 
 void test_jsr_right_PCoffset11(void __attribute__ ((unused)) **state) {    
     uint16_t machine_instr;
-    parse_jsr("1", 0, &machine_instr);
+    parse_jsr("1", 0, &machine_instr,0);
     unsigned char *bytes = (unsigned char *)&machine_instr;
     //assert order is flipped because of little-endian arch
     assert_int_equal(bytes[0], 1);
@@ -16,16 +16,16 @@ void test_jsr_right_PCoffset11(void __attribute__ ((unused)) **state) {
 
 void test_jsr_PCoffset11_too_big(void __attribute__ ((unused))  **state) {    
     uint16_t machine_instr;
-    exit_t result = parse_jsr("2000", 0,&machine_instr);
+    exit_t result = parse_jsr("2000", 0,&machine_instr,0);
     assert_int_equal(result.code, 1);
-    assert_string_equal(result.desc, "value of PCoffset11 2000 is outside the range [-1024, 1023]");
+    assert_string_equal(result.desc, "ERROR (line 0): Value of PCoffset11 2000 is outside the range [-1024, 1023]");
 }
 
 void test_jsr_PCoffset11_too_small(void __attribute__ ((unused))  **state) {    
     uint16_t machine_instr;
-    exit_t result = parse_jsr("-2000", 0,&machine_instr);
+    exit_t result = parse_jsr("-2000", 0,&machine_instr,0);
     assert_int_equal(result.code, 1);
-    assert_string_equal(result.desc, "value of PCoffset11 -2000 is outside the range [-1024, 1023]");
+    assert_string_equal(result.desc, "ERROR (line 0): Value of PCoffset11 -2000 is outside the range [-1024, 1023]");
 }
 
 
@@ -33,7 +33,7 @@ void test_jsr_with_label(void __attribute__ ((unused))  **state) {
     initialize();
     add("LABEL", 0x3003);    
     uint16_t machine_instr;
-    parse_jsr("LABEL", 0x3001,&machine_instr);
+    parse_jsr("LABEL", 0x3001,&machine_instr,0);
 
     unsigned char *bytes = (unsigned char *)&machine_instr;
     //assert order is flipped because of little-endian arch
@@ -45,9 +45,9 @@ void test_jsr_with_label(void __attribute__ ((unused))  **state) {
 void test_jsr_non_existent_label(void __attribute__ ((unused))  **state) {
     initialize();    
     uint16_t machine_instr;
-    exit_t result = parse_jsr("NON_EXISTENT_LABEL", 0,&machine_instr);
+    exit_t result = parse_jsr("NON_EXISTENT_LABEL", 0,&machine_instr,0);
     assert_int_equal(result.code, 1);
-    assert_string_equal(result.desc, "Symbol not found ('NON_EXISTENT_LABEL')");
+    assert_string_equal(result.desc, "ERROR (line 0): Symbol not found ('NON_EXISTENT_LABEL')");
 }
 
 int main(int __attribute__ ((unused)) argc, char const __attribute__ ((unused)) *argv[]) {

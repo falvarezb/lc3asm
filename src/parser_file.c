@@ -404,7 +404,7 @@ exit_t second_pass_parse(const char *assembly_file_name, const char *object_file
                 if(num_tokens < 2) {
                     return exit_second_pass(EXIT_FAILURE, source_file, destination_file, tokens, "ERROR (line %d): missing JSR operand", line_counter);
                 }
-                result = parse_jsr(tokens[1], instruction_counter, &machine_instr);
+                result = parse_jsr(tokens[1], instruction_counter, &machine_instr, line_counter);
             }
             else if(opcode_type == NOT) {
                 if(num_tokens < 3) {

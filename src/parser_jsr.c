@@ -22,10 +22,12 @@
  * In case of having a label representing a memory address, the corresponding PCoffset11 is worked out.
  *
  * @param operand LABEL or PCoffset11
- * @param instruction_location memory address of the instruction being parsed
- * @return uint16_t 16-bit machine instruction or 0 in case of error (errdesc is set with error details)
+ * @param instruction_counter instruction number in the assembly file
+ * @param machine_instruction 16-bit machine instruction (in case of error, it has undefined value)
+ * @param line_counter line number of the assembly file
+ * @return exit_t
  */
-exit_t parse_jsr(char *operand, uint16_t instruction_location, uint16_t *machine_instr) {
+exit_t parse_jsr(char *operand, uint16_t instruction_counter, uint16_t *machine_instr, uint16_t line_counter) {
     
     long PCoffset11;    
 
@@ -34,14 +36,14 @@ exit_t parse_jsr(char *operand, uint16_t instruction_location, uint16_t *machine
         //transform label into PCoffset11 by retrieving the memory location corresponding to the label from symbol table
         node_t *node = lookup(operand);
         if(!node) {
-            return do_exit(EXIT_FAILURE,"Symbol not found ('%s')", operand);                        
+            return do_exit(EXIT_FAILURE,"ERROR (line %d): Symbol not found ('%s')", line_counter, operand);                        
         }
-        PCoffset11 = node->val - instruction_location - 1;
+        PCoffset11 = node->val - instruction_counter - 1;
     }
     else {
         //validate PCoffset11 numerical range
         if(PCoffset11 < -1024 || PCoffset11 > 1023) {
-            return do_exit(EXIT_FAILURE, "value of PCoffset11 %ld is outside the range [-1024, 1023]", PCoffset11);                        
+            return do_exit(EXIT_FAILURE, "ERROR (line %d): Value of PCoffset11 %ld is outside the range [-1024, 1023]", line_counter, PCoffset11);                        
         }
     }
 
