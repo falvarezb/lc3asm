@@ -2,34 +2,32 @@
 #include "../include/lc3.h"
 
 /**
- * @brief
+ * @brief Converts assembly 'NOT' instruction into machine instruction
  *
- * Assembler formats:
- * NOT DR,SR
+ * ### Assembly format
+ * - NOT DR,SR
  *
- * @param asm_instr NOT instruction
- * @return uint16_t* 16 bits representation of the instruction or 0 in case of error
+ * SR: Source Register; one of R0..R7 which specifies the register from which a source operand is obtained
+ * DR: Destination Register; one of R0..R7, which specifies which register the result of an instruction should be written to
+ *
+ * @param operand1 DR
+ * @param operand2 SR
+ * @param machine_instruction 16-bit machine instruction (in case of error, it has undefined value)
+ * @param line_counter line number of the assembly file
+ * @return exit_t
  */
-exit_t parse_not(char *asm_instr, uint16_t *machine_instr) {
+exit_t parse_not(char *operand1, char *operand2, uint16_t *machine_instr, uint16_t line_counter) {
 
-    //PARSING INSTRUCTION TOKENS
     int DR, SR;
-    char *instr_name = "NOT";
-    int num_tokens = 3;
-    char **tokens;    
 
-    if((tokens = instruction_tokens(asm_instr, instr_name, num_tokens)) == NULL) {
-        return do_exit(EXIT_FAILURE, "unexpected token in NOT instruction");
+    //VALIDATING OPERANDS
+
+    if((DR = is_register(operand1)) == -1) {
+        return do_exit(EXIT_FAILURE, "ERROR (line %d): Expected register but found %s", line_counter, operand1);
     }
 
-    //VALIDATING TOKENS
-
-    if((DR = is_register(tokens[1])) == -1) {        
-        return do_exit(EXIT_FAILURE,"expected register but found %s", tokens[1]);       
-    }
-
-    if((SR = is_register(tokens[2])) == -1) {
-        return do_exit(EXIT_FAILURE,"expected register but found %s", tokens[2]);       
+    if((SR = is_register(operand2)) == -1) {
+        return do_exit(EXIT_FAILURE, "ERROR (line %d): Expected register but found %s", line_counter, operand2);
     }
 
 
@@ -49,7 +47,7 @@ exit_t parse_not(char *asm_instr, uint16_t *machine_instr) {
     //last 6 bits = 111111
     *machine_instr += 63;
 
-    return do_exit(EXIT_SUCCESS, NULL);  
+    return success();
 }
 
 
