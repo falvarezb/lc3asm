@@ -36,7 +36,7 @@
  * @param opcode opcode to identify whether it is a LD or STI instruction
  * @return exit_t
  */
-exit_t parse_ld_sti(char *operand1, char *operand2, uint16_t instruction_counter, uint16_t *machine_instr, uint16_t line_counter, opcode_t opcode) {
+exit_t parse_pcoffset9_pattern(char *operand1, char *operand2, uint16_t instruction_counter, uint16_t *machine_instr, uint16_t line_counter, opcode_t opcode) {
     
     int lc3register;
     long PCoffset9;  

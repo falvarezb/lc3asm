@@ -464,7 +464,7 @@ exit_t second_pass_parse(const char *assembly_file_name, const char *object_file
                 if(num_tokens < 3) {
                     return exit_second_pass(EXIT_FAILURE,is_label_line, source_file, destination_file, tokens, "ERROR (line %d): missing operands", line_counter);
                 }
-                result = parse_ld_sti(tokens[1], tokens[2], instruction_counter, &machine_instr, line_counter, opcode_type);
+                result = parse_pcoffset9_pattern(tokens[1], tokens[2], instruction_counter, &machine_instr, line_counter, opcode_type);
             }
             else if(opcode_type == RET) {
                 result = parse_ret(&machine_instr);
