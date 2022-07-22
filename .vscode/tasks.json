@@ -138,7 +138,7 @@
                 "${workspaceFolder}/src/parser_jsr.c",
                 "${workspaceFolder}/src/parser_not.c",
                 "${workspaceFolder}/src/parser_ret.c",
-                "${workspaceFolder}/src/parser_ld_sti.c",
+                "${workspaceFolder}/src/memory_access_instr.c",
                 "${workspaceFolder}/src/common.c",        
                 "${workspaceFolder}/src/lc3util.c",
                 "${workspaceFolder}/src/dict.c",
