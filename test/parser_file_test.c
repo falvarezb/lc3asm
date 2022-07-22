@@ -49,8 +49,13 @@ static void run_second_pass_test(char *asm_file_name, char *expected_obj_file_na
 }
 
 static void run_assemble_test(char *asm_file_name, char *expected_obj_file_name, char *actual_obj_file_name) {
-    assemble(asm_file_name);
-    printf("\nmyerror:%s\n", errdesc);
+    exit_t result = assemble(asm_file_name);
+    if(result.code) {
+        printf("\n\n==========================================\n");
+        printf("%s\n", result.desc);    
+        printf("==========================================\n\n");
+    }
+    assert_int_equal(result.code, 0);
 
     FILE *expected_obj_file = fopen(expected_obj_file_name, "r");
     FILE *actual_obj_file = fopen(actual_obj_file_name, "r");
@@ -106,7 +111,7 @@ static void test_symbol_table_t4(void  __attribute__((unused)) **state) {
 static void test_symbol_table_t5(void  __attribute__((unused)) **state) {
     exit_t result = compute_symbol_table("./test/t5.asm");
     assert_int_equal(result.code, EXIT_FAILURE);
-    assert_string_equal(result.desc, "invalid opcode ('LABEL2')");
+    assert_string_equal(result.desc, "ERROR (line 10): Invalid opcode ('LABEL2')");
     free(result.desc);
 }
 
@@ -195,6 +200,10 @@ static void test_wrong_assembly_file_extension(void  __attribute__((unused)) **s
     free(result.desc);
 }
 
+static void assemble_or_asm(void  __attribute__((unused)) **state) {
+    run_assemble_test("./test/or.asm", "./test/or.expected.obj", "./test/or.obj");
+}
+
 
 int main(int argc, char const *argv[]) {
     const struct CMUnitTest tests[] = {
@@ -212,7 +221,8 @@ int main(int argc, char const *argv[]) {
         cmocka_unit_test_setup_teardown(test_first_pass_missing_orig_t7, setup, teardown),
         cmocka_unit_test_setup_teardown(test_first_pass_missing_orig_address_t8, setup, teardown),
         cmocka_unit_test_setup_teardown(test_missing_assembly_file, setup, teardown),
-        cmocka_unit_test_setup_teardown(test_wrong_assembly_file_extension, setup, teardown)
+        cmocka_unit_test_setup_teardown(test_wrong_assembly_file_extension, setup, teardown),
+        cmocka_unit_test_setup_teardown(assemble_or_asm, setup, teardown)
     };
     return cmocka_run_group_tests(tests, NULL, NULL);
 }

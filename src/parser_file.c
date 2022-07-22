@@ -57,13 +57,13 @@ static exit_t exit_compute_symbol_table(int exit_code, char **tokens, bool is_la
     return (exit_t) { .code = exit_code, .desc = errdesc };
 }
 
-static void free_second_pass(FILE *source_file, FILE *destination_file, char **tokens) {
+static void free_second_pass(FILE *source_file, FILE *destination_file, char **tokens, bool is_label_line) {
     fclose(source_file);
     fclose(destination_file);
-    free(tokens);
+    free_tokens(tokens, is_label_line);
 }
 
-static exit_t exit_second_pass(int exit_code, FILE *source_file, FILE *destination_file, char **tokens, char *format, ...) {
+static exit_t exit_second_pass(int exit_code, bool is_label_line, FILE *source_file, FILE *destination_file, char **tokens, char *format, ...) {
     size_t errdesc_length = ERR_DESC_LENGTH;
     char *errdesc;
     if(format) {
@@ -80,7 +80,7 @@ static exit_t exit_second_pass(int exit_code, FILE *source_file, FILE *destinati
         errdesc = NULL;
     }
 
-    free_second_pass(source_file, destination_file, tokens);
+    free_second_pass(source_file, destination_file, tokens, is_label_line);
     return (exit_t) { .code = exit_code, .desc = errdesc };
 }
 
@@ -153,7 +153,9 @@ linetype_t compute_line_type(const char *first_token) {
         strcmp(first_token, "JSR") == 0 ||
         strcmp(first_token, "NOT") == 0 ||
         strcmp(first_token, "RET") == 0 ||
-        strcmp(first_token, "HALT") == 0
+        strcmp(first_token, "HALT") == 0 ||
+        strcmp(first_token, "LD") == 0 ||
+        strcmp(first_token, "STI") == 0
         ) {
         result = OPCODE;
     }
@@ -163,10 +165,14 @@ linetype_t compute_line_type(const char *first_token) {
     else if(strcmp(first_token, ".END") == 0) {
         result = END_DIRECTIVE;
     }
+    else if(strcmp(first_token, ".FILL") == 0) {
+        result = FILL_DIRECTIVE;
+    }
     else if(first_token[0] == ';') {
         result = COMMENT;
     }
     else {
+        //any unrecognised token is considered to be a label
         result = LABEL;
     }
 
@@ -200,8 +206,17 @@ opcode_t compute_opcode_type(const char *opcode) {
     else if(strcmp(opcode, "RET") == 0) {
         result = RET;
     }
-    else {
+    else if(strcmp(opcode, "LD") == 0) {
+        result = LD;
+    }
+    else if(strcmp(opcode, "STI") == 0) {
+        result = STI;
+    }
+    else if(strcmp(opcode, "HALT") == 0){
         result = HALT;
+    }
+    else {
+        assert(false);
     }
     return result;
 }
@@ -252,7 +267,9 @@ exit_t compute_symbol_table(const char *assembly_file_name) {
     }
     while((read = getline(&line, &len, source_file)) != -1) {
         printf("%s", line);
-        line[read - 1] = '\0'; //remove newline char at the end of the line
+        if(line[read-1] == '\n') {
+            line[read - 1] = '\0'; //remove newline char at the end of the line
+        }
 
         bool is_label_line = false;
         line_counter++;
@@ -311,7 +328,7 @@ exit_t compute_symbol_table(const char *assembly_file_name) {
             for(int i = 0; i < num_found_labels; i++) {
                 free(found_labels[i]);
             }
-            return exit_compute_symbol_table(EXIT_FAILURE, tokens, is_label_line, line, source_file, "invalid opcode ('%s')", tokens[0]);
+            return exit_compute_symbol_table(EXIT_FAILURE, tokens, is_label_line, line, source_file, "ERROR (line %d): Invalid opcode ('%s')", line_counter, tokens[0]);
         }
         else if(line_type == OPCODE) {
             add_labels_if_any_to_symbol_table(found_labels, &num_found_labels, instruction_counter);
@@ -367,9 +384,12 @@ exit_t second_pass_parse(const char *assembly_file_name, const char *object_file
 
     errno = 0;
     while((read = getline(&line, &len, source_file)) != -1) {
+        bool is_label_line = false;
         line_counter++;
         printf("%s", line);
-        line[read - 1] = '\0'; //remove newline char at the end of the line
+        if(line[read-1] == '\n') {
+            line[read - 1] = '\0'; //remove newline char at the end of the line
+        }
         int num_tokens;
         char **tokens = split_tokens(line, &num_tokens, " ,");
         if(num_tokens == 0) {
@@ -377,6 +397,19 @@ exit_t second_pass_parse(const char *assembly_file_name, const char *object_file
         }
 
         linetype_t line_type = compute_line_type(tokens[0]);
+        if(line_type == LABEL) {            
+            if(num_tokens > 1) {
+                //continue processing the rest of the line as there are more elements after the label
+                tokens++;
+                is_label_line = true;
+                line_type = compute_line_type(tokens[0]);
+            }
+            else {
+                free(tokens);
+                continue;
+            }
+        }
+
         if(line_type == END_DIRECTIVE) {
             //stop reading file
             free(tokens);
@@ -386,7 +419,7 @@ exit_t second_pass_parse(const char *assembly_file_name, const char *object_file
             orig(tokens[1], &machine_instr, line_counter);
             instruction_counter = machine_instr;
             if(write_machine_instruction(machine_instr, destination_file)) {
-                free_second_pass(source_file, destination_file, tokens);
+                free_second_pass(source_file, destination_file, tokens, is_label_line);
                 return do_exit(EXIT_FAILURE, "error writing instruction to object file");
             }
         }
@@ -394,7 +427,7 @@ exit_t second_pass_parse(const char *assembly_file_name, const char *object_file
             fill(tokens[1], &machine_instr, line_counter);   
             //TODO review name: it's not machine instruction but allocated value         
             if(write_machine_instruction(machine_instr, destination_file)) {
-                free_second_pass(source_file, destination_file, tokens);
+                free_second_pass(source_file, destination_file, tokens, is_label_line);
                 return do_exit(EXIT_FAILURE, "error writing instruction to object file");
             }
         }
@@ -402,48 +435,57 @@ exit_t second_pass_parse(const char *assembly_file_name, const char *object_file
             opcode_t opcode_type = compute_opcode_type(tokens[0]);
             if(opcode_type == ADD) {
                 if(num_tokens < 4) {
-                    return exit_second_pass(EXIT_FAILURE, source_file, destination_file, tokens, "ERROR (line %d): missing ADD operands", line_counter);
+                    return exit_second_pass(EXIT_FAILURE, is_label_line, source_file, destination_file, tokens, "ERROR (line %d): missing ADD operands", line_counter);
                 }
                 result = parse_add(tokens[1], tokens[2], tokens[3], &machine_instr, line_counter);
             }
             else if(opcode_type == AND) {
                 if(num_tokens < 4) {
-                    return exit_second_pass(EXIT_FAILURE, source_file, destination_file, tokens, "ERROR (line %d): missing AND operands", line_counter);
+                    return exit_second_pass(EXIT_FAILURE, is_label_line, source_file, destination_file, tokens, "ERROR (line %d): missing AND operands", line_counter);
                 }
-                result = parse_add(tokens[1], tokens[2], tokens[3], &machine_instr, line_counter);
+                result = parse_and(tokens[1], tokens[2], tokens[3], &machine_instr, line_counter);
             }
             else if(opcode_type == JMP) {
                 result = parse_jmp(line, &machine_instr,line_counter);
             }
             else if(opcode_type == JSR) {
                 if(num_tokens < 2) {
-                    return exit_second_pass(EXIT_FAILURE, source_file, destination_file, tokens, "ERROR (line %d): missing JSR operand", line_counter);
+                    return exit_second_pass(EXIT_FAILURE, is_label_line, source_file, destination_file, tokens, "ERROR (line %d): missing JSR operand", line_counter);
                 }
                 result = parse_jsr(tokens[1], instruction_counter, &machine_instr, line_counter);
             }
             else if(opcode_type == NOT) {
                 if(num_tokens < 3) {
-                    return exit_second_pass(EXIT_FAILURE, source_file, destination_file, tokens, "ERROR (line %d): missing NOT operands", line_counter);
+                    return exit_second_pass(EXIT_FAILURE, is_label_line, source_file, destination_file, tokens, "ERROR (line %d): missing NOT operands", line_counter);
                 }
                 result = parse_not(tokens[1], tokens[2], &machine_instr, line_counter);
+            }
+            else if(opcode_type == LD || opcode_type == STI) {
+                if(num_tokens < 3) {
+                    return exit_second_pass(EXIT_FAILURE,is_label_line, source_file, destination_file, tokens, "ERROR (line %d): missing operands", line_counter);
+                }
+                result = parse_ld_sti(tokens[1], tokens[2], instruction_counter, &machine_instr, line_counter, opcode_type);
             }
             else if(opcode_type == RET) {
                 result = parse_ret(&machine_instr);
             }
-            else {
+            else if(opcode_type == HALT){
                 result = halt(&machine_instr);
+            }
+            else {
+                assert(false);
             }
 
             if(result.code) {
-                free_second_pass(source_file, destination_file, tokens);
+                free_second_pass(source_file, destination_file, tokens,is_label_line);
                 return result;
             }
             if(write_machine_instruction(machine_instr, destination_file)) {
-                return exit_second_pass(EXIT_FAILURE, source_file, destination_file, tokens, "error writing instruction to object file");
+                return exit_second_pass(EXIT_FAILURE,is_label_line, source_file, destination_file, tokens, "error writing instruction to object file");
             }
             instruction_counter++;
         }
-        free(tokens);
+        free_tokens(tokens,is_label_line);
     }
 
     free(line);
@@ -451,8 +493,8 @@ exit_t second_pass_parse(const char *assembly_file_name, const char *object_file
     fclose(destination_file);
 
     //check if getline resulted in error
-    if(read == -1 && errno) {
-        return do_exit(EXIT_FAILURE, "getLine error %d\n", errno);
+    if(read == -1 && errno) {        
+        return do_exit(EXIT_FAILURE, "getLine error %d", errno);
     }
 
     return success();
