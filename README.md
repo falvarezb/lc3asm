@@ -118,12 +118,12 @@ Each line of the assembly file corresponding to an instruction/directive is:
 - converted into a 16-bit integer (using big-endian format)
 - stored in a memory cell (each memory cell is 16-bit long)
 
-The number of memory cells is 2**16, therefore a memory address can also be stored in a memory cell
+The number of memory cells is 2**16, therefore a memory address fits in a memory cell
 (making it possible to have pointers)
 
 The memory address in which an instruction is stored corresponds to the position of said instruction inside
-the assembly file: the position (instruction number) is added to the offset established by the .ORIG directive.
+the assembly file: the position (instruction number) is the offset to be added to the value defined by the .ORIG directive.
 
 For instance, given `.ORIG n`, the first instruction in the file is stored on memory address `n`, the second one on `n+1` and so on.
 
-It's worth noticing that instructions and values (allocated by directives) can be intermingled in memory.
+Instructions and values (allocated by directives) shared the same address space and therefore can be intermingled in memory. This requires extra care to avoid ending up with the PC pointing to memory address containing a random value instead of an actual instruction.
