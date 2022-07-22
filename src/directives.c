@@ -32,6 +32,6 @@ exit_t orig(char *str, uint16_t *memaddr, uint16_t line_counter) {
  * @param n pointer to store the numeric representation of the operand
  * @return error_t
  */
-exit_t fill(char *str, uint16_t* n) {
-    return (exit_t){.code = EXIT_SUCCESS, .desc = NULL};
+exit_t fill(char *str, uint16_t* n, uint16_t line_counter) {
+    return is_valid_16bit_int(str, n, line_counter);
 }

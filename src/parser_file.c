@@ -299,6 +299,13 @@ exit_t compute_symbol_table(const char *assembly_file_name) {
             }
             orig_found = true;
         }
+        else if(line_type == FILL_DIRECTIVE) {
+            add_labels_if_any_to_symbol_table(found_labels, &num_found_labels, instruction_counter);
+            if(!orig_found) {
+                return exit_compute_symbol_table(EXIT_FAILURE, tokens, is_label_line, line, source_file, "ERROR (line %d): Instruction not preceeded by a .orig directive", line_counter);
+            }
+            instruction_counter++;
+        }
         else if(line_type == LABEL) {
             //two labels in the same line is disallowed            
             for(int i = 0; i < num_found_labels; i++) {
@@ -353,7 +360,7 @@ exit_t second_pass_parse(const char *assembly_file_name, const char *object_file
     ssize_t read;
     uint16_t line_counter = 0;
     uint16_t instruction_counter = 0; // incremental value that represents the memory address of each instruction
-    uint16_t machine_instr = 0; // 16-bit representation of machine instruction, 0 if assembly instruction cannot be parsed
+    uint16_t machine_instr = 0; // 16-bit representation of machine instruction/allocated value, 0 if assembly instruction cannot be parsed
     FILE *source_file = fopen(assembly_file_name, "r");
     FILE *destination_file = fopen(object_file_name, "w");
     exit_t result;
@@ -378,6 +385,14 @@ exit_t second_pass_parse(const char *assembly_file_name, const char *object_file
         else if(line_type == ORIG_DIRECTIVE) {
             orig(tokens[1], &machine_instr, line_counter);
             instruction_counter = machine_instr;
+            if(write_machine_instruction(machine_instr, destination_file)) {
+                free_second_pass(source_file, destination_file, tokens);
+                return do_exit(EXIT_FAILURE, "error writing instruction to object file");
+            }
+        }
+        else if(line_type == FILL_DIRECTIVE) {
+            fill(tokens[1], &machine_instr, line_counter);   
+            //TODO review name: it's not machine instruction but allocated value         
             if(write_machine_instruction(machine_instr, destination_file)) {
                 free_second_pass(source_file, destination_file, tokens);
                 return do_exit(EXIT_FAILURE, "error writing instruction to object file");

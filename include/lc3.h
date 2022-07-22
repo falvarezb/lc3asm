@@ -12,6 +12,7 @@ exit_t parse_ld_sti(char *operand1, char *operand2, uint16_t instruction_counter
 
 exit_t halt(uint16_t *machine_instr);
 exit_t orig(char *token, uint16_t *memaddr, uint16_t line_counter);
+exit_t fill(char *str, uint16_t* n, uint16_t line_counter);
 
 exit_t first_pass_parse(const char *assembly_file_name, const char *symbol_table_file_name);
 exit_t second_pass_parse(const char *assembly_file_name, const char *object_file_name);
