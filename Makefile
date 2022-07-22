@@ -15,7 +15,7 @@ CFLAGS = -Og -Wall -Wno-missing-braces -Wextra -Wshadow -Wpedantic -std=c11 -fno
 LDFLAGS = 
 SOURCE_DIR := src
 OBJS_PROD := $(addprefix $(BUILD_DIR)/, $(patsubst %.c,%.o,$(shell ls $(SOURCE_DIR))))
-SRCS_TEST := test.c parser_add_test.c parser_and_test.c parser_not_test.c parser_ret_test.c parser_jmp_test.c
+SRCS_TEST := test.c parser_add_test.c parser_and_test.c parser_not_test.c parser_ret_test.c parser_jmp_test.c parser_ld_sti_test.c
 OBJS_TEST := $(addprefix $(BUILD_DIR)/, $(patsubst %.c,%.o,$(SRCS_TEST)))
 SRCS_TOOLS := lc3objdump.c
 OBJS_TOOLS := $(addprefix $(TOOLS_BUILD_DIR)/, $(patsubst %.c,%.o,$(SRCS_TOOLS)))
@@ -34,7 +34,7 @@ endif
 
 .PHONY: all clean compile compiletest unittest runobjdump
 
-unittest: addtest andtest jmptest nottest rettest jsrtest filetest
+unittest: addtest andtest jmptest nottest rettest jsrtest ldstitest filetest
 
 all: clean compile unittest
 
@@ -95,6 +95,14 @@ jsrtest: $(BUILD_DIR)/jsrtest
 	$(VALGRIND) ./$^
 
 $(BUILD_DIR)/jsrtest: $(OBJS_PROD) $(BUILD_DIR)/parser_jsr_test.o
+	$(LINK.c) $^ -o $@ $(LDLIBS) -lcmocka
+
+#######################
+
+ldstitest: $(BUILD_DIR)/ldstitest
+	$(VALGRIND) ./$^
+
+$(BUILD_DIR)/ldstitest: $(OBJS_PROD) $(BUILD_DIR)/parser_ld_sti_test.o
 	$(LINK.c) $^ -o $@ $(LDLIBS) -lcmocka
 
 #######################
