@@ -155,7 +155,10 @@ linetype_t compute_line_type(const char *first_token) {
         strcmp(first_token, "RET") == 0 ||
         strcmp(first_token, "HALT") == 0 ||
         strcmp(first_token, "LD") == 0 ||
-        strcmp(first_token, "STI") == 0
+        strcmp(first_token, "ST") == 0 ||
+        strcmp(first_token, "LDI") == 0 ||
+        strcmp(first_token, "STI") == 0 ||
+        strcmp(first_token, "LEA") == 0
         ) {
         result = OPCODE;
     }
@@ -209,8 +212,17 @@ opcode_t compute_opcode_type(const char *opcode) {
     else if(strcmp(opcode, "LD") == 0) {
         result = LD;
     }
+    else if(strcmp(opcode, "ST") == 0) {
+        result = ST;
+    }
+    else if(strcmp(opcode, "LDI") == 0) {
+        result = LDI;
+    }
     else if(strcmp(opcode, "STI") == 0) {
         result = STI;
+    }
+    else if(strcmp(opcode, "LEA") == 0) {
+        result = LEA;
     }
     else if(strcmp(opcode, "HALT") == 0){
         result = HALT;
@@ -460,7 +472,7 @@ exit_t second_pass_parse(const char *assembly_file_name, const char *object_file
                 }
                 result = parse_not(tokens[1], tokens[2], &machine_instr, line_counter);
             }
-            else if(opcode_type == LD || opcode_type == STI) {
+            else if(opcode_type == LD || opcode_type == ST || opcode_type == LDI || opcode_type == STI || opcode_type == LEA) {
                 if(num_tokens < 3) {
                     return exit_second_pass(EXIT_FAILURE,is_label_line, source_file, destination_file, tokens, "ERROR (line %d): missing operands", line_counter);
                 }

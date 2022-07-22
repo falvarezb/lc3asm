@@ -9,13 +9,13 @@
 #include "../include/lc3.h"
 
 /**
- * @brief Parse an assembly LD/STI instruction and returns the corresponding machine instruction
+ * @brief Parse assembly instructions to access memory using a PC offset of 9 bits. Instructions in this category are: LD, ST, LDI, STI, LEA
  *
- * ## Assembly format
+ * ## Assembly format examples
  * - LD DR,LABEL
  * - LD DR,PCoffset9
- * - STI SR,LABEL
- * - STI SR,PCoffset9
+ * - ST SR,LABEL
+ * - ST SR,PCoffset9
  * 
  * SR: Source Register; one of R0..R7 which specifies the register from which a source operand is obtained
  * DR: Destination Register; one of R0..R7, which specifies which register the result of an instruction should be written to
@@ -28,7 +28,7 @@
  * of a name, rather than its 16-bit address).
  * In case of having a label, the corresponding PCoffset9 is worked out.
  *
- * @param operand1 source/destination register (depending on whether is STI or LD respectively)
+ * @param operand1 source/destination register of the corresponding store/load instruction
  * @param operand2 LABEL or PCoffset9
  * @param instruction_counter instruction number in the assembly file
  * @param machine_instr 16-bit machine instruction (in case of error, it has undefined value)
@@ -68,12 +68,24 @@ exit_t parse_pcoffset9_pattern(char *operand1, char *operand2, uint16_t instruct
         //ops code: 0010
         opcode_binary = 2 << 12;
     }
+    else if(opcode == ST) {
+        //ops code: 0011
+        opcode_binary = 3 << 12;
+    }
+    else if(opcode == LDI) {
+        //ops code: 1010
+        opcode_binary = 10 << 12;
+    }
     else if(opcode == STI) {
         //ops code: 1011
         opcode_binary = 11 << 12;
     }
+    else if(opcode == LEA) {
+        //ops code: 1110
+        opcode_binary = 14 << 12;
+    }
     else {
-        opcode_binary = 0;
+        assert(false);
     }
     *machine_instr = opcode_binary;
 
