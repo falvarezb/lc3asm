@@ -224,6 +224,27 @@ opcode_t compute_opcode_type(const char *opcode) {
     else if(strcmp(opcode, "LEA") == 0) {
         result = LEA;
     }
+    else if(strcmp(opcode, "BR") == 0 || strcmp(opcode, "BRnzp") == 0) {
+        result = BR;
+    }
+    else if(strcmp(opcode, "BRn") == 0) {
+        result = BRn;
+    }
+    else if(strcmp(opcode, "BRz") == 0) {
+        result = BRz;
+    }
+    else if(strcmp(opcode, "BRp") == 0) {
+        result = BRp;
+    }
+    else if(strcmp(opcode, "BRnz") == 0) {
+        result = BRnz;
+    }
+    else if(strcmp(opcode, "BRnp") == 0) {
+        result = BRnp;
+    }
+    else if(strcmp(opcode, "BRzp") == 0) {
+        result = BRzp;
+    }
     else if(strcmp(opcode, "HALT") == 0){
         result = HALT;
     }
@@ -477,6 +498,48 @@ exit_t second_pass_parse(const char *assembly_file_name, const char *object_file
                     return exit_second_pass(EXIT_FAILURE,is_label_line, source_file, destination_file, tokens, "ERROR (line %d): missing operands", line_counter);
                 }
                 result = parse_pcoffset9_pattern(tokens[1], tokens[2], instruction_counter, &machine_instr, line_counter, opcode_type);
+            }
+            else if(opcode_type == BR) {
+                if(num_tokens < 2) {
+                    return exit_second_pass(EXIT_FAILURE,is_label_line, source_file, destination_file, tokens, "ERROR (line %d): missing operands", line_counter);
+                }
+                result = parse_br(tokens[1], 7, instruction_counter, &machine_instr, line_counter);
+            }
+            else if(opcode_type == BRn) {
+                if(num_tokens < 2) {
+                    return exit_second_pass(EXIT_FAILURE,is_label_line, source_file, destination_file, tokens, "ERROR (line %d): missing operands", line_counter);
+                }
+                result = parse_br(tokens[1], 4, instruction_counter, &machine_instr, line_counter);
+            }
+            else if(opcode_type == BRz) {
+                if(num_tokens < 2) {
+                    return exit_second_pass(EXIT_FAILURE,is_label_line, source_file, destination_file, tokens, "ERROR (line %d): missing operands", line_counter);
+                }
+                result = parse_br(tokens[1], 2, instruction_counter, &machine_instr, line_counter);
+            }
+            else if(opcode_type == BRp) {
+                if(num_tokens < 2) {
+                    return exit_second_pass(EXIT_FAILURE,is_label_line, source_file, destination_file, tokens, "ERROR (line %d): missing operands", line_counter);
+                }
+                result = parse_br(tokens[1], 1, instruction_counter, &machine_instr, line_counter);
+            }
+            else if(opcode_type == BRnz) {
+                if(num_tokens < 2) {
+                    return exit_second_pass(EXIT_FAILURE,is_label_line, source_file, destination_file, tokens, "ERROR (line %d): missing operands", line_counter);
+                }
+                result = parse_br(tokens[1], 6, instruction_counter, &machine_instr, line_counter);
+            }
+            else if(opcode_type == BRnp) {
+                if(num_tokens < 2) {
+                    return exit_second_pass(EXIT_FAILURE,is_label_line, source_file, destination_file, tokens, "ERROR (line %d): missing operands", line_counter);
+                }
+                result = parse_br(tokens[1], 5, instruction_counter, &machine_instr, line_counter);
+            }
+            else if(opcode_type == BRzp) {
+                if(num_tokens < 2) {
+                    return exit_second_pass(EXIT_FAILURE,is_label_line, source_file, destination_file, tokens, "ERROR (line %d): missing operands", line_counter);
+                }
+                result = parse_br(tokens[1], 3, instruction_counter, &machine_instr, line_counter);
             }
             else if(opcode_type == RET) {
                 result = parse_ret(&machine_instr);

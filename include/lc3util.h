@@ -9,7 +9,7 @@ typedef enum {
 } linetype_t;
 
 typedef enum {
-    ADD, AND, JMP, JSR, NOT, RET, HALT, LD, ST, LDI, STI, LEA
+    ADD, AND, JMP, JSR, NOT, RET, HALT, LD, ST, LDI, STI, LEA, BR, BRp, BRz, BRn, BRzp, BRnp, BRnz
 } opcode_t;
 
 int is_register(char *token);
