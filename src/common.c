@@ -41,7 +41,7 @@ void clearerrdesc() {
 
 exit_t do_exit(int exit_code, char *format, ...) {
     size_t errdesc_length = ERR_DESC_LENGTH;
-    char *errdesc;
+    char *errdesc = NULL;
     if(format) {
         errdesc = malloc(errdesc_length * sizeof(char));
         va_list ap;

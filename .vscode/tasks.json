@@ -91,6 +91,38 @@
         },
         {
             "type": "cppbuild",
+            "label": "C/C++ macos: brtest",
+            "command": "/usr/bin/gcc",
+            "args": [
+                "-g",
+                "-Wall",    
+                "-Wno-missing-braces ",                  
+                "${workspaceFolder}/test/parser_br_test.c",
+                "${workspaceFolder}/src/branching_instr.c",
+                "${workspaceFolder}/src/lc3util.c",
+                "${workspaceFolder}/src/common.c",
+                "${workspaceFolder}/src/dict.c",                             
+                "-lcmocka",                
+                "-fno-common",
+                "-fsanitize=address",
+                "-fsanitize=undefined",
+                "-o",
+                "${workspaceFolder}/out/test.out"
+            ],
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "Task to run tests"
+        },
+        {
+            "type": "cppbuild",
             "label": "C/C++ linux: test",
             "command": "/usr/bin/gcc",
             "args": [

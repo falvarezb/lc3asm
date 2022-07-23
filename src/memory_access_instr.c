@@ -1,6 +1,6 @@
 /**
- * @file parser_jsr.c
- * @brief 
+ * @file memory_access_instr.c
+ * @brief Contains functions to parse instructions to read/write to memory
  * @version 0.1
  * @date 2022-07-11
  * 
