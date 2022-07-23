@@ -119,3 +119,23 @@ char **instruction_tokens(char *asm_instr, char *instr_name, int num_tokens) {
     return tokens;
 }
 
+exit_t validate_offset(char* value, int lower_bound, int upper_bound, uint16_t instruction_number, uint16_t line_counter, long *offset) {
+
+    //is value a label or a number?
+    if(!strtolong(value, offset)) {
+        //transform label into offset by retrieving the memory location corresponding to the label from symbol table
+        node_t *node = lookup(value);
+        if(!node) {
+            return do_exit(EXIT_FAILURE, "ERROR (line %d): Symbol not found ('%s')", line_counter, value);
+        }
+        *offset = node->val - instruction_number - 1;
+    }
+
+    //validate offset numerical range
+    if(*offset < lower_bound || *offset > upper_bound) {
+        return do_exit(EXIT_FAILURE, "ERROR (line %d): Value of offset %ld is outside the range [%d, %d]", line_counter, *offset, lower_bound, upper_bound);
+    }
+
+    return success();
+}
+

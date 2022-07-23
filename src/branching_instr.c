@@ -65,23 +65,11 @@ exit_t parse_jsr(char *operand, uint16_t instruction_counter, uint16_t *machine_
 
 exit_t parse_br(char *operand, int condition_codes, uint16_t instruction_number, uint16_t *machine_instr, uint16_t line_counter) {
 
-    long PCoffset9;
-
-    //label or PCoffset9?
-    if(!strtolong(operand, &PCoffset9)) {
-        //transform label into PCoffset9 by retrieving the memory location corresponding to the label from symbol table
-        node_t *node = lookup(operand);
-        if(!node) {
-            return do_exit(EXIT_FAILURE, "ERROR (line %d): Symbol not found ('%s')", line_counter, operand);
-        }
-        PCoffset9 = node->val - instruction_number - 1;
+    long offset;
+    exit_t result = validate_offset(operand, -256, 255, instruction_number, line_counter, &offset);
+    if(result.code) {
+        return result;
     }
-
-    //validate PCoffset9 numerical range
-    if(PCoffset9 < -256 || PCoffset9 > 255) {
-        return do_exit(EXIT_FAILURE, "ERROR (line %d): Value of PCoffset9 %ld is outside the range [-256, 255]", line_counter, PCoffset9);
-    }
-
 
     //CONVERTING TO BINARY REPRESENTATION
 
@@ -92,7 +80,7 @@ exit_t parse_br(char *operand, int condition_codes, uint16_t instruction_number,
     *machine_instr += (condition_codes << 9);
 
     //LABEL
-    *machine_instr += PCoffset9;
+    *machine_instr += offset;
 
     return success();
 }

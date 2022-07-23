@@ -72,14 +72,14 @@ static void test_br_PCoffset9_too_big(void __attribute__ ((unused))  **state) {
     uint16_t machine_instr;
     exit_t result = parse_br("300",1, 0,&machine_instr,0);
     assert_int_equal(result.code, 1);
-    assert_string_equal(result.desc, "ERROR (line 0): Value of PCoffset9 300 is outside the range [-256, 255]");
+    assert_string_equal(result.desc, "ERROR (line 0): Value of offset 300 is outside the range [-256, 255]");
 }
 
 static void test_br_PCoffset9_too_small(void __attribute__ ((unused))  **state) {    
     uint16_t machine_instr;
     exit_t result = parse_br("-300",1, 0,&machine_instr,0);
     assert_int_equal(result.code, 1);
-    assert_string_equal(result.desc, "ERROR (line 0): Value of PCoffset9 -300 is outside the range [-256, 255]");
+    assert_string_equal(result.desc, "ERROR (line 0): Value of offset -300 is outside the range [-256, 255]");
 }
 
 
