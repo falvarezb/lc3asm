@@ -69,6 +69,32 @@ static exit_t is_valid_immediate(char *token, uint16_t *imm, long min, long max,
     return do_exit(EXIT_FAILURE, "ERROR (line %d): Immediate %s must be decimal or hex", line_counter, token);    
 }
 
+static exit_t is_valid_immediate2(char *token, int16_t *imm, long min, long max, uint16_t line_counter) {
+    long tmp;
+    char first_ch = *token;
+    if(first_ch == '#') { //decimal literal
+        if(!strtolong(token + 1, &tmp)) {
+            return do_exit(EXIT_FAILURE, "ERROR (line %d): Immediate %s is not a numeric value", line_counter, token);
+        }
+        if(tmp < min || tmp > max) {
+            return do_exit(EXIT_FAILURE, "ERROR (line %d): Immediate operand (%s) outside of range (%ld to %ld)", line_counter, token + 1, min, max);            
+        }
+        *imm = (int16_t)tmp;
+        return do_exit(EXIT_SUCCESS, NULL);
+    }
+    else if(first_ch == 'x') { //hex literal
+        if(sscanf(token + 1, "%lx", &tmp) < 1) {
+            return do_exit(EXIT_FAILURE, "ERROR (line %d): Error while reading immediate %s", line_counter, token);            
+        }
+        if(tmp < min || tmp > max) {
+            return do_exit(EXIT_FAILURE, "ERROR (line %d): Immediate operand (%s) outside of range (%ld to %ld)", line_counter, token + 1, min, max);            
+        }
+        *imm = (int16_t)tmp;
+        return do_exit(EXIT_SUCCESS, NULL);
+    }
+    return do_exit(EXIT_FAILURE, "ERROR (line %d): Immediate %s must be decimal or hex", line_counter, token);    
+}
+
 /**
  * @brief Transforms the given string into imm5
  * 
@@ -83,8 +109,12 @@ exit_t is_imm5(char *str, uint16_t *imm5, uint16_t line_counter) {
     return is_valid_immediate(str, imm5, -16, 15, line_counter);
 }
 
-exit_t is_valid_16bit_int(char *str, uint16_t *n, uint16_t line_counter) {
+exit_t is_valid_u16bit(char *str, uint16_t *n, uint16_t line_counter) {
     return is_valid_immediate(str, n, 0, 0xFFFF, line_counter);
+}
+
+exit_t is_valid_16bit(char *str, int16_t *n, uint16_t line_counter) {
+    return is_valid_immediate2(str, n, -32768, 32767, line_counter);
 }
 
 uint16_t do_return(uint16_t ret, char **tokens) {

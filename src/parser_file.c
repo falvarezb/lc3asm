@@ -158,7 +158,15 @@ linetype_t compute_line_type(const char *first_token) {
         strcmp(first_token, "ST") == 0 ||
         strcmp(first_token, "LDI") == 0 ||
         strcmp(first_token, "STI") == 0 ||
-        strcmp(first_token, "LEA") == 0
+        strcmp(first_token, "LEA") == 0 ||
+        strcmp(first_token, "BR") == 0 ||
+        strcmp(first_token, "BRnzp") == 0 ||
+        strcmp(first_token, "BRnz") == 0 ||
+        strcmp(first_token, "BRnp") == 0 ||
+        strcmp(first_token, "BRzp") == 0 ||
+        strcmp(first_token, "BRn") == 0 ||
+        strcmp(first_token, "BRz") == 0 ||
+        strcmp(first_token, "BRp") == 0
         ) {
         result = OPCODE;
     }
@@ -457,7 +465,9 @@ exit_t second_pass_parse(const char *assembly_file_name, const char *object_file
             }
         }
         else if(line_type == FILL_DIRECTIVE) {
-            fill(tokens[1], &machine_instr, line_counter);   
+            if((result = fill(tokens[1], &machine_instr, line_counter)).code) {
+                return result;
+            }   
             //TODO review name: it's not machine instruction but allocated value         
             if(write_machine_instruction(machine_instr, destination_file)) {
                 free_second_pass(source_file, destination_file, tokens, is_label_line);
@@ -479,7 +489,10 @@ exit_t second_pass_parse(const char *assembly_file_name, const char *object_file
                 result = parse_and(tokens[1], tokens[2], tokens[3], &machine_instr, line_counter);
             }
             else if(opcode_type == JMP) {
-                result = parse_jmp(line, &machine_instr,line_counter);
+                if(num_tokens < 2) {
+                    return exit_second_pass(EXIT_FAILURE, is_label_line, source_file, destination_file, tokens, "ERROR (line %d): missing JSR operand", line_counter);
+                }
+                result = parse_jmp(tokens[1], &machine_instr,line_counter);
             }
             else if(opcode_type == JSR) {
                 if(num_tokens < 2) {

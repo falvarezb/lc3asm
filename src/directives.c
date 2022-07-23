@@ -20,7 +20,7 @@ exit_t halt(uint16_t *machine_instr) {
  * @return uint16_t numeric representation of the address or 0 if it cannot be parsed to a number
  */
 exit_t orig(char *str, uint16_t *memaddr, uint16_t line_counter) {    
-    return is_valid_16bit_int(str, memaddr, line_counter);
+    return is_valid_u16bit(str, memaddr, line_counter);
 }
 
 /**
@@ -33,5 +33,5 @@ exit_t orig(char *str, uint16_t *memaddr, uint16_t line_counter) {
  * @return error_t
  */
 exit_t fill(char *str, uint16_t* n, uint16_t line_counter) {
-    return is_valid_16bit_int(str, n, line_counter);
+    return is_valid_16bit(str, n, line_counter);
 }
