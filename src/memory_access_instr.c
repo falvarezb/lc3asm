@@ -38,27 +38,16 @@
  */
 exit_t parse_pcoffset9_pattern(char *operand1, char *operand2, uint16_t instruction_counter, uint16_t *machine_instr, uint16_t line_counter, opcode_t opcode) {
     
-    int lc3register;
-    long PCoffset9;  
+    int lc3register;    
 
     if((lc3register = is_register(operand1)) == -1) {
         return do_exit(EXIT_FAILURE, "ERROR (line %d): Expected register but found %s", line_counter, operand1);
     }  
 
-    //label or PCoffset9?
-    if(!strtolong(operand2, &PCoffset9)) {    
-        //transform label into PCoffset9 by retrieving the memory location corresponding to the label from symbol table
-        node_t *node = lookup(operand2);
-        if(!node) {
-            return do_exit(EXIT_FAILURE,"ERROR (line %d): Symbol not found ('%s')", line_counter, operand2);                        
-        }
-        PCoffset9 = node->val - instruction_counter - 1;
-    }
-    else {
-        //validate PCoffset9 numerical range
-        if(PCoffset9 < -256 || PCoffset9 > 255) {
-            return do_exit(EXIT_FAILURE, "ERROR (line %d): Value of PCoffset9 %ld is outside the range [-256, 255]", line_counter, PCoffset9);                        
-        }
+    long offset;
+    exit_t result = validate_offset(operand2, -256, 255, instruction_counter, line_counter, &offset);
+    if(result.code) {
+        return result;
     }
 
     //CONVERTING TO BINARY REPRESENTATION
@@ -94,7 +83,7 @@ exit_t parse_pcoffset9_pattern(char *operand1, char *operand2, uint16_t instruct
     *machine_instr += lc3register;
 
     //LABEL
-    *machine_instr += PCoffset9;
+    *machine_instr += offset;
 
     return success();
 }
