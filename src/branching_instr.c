@@ -31,22 +31,10 @@
   */
 exit_t parse_jsr(char *operand, uint16_t instruction_counter, uint16_t *machine_instr, uint16_t line_counter) {
 
-    long PCoffset11;
-
-    //label or PCoffset11?
-    if(!strtolong(operand, &PCoffset11)) {
-        //transform label into PCoffset11 by retrieving the memory location corresponding to the label from symbol table
-        node_t *node = lookup(operand);
-        if(!node) {
-            return do_exit(EXIT_FAILURE, "ERROR (line %d): Symbol not found ('%s')", line_counter, operand);
-        }
-        PCoffset11 = node->val - instruction_counter - 1;
-    }
-    else {
-        //validate PCoffset11 numerical range
-        if(PCoffset11 < -1024 || PCoffset11 > 1023) {
-            return do_exit(EXIT_FAILURE, "ERROR (line %d): Value of PCoffset11 %ld is outside the range [-1024, 1023]", line_counter, PCoffset11);
-        }
+    long offset;
+    exit_t result = validate_offset(operand, -1024, 1023, instruction_counter, line_counter, &offset);
+    if(result.code) {
+        return result;
     }
 
     //CONVERTING TO BINARY REPRESENTATION
@@ -58,7 +46,7 @@ exit_t parse_jsr(char *operand, uint16_t instruction_counter, uint16_t *machine_
     *machine_instr += (1 << 11);
 
     //LABEL
-    *machine_instr += PCoffset11;
+    *machine_instr += offset;
 
     return success();
 }

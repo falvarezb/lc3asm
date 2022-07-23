@@ -18,14 +18,14 @@ void test_jsr_PCoffset11_too_big(void __attribute__ ((unused))  **state) {
     uint16_t machine_instr;
     exit_t result = parse_jsr("2000", 0,&machine_instr,0);
     assert_int_equal(result.code, 1);
-    assert_string_equal(result.desc, "ERROR (line 0): Value of PCoffset11 2000 is outside the range [-1024, 1023]");
+    assert_string_equal(result.desc, "ERROR (line 0): Value of offset 2000 is outside the range [-1024, 1023]");
 }
 
 void test_jsr_PCoffset11_too_small(void __attribute__ ((unused))  **state) {    
     uint16_t machine_instr;
     exit_t result = parse_jsr("-2000", 0,&machine_instr,0);
     assert_int_equal(result.code, 1);
-    assert_string_equal(result.desc, "ERROR (line 0): Value of PCoffset11 -2000 is outside the range [-1024, 1023]");
+    assert_string_equal(result.desc, "ERROR (line 0): Value of offset -2000 is outside the range [-1024, 1023]");
 }
 
 
