@@ -151,17 +151,16 @@ char **split_tokens(char *str, int *num_tokens, const char *delimiters) {
     return resized_tokens;
 }
 
-char **split_tokens2(char *str, char **str_copy, int *num_tokens, const char *delimiters) {
+char **split_tokens2(char *str, int *num_tokens, const char *delimiters) {
     const int max_num_tokens = 200;
     char **tokens = malloc(max_num_tokens * sizeof(char *));
     if(tokens == NULL) {
         seterrdesc("out of memory\n");
         return NULL;
-    }
-    *str_copy = strdup(str);
+    }    
 
     *num_tokens = 0;
-    char *pch = strtok(*str_copy, delimiters);
+    char *pch = strtok(str, delimiters);
     while(pch != NULL) {
         tokens[(*num_tokens)++] = pch;
         pch = strtok(NULL, delimiters);
@@ -174,8 +173,7 @@ char **split_tokens2(char *str, char **str_copy, int *num_tokens, const char *de
 
     char **resized_tokens = realloc(tokens, *num_tokens * sizeof(char *));
     if(resized_tokens == NULL) {
-        seterrdesc("out of memory\n");
-        free(*str_copy);
+        seterrdesc("out of memory\n");        
         free(tokens);
         return NULL;
     }    

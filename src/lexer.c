@@ -91,24 +91,26 @@ static linetype_t compute_line_type(const char *first_token) {
  * @return exit_t 
  */
 exit_t do_lexical_analysis(FILE *assembly_file, linemetadata_t *tokenized_lines[]) {    
-    char *line = NULL; //pointer to the current line; freed after finishing reading the file
+    //pointer to the current line
+    //on each iteration of the while loop, the value is overwritten with the contents of the current line    
+    char *resusable_line = NULL;
     size_t len = 0; //length of the current line
-    char *line_dup = NULL;
 
     memaddr_t location_counter = 0; //location in memory assigned to each instruction
     int line_counter = 0; //current line number in the assembly file
 
     errno = 0;
     ssize_t read;
-    while((read = getline(&line, &len, assembly_file)) != -1) {
-        printf("%s", line);
+    while((read = getline(&resusable_line, &len, assembly_file)) != -1) {
+        printf("%s", resusable_line);
         bool is_label_line = false;
         line_counter++;
 
+        char *line = strdup(resusable_line);
         int num_tokens = 0;
-        char **tokens = split_tokens2(line, &line_dup, &num_tokens, " ,\n");
-        if(num_tokens == 0) {   
-            free(line_dup);         
+        char **tokens = split_tokens2(line, &num_tokens, " ,\n");
+        if(num_tokens == 0) {               
+            free(line);         
             continue;
         }
 
@@ -123,20 +125,20 @@ exit_t do_lexical_analysis(FILE *assembly_file, linemetadata_t *tokenized_lines[
                 line_type = compute_line_type(tokens[0]);
             }
             else {
-                free(line_dup);
+                free(line);
                 free(tokens);
                 continue;
             }
         }
 
         if(line_type == END_DIRECTIVE) {
-            free(line_dup);
+            free(line);
             free_tokens(tokens, is_label_line);
             //stop reading file
             break;
         }
         else if(line_type == COMMENT || line_type == BLANK_LINE) {  
-            free(line_dup);          
+            free(line);          
             free_tokens(tokens, is_label_line);
             //ignore line
             continue;
@@ -149,12 +151,12 @@ exit_t do_lexical_analysis(FILE *assembly_file, linemetadata_t *tokenized_lines[
         linemetadata->tokens = tokens;
         linemetadata->num_tokens = num_tokens;
         linemetadata->is_label_line = is_label_line;
-        linemetadata->line = line_dup;
+        linemetadata->line = line;
         tokenized_lines[location_counter] = linemetadata;        
         location_counter++;
     }
 
-    free(line);
+    free(resusable_line);
     //check if getline resulted in error
     if(read == -1 && errno) {
         return do_exit(EXIT_FAILURE, "getLine error %d\n", errno);

@@ -32,7 +32,7 @@ int seterrdesc(char *format, ...);
 void clearerrdesc();
 bool strtolong(char *str, long *num);
 char **split_tokens(char *str, int *num_tokens, const char *delimiters);
-char **split_tokens2(char *str, char **str_copy, int *num_tokens, const char *delimiters);
+char **split_tokens2(char *str, int *num_tokens, const char *delimiters);
 char *split_by_last_delimiter(char *str, char delimiter);
 exit_t do_exit(int exit_code, char *format, ...);
 exit_t success();
