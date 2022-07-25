@@ -15,7 +15,7 @@ CFLAGS = -Og -Wall -Wno-missing-braces -Wextra -Wshadow -Wpedantic -std=c11 -fno
 LDFLAGS = 
 SOURCE_DIR := src
 OBJS_PROD := $(addprefix $(BUILD_DIR)/, $(patsubst %.c,%.o,$(shell ls $(SOURCE_DIR))))
-SRCS_TEST := test.c parser_add_test.c parser_and_test.c parser_not_test.c parser_ret_test.c parser_jmp_test.c parser_br_test.c memory_access_instr_test.c
+SRCS_TEST := test.c parser_add_test.c parser_and_test.c parser_not_test.c parser_ret_test.c parser_jmp_test.c parser_br_test.c memory_access_instr_test.c lexer_test.c
 OBJS_TEST := $(addprefix $(BUILD_DIR)/, $(patsubst %.c,%.o,$(SRCS_TEST)))
 SRCS_TOOLS := lc3objdump.c
 OBJS_TOOLS := $(addprefix $(TOOLS_BUILD_DIR)/, $(patsubst %.c,%.o,$(SRCS_TOOLS)))
@@ -111,6 +111,14 @@ ldfamilytest: $(BUILD_DIR)/ldfamilytest
 	$(VALGRIND) ./$^
 
 $(BUILD_DIR)/ldfamilytest: $(OBJS_PROD) $(BUILD_DIR)/memory_access_instr_test.o
+	$(LINK.c) $^ -o $@ $(LDLIBS) -lcmocka
+
+#######################
+
+lexertest: $(BUILD_DIR)/lexertest
+	$(VALGRIND) ./$^	
+
+$(BUILD_DIR)/lexertest: $(OBJS_PROD) $(BUILD_DIR)/lexer_test.o
 	$(LINK.c) $^ -o $@ $(LDLIBS) -lcmocka
 
 #######################

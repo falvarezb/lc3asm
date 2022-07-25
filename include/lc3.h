@@ -21,5 +21,7 @@ exit_t compute_symbol_table(const char *assembly_file_name);
 exit_t serialize_symbol_table(const char* symbol_table_file_name);
 exit_t assemble(const char *assembly_file_name);
 
+exit_t do_lexical_analysis(FILE *assembly_file, linemetadata_t *tokenized_lines[]);
+
 
 #endif

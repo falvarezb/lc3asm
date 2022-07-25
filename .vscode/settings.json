@@ -17,6 +17,8 @@
         "cmocka.h": "c",
         "stdarg.h": "c",
         "lc3util.h": "c",
-        "__locale": "c"
+        "__locale": "c",
+        "atomic": "c",
+        "cstdint": "c"
     }
 }

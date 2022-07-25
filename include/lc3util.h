@@ -12,6 +12,14 @@ typedef enum {
     ADD, AND, JMP, JSR, NOT, RET, HALT, LD, ST, LDI, STI, LEA, BR, BRp, BRz, BRn, BRzp, BRnp, BRnz
 } opcode_t;
 
+typedef uint16_t memaddr_t;
+typedef struct linemetadata {
+    char *line;
+    char **tokens; /**< tokens the line is split into */
+    int num_tokens;
+    bool is_label_line; /**< flag to identify lines that begin with a label */   
+} linemetadata_t;
+
 int is_register(char *token);
 exit_t is_imm5(char *str, uint16_t *imm5, uint16_t line_counter);
 exit_t is_valid_u16bit(char *str, uint16_t *n, uint16_t line_counter);

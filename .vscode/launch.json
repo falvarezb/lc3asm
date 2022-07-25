@@ -45,18 +45,18 @@
             "preLaunchTask": "C/C++ macos: test"
         },
         {
-            "name": "gcc macos - brtest",
+            "name": "gcc macos - gentest",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/out/test.out",
             // "args": ["-p", "/suite2"],
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${fileDirname}",
+            "cwd": "${workspaceFolder}",
             "environment": [],
             "externalConsole": false,
             "MIMode": "lldb",
-            "preLaunchTask": "C/C++ macos: brtest"
+            "preLaunchTask": "C/C++ macos: lexer test"
         },
         {
             "name": "gcc macos - parser file test",

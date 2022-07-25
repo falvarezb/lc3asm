@@ -1,0 +1,204 @@
+#include <stddef.h>
+#include <stdarg.h>
+#include <setjmp.h>
+#include <cmocka.h>
+#include <stdbool.h>
+#include "../include/lc3.h"
+#include "../include/dict.h"
+
+#define NUM_LINES 20
+
+static int setup(void **state) {
+    clearerrdesc();
+    initialize();
+    return 0;
+}
+
+static int teardown(void **state) {
+    initialize();
+    return 0;
+}
+
+static void run_lexer_test(char *filename, linemetadata_t *tokenized_lines[]) {
+    FILE *asm_file = fopen(filename, "r");
+    if(!asm_file) {
+        printf("error %d while reading file", errno);
+        assert(false);
+    }
+    do_lexical_analysis(asm_file, tokenized_lines);
+    fclose(asm_file);
+}
+
+static void free_line_data(linemetadata_t *tokenized_lines[]) {
+    for(size_t i = 0; i < NUM_LINES; i++) {
+        if(tokenized_lines[i]) {
+            linemetadata_t *line_data = tokenized_lines[i];
+            if(line_data->is_label_line) {                               
+                free(line_data->tokens-1);
+                free(line_data->line);
+                free(line_data);                
+            }
+            else {                                
+                free(line_data->tokens);
+                free(line_data->line);
+                free(line_data);
+            }
+        }
+    }
+}
+
+static void assert_symbol_table(const char *label, size_t num_instruction) {
+    node_t *node = lookup(label);
+    assert_non_null(node);
+    assert_int_equal(node->val, num_instruction);
+}
+
+///////////////////////////////////////////////////
+
+static void test_lexer_without_labels_t1(void  __attribute__((unused)) **state) {    
+    linemetadata_t *tokenized_lines[NUM_LINES] = { NULL };
+    run_lexer_test("./test/t1.asm", tokenized_lines);
+
+    assert_null(next(true));
+
+    size_t idx;
+    //1st line
+    idx = 0;
+    assert_int_equal(2, tokenized_lines[idx]->num_tokens);
+    assert_string_equal(".ORIG", tokenized_lines[idx]->tokens[0]);
+    assert_string_equal("x3000", tokenized_lines[idx]->tokens[1]);
+    assert_false(tokenized_lines[idx]->is_label_line);
+
+    //2nd line
+    idx = 1;
+    assert_int_equal(6, tokenized_lines[idx]->num_tokens);
+    assert_string_equal("ADD", tokenized_lines[idx]->tokens[0]);
+    assert_string_equal("R0", tokenized_lines[idx]->tokens[1]);
+    assert_string_equal("R0", tokenized_lines[idx]->tokens[2]);
+    assert_string_equal("#1", tokenized_lines[idx]->tokens[3]);
+    assert_string_equal(";", tokenized_lines[idx]->tokens[4]);
+    assert_string_equal("comment", tokenized_lines[idx]->tokens[5]);
+    assert_false(tokenized_lines[idx]->is_label_line);
+
+    //3rd line
+    idx = 2;
+    assert_int_equal(1, tokenized_lines[idx]->num_tokens);
+    assert_string_equal("HALT", tokenized_lines[idx]->tokens[0]);
+    assert_false(tokenized_lines[idx]->is_label_line);
+
+    free_line_data(tokenized_lines);
+}
+
+void test_lexer_t2(void  __attribute__((unused)) **state) {
+    linemetadata_t *tokenized_lines[NUM_LINES] = { NULL };
+    run_lexer_test("./test/t2.asm", tokenized_lines);
+
+    assert_symbol_table("LABEL", 4);
+
+    size_t idx;
+    //1st line
+    idx = 0;
+    assert_int_equal(2, tokenized_lines[idx]->num_tokens);
+    assert_string_equal(".ORIG", tokenized_lines[idx]->tokens[0]);
+    assert_string_equal("x3000", tokenized_lines[idx]->tokens[1]);
+    assert_false(tokenized_lines[idx]->is_label_line);
+
+    //2nd line
+    idx = 1;
+    assert_int_equal(2, tokenized_lines[idx]->num_tokens);
+    assert_string_equal("JSR", tokenized_lines[idx]->tokens[0]);
+    assert_string_equal("LABEL", tokenized_lines[idx]->tokens[1]);
+    assert_false(tokenized_lines[idx]->is_label_line);
+
+    //3rd line
+    idx = 2;
+    assert_int_equal(4, tokenized_lines[idx]->num_tokens);
+    assert_string_equal("ADD", tokenized_lines[idx]->tokens[0]);
+    assert_string_equal("R0", tokenized_lines[idx]->tokens[1]);
+    assert_string_equal("R0", tokenized_lines[idx]->tokens[2]);
+    assert_string_equal("#1", tokenized_lines[idx]->tokens[3]);
+    assert_false(tokenized_lines[idx]->is_label_line);
+
+    //4th line
+    idx = 3;
+    assert_int_equal(1, tokenized_lines[idx]->num_tokens);
+    assert_string_equal("HALT", tokenized_lines[idx]->tokens[0]);
+    assert_false(tokenized_lines[idx]->is_label_line);
+
+    //5th line
+    idx = 4;
+    assert_int_equal(6, tokenized_lines[idx]->num_tokens);
+    assert_string_equal("ADD", tokenized_lines[idx]->tokens[0]);
+    assert_string_equal("R0", tokenized_lines[idx]->tokens[1]);
+    assert_string_equal("R1", tokenized_lines[idx]->tokens[2]);
+    assert_string_equal("R2", tokenized_lines[idx]->tokens[3]);
+    assert_string_equal(";", tokenized_lines[idx]->tokens[4]);
+    assert_string_equal("comment", tokenized_lines[idx]->tokens[5]);
+    assert_false(tokenized_lines[idx]->is_label_line);
+
+    free_line_data(tokenized_lines);
+}
+
+static void test_lexer_t3(void  __attribute__((unused)) **state) {
+    linemetadata_t *tokenized_lines[NUM_LINES] = { NULL };
+    run_lexer_test("./test/t3.asm", tokenized_lines);
+
+    assert_symbol_table("LABEL", 4);
+
+    size_t idx;
+    //5th line
+    idx = 4;
+    assert_int_equal(4, tokenized_lines[idx]->num_tokens);
+    assert_string_equal("ADD", tokenized_lines[idx]->tokens[0]);
+    assert_string_equal("R0", tokenized_lines[idx]->tokens[1]);
+    assert_string_equal("R1", tokenized_lines[idx]->tokens[2]);
+    assert_string_equal("R2", tokenized_lines[idx]->tokens[3]);
+    assert_true(tokenized_lines[idx]->is_label_line);
+
+    free_line_data(tokenized_lines);
+}
+
+static void test_lexer_t4(void  __attribute__((unused)) **state) {
+    linemetadata_t *tokenized_lines[NUM_LINES] = { NULL };
+    run_lexer_test("./test/t4.asm", tokenized_lines);
+
+    assert_symbol_table("LABEL1", 4);
+    assert_symbol_table("LABEL2", 2);
+    assert_symbol_table("LABEL3", 3);
+    assert_symbol_table("LABEL4", 5);
+    assert_symbol_table("LABEL5", 4);
+
+    free_line_data(tokenized_lines);
+}
+
+static void test_lexer_t5(void  __attribute__((unused)) **state) {
+    linemetadata_t *tokenized_lines[NUM_LINES] = { NULL };
+    run_lexer_test("./test/t5.asm", tokenized_lines);
+
+    assert_symbol_table("LABEL1", 4);
+
+    size_t idx;
+    //5th line
+    idx = 4;
+    assert_int_equal(5, tokenized_lines[idx]->num_tokens);
+    assert_string_equal("LABEL2", tokenized_lines[idx]->tokens[0]);
+    assert_string_equal("ADD", tokenized_lines[idx]->tokens[1]);
+    assert_string_equal("R0", tokenized_lines[idx]->tokens[2]);
+    assert_string_equal("R1", tokenized_lines[idx]->tokens[3]);
+    assert_string_equal("R2", tokenized_lines[idx]->tokens[4]);
+    assert_true(tokenized_lines[idx]->is_label_line);
+
+    free_line_data(tokenized_lines);
+}
+
+
+int main(int argc, char const *argv[]) {
+    const struct CMUnitTest tests[] = {
+        cmocka_unit_test_setup_teardown(test_lexer_without_labels_t1, setup, teardown),
+        cmocka_unit_test_setup_teardown(test_lexer_t2, setup, teardown),
+        cmocka_unit_test_setup_teardown(test_lexer_t3, setup, teardown),
+        cmocka_unit_test_setup_teardown(test_lexer_t4, setup, teardown),
+        cmocka_unit_test_setup_teardown(test_lexer_t5, setup, teardown)
+    };
+    return cmocka_run_group_tests(tests, NULL, NULL);
+}
