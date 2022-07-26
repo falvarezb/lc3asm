@@ -2,18 +2,12 @@
 #define FAB_LC3
 #include "lc3util.h"
 
-exit_t parse_add(char *operand1, char* operand2, char* operand3, uint16_t *machine_instr, uint16_t line_counter);
-exit_t parse_and(char *operand1, char* operand2, char* operand3, uint16_t *machine_instr, uint16_t line_counter);
-exit_t parse_not(char *operand1, char* operand2, uint16_t *machine_instr, uint16_t line_counter);
-exit_t parse_ret(uint16_t *machine_instr);
-exit_t parse_jmp(char *operand, uint16_t *machine_instr, uint16_t line_counter);
-exit_t parse_jsr(char *operand, uint16_t instruction_number, uint16_t *machine_instr, uint16_t line_counter);
-exit_t parse_br(char *operand, int condition_codes, uint16_t instruction_number, uint16_t *machine_instr, uint16_t line_counter);
-exit_t parse_pcoffset9_pattern(char *operand1, char *operand2, uint16_t instruction_number, uint16_t *machine_instr, uint16_t line_counter, opcode_t opcode);
-
-exit_t halt(uint16_t *machine_instr);
-exit_t orig(char *token, uint16_t *memaddr, uint16_t line_counter);
-exit_t fill(char *str, uint16_t* n, uint16_t line_counter);
+exit_t parse_binary_operation(linemetadata_t *line_metadata, opcode_t opcode);
+exit_t parse_not(linemetadata_t *line_metadata);
+exit_t parse_jmp(linemetadata_t *line_metadata);
+exit_t parse_jsr(linemetadata_t *line_metadata);
+exit_t parse_br(linemetadata_t *line_metadata, int condition_codes);
+exit_t parse_pcoffset9_pattern(linemetadata_t *line_metadata, opcode_t opcode);
 
 exit_t first_pass_parse(const char *assembly_file_name, const char *symbol_table_file_name);
 exit_t second_pass_parse(const char *assembly_file_name, const char *object_file_name);
@@ -22,6 +16,10 @@ exit_t serialize_symbol_table(const char* symbol_table_file_name);
 exit_t assemble(const char *assembly_file_name);
 
 exit_t do_lexical_analysis(FILE *assembly_file, linemetadata_t *tokenized_lines[]);
+exit_t do_syntax_analysis(linemetadata_t *tokenized_lines[]);
+
+exit_t parse_orig(linemetadata_t *line_metadata);
+exit_t parse_fill(linemetadata_t *line_metadata);
 
 
 #endif

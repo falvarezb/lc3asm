@@ -68,6 +68,8 @@ static void test_lexer_without_labels_t1(void  __attribute__((unused)) **state) 
     assert_string_equal(".ORIG", tokenized_lines[idx]->tokens[0]);
     assert_string_equal("x3000", tokenized_lines[idx]->tokens[1]);
     assert_false(tokenized_lines[idx]->is_label_line);
+    assert_int_equal(2, tokenized_lines[idx]->line_number);
+    assert_int_equal(0, tokenized_lines[idx]->instruction_location);
 
     //2nd line
     idx = 1;
@@ -79,12 +81,16 @@ static void test_lexer_without_labels_t1(void  __attribute__((unused)) **state) 
     assert_string_equal(";", tokenized_lines[idx]->tokens[4]);
     assert_string_equal("comment", tokenized_lines[idx]->tokens[5]);
     assert_false(tokenized_lines[idx]->is_label_line);
+    assert_int_equal(3, tokenized_lines[idx]->line_number);
+    assert_int_equal(1, tokenized_lines[idx]->instruction_location);
 
     //3rd line
     idx = 2;
     assert_int_equal(1, tokenized_lines[idx]->num_tokens);
     assert_string_equal("HALT", tokenized_lines[idx]->tokens[0]);
     assert_false(tokenized_lines[idx]->is_label_line);
+    assert_int_equal(4, tokenized_lines[idx]->line_number);
+    assert_int_equal(2, tokenized_lines[idx]->instruction_location);
 
     free_line_data(tokenized_lines);
 }
@@ -102,6 +108,8 @@ void test_lexer_t2(void  __attribute__((unused)) **state) {
     assert_string_equal(".ORIG", tokenized_lines[idx]->tokens[0]);
     assert_string_equal("x3000", tokenized_lines[idx]->tokens[1]);
     assert_false(tokenized_lines[idx]->is_label_line);
+    assert_int_equal(4, tokenized_lines[idx]->line_number);
+    assert_int_equal(0, tokenized_lines[idx]->instruction_location);
 
     //2nd line
     idx = 1;
@@ -109,6 +117,8 @@ void test_lexer_t2(void  __attribute__((unused)) **state) {
     assert_string_equal("JSR", tokenized_lines[idx]->tokens[0]);
     assert_string_equal("LABEL", tokenized_lines[idx]->tokens[1]);
     assert_false(tokenized_lines[idx]->is_label_line);
+    assert_int_equal(5, tokenized_lines[idx]->line_number);
+    assert_int_equal(1, tokenized_lines[idx]->instruction_location);
 
     //3rd line
     idx = 2;
@@ -118,12 +128,16 @@ void test_lexer_t2(void  __attribute__((unused)) **state) {
     assert_string_equal("R0", tokenized_lines[idx]->tokens[2]);
     assert_string_equal("#1", tokenized_lines[idx]->tokens[3]);
     assert_false(tokenized_lines[idx]->is_label_line);
+    assert_int_equal(6, tokenized_lines[idx]->line_number);
+    assert_int_equal(2, tokenized_lines[idx]->instruction_location);
 
     //4th line
     idx = 3;
     assert_int_equal(1, tokenized_lines[idx]->num_tokens);
     assert_string_equal("HALT", tokenized_lines[idx]->tokens[0]);
     assert_false(tokenized_lines[idx]->is_label_line);
+    assert_int_equal(7, tokenized_lines[idx]->line_number);
+    assert_int_equal(3, tokenized_lines[idx]->instruction_location);
 
     //5th line
     idx = 4;
@@ -135,6 +149,8 @@ void test_lexer_t2(void  __attribute__((unused)) **state) {
     assert_string_equal(";", tokenized_lines[idx]->tokens[4]);
     assert_string_equal("comment", tokenized_lines[idx]->tokens[5]);
     assert_false(tokenized_lines[idx]->is_label_line);
+    assert_int_equal(11, tokenized_lines[idx]->line_number);
+    assert_int_equal(4, tokenized_lines[idx]->instruction_location);
 
     free_line_data(tokenized_lines);
 }
@@ -154,6 +170,8 @@ static void test_lexer_t3(void  __attribute__((unused)) **state) {
     assert_string_equal("R1", tokenized_lines[idx]->tokens[2]);
     assert_string_equal("R2", tokenized_lines[idx]->tokens[3]);
     assert_true(tokenized_lines[idx]->is_label_line);
+    assert_int_equal(10, tokenized_lines[idx]->line_number);
+    assert_int_equal(4, tokenized_lines[idx]->instruction_location);
 
     free_line_data(tokenized_lines);
 }
@@ -187,6 +205,8 @@ static void test_lexer_t5(void  __attribute__((unused)) **state) {
     assert_string_equal("R1", tokenized_lines[idx]->tokens[3]);
     assert_string_equal("R2", tokenized_lines[idx]->tokens[4]);
     assert_true(tokenized_lines[idx]->is_label_line);
+    assert_int_equal(10, tokenized_lines[idx]->line_number);
+    assert_int_equal(4, tokenized_lines[idx]->instruction_location);
 
     free_line_data(tokenized_lines);
 }

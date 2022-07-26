@@ -91,14 +91,14 @@
         },
         {
             "type": "cppbuild",
-            "label": "C/C++ macos: brtest",
+            "label": "C/C++ macos: add test",
             "command": "/usr/bin/gcc",
             "args": [
                 "-g",
                 "-Wall",    
                 "-Wno-missing-braces ",                  
-                "${workspaceFolder}/test/parser_br_test.c",
-                "${workspaceFolder}/src/branching_instr.c",
+                "${workspaceFolder}/test/parser_jmp_test.c",                
+                "${workspaceFolder}/src/control_instructions.c",
                 "${workspaceFolder}/src/lc3util.c",
                 "${workspaceFolder}/src/common.c",
                 "${workspaceFolder}/src/dict.c",                             

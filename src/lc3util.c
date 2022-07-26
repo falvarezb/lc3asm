@@ -169,3 +169,133 @@ exit_t validate_offset(char* value, int lower_bound, int upper_bound, uint16_t i
     return success();
 }
 
+/**
+ * @brief Determine the type of a line based on the value of the first token
+ *
+ * @param first_token first token of the line being parsed
+ * @return linetype_t value indicative of the type of line
+ */
+linetype_t compute_line_type(const char *first_token) {
+
+    linetype_t result;
+    if(first_token[0] == '\n') {
+        result = BLANK_LINE;
+    }
+    else if(
+        strcmp(first_token, "ADD") == 0 ||
+        strcmp(first_token, "AND") == 0 ||
+        strcmp(first_token, "JMP") == 0 ||
+        strcmp(first_token, "JSR") == 0 ||
+        strcmp(first_token, "NOT") == 0 ||
+        strcmp(first_token, "RET") == 0 ||
+        strcmp(first_token, "HALT") == 0 ||
+        strcmp(first_token, "LD") == 0 ||
+        strcmp(first_token, "ST") == 0 ||
+        strcmp(first_token, "LDI") == 0 ||
+        strcmp(first_token, "STI") == 0 ||
+        strcmp(first_token, "LEA") == 0 ||
+        strcmp(first_token, "BR") == 0 ||
+        strcmp(first_token, "BRnzp") == 0 ||
+        strcmp(first_token, "BRnz") == 0 ||
+        strcmp(first_token, "BRnp") == 0 ||
+        strcmp(first_token, "BRzp") == 0 ||
+        strcmp(first_token, "BRn") == 0 ||
+        strcmp(first_token, "BRz") == 0 ||
+        strcmp(first_token, "BRp") == 0
+        ) {
+        result = OPCODE;
+    }
+    else if(strcmp(first_token, ".ORIG") == 0) {
+        result = ORIG_DIRECTIVE;
+    }
+    else if(strcmp(first_token, ".END") == 0) {
+        result = END_DIRECTIVE;
+    }
+    else if(strcmp(first_token, ".FILL") == 0) {
+        result = FILL_DIRECTIVE;
+    }
+    else if(first_token[0] == ';') {
+        result = COMMENT;
+    }
+    else {
+        //any unrecognised token is considered to be a label
+        result = LABEL;
+    }
+
+    return result;
+}
+
+/**
+ * @brief Determine the opcode of an instruction
+ *
+ * @param opcode opcode to be analyzed
+ * @return opcode_t value indicative of the type of opcode
+ */
+opcode_t compute_opcode_type(const char *opcode) {
+
+    opcode_t result;
+    if(strcmp(opcode, "ADD") == 0) {
+        result = ADD;
+    }
+    else if(strcmp(opcode, "AND") == 0) {
+        result = AND;
+    }
+    else if(strcmp(opcode, "JMP") == 0) {
+        result = JMP;
+    }
+    else if(strcmp(opcode, "JSR") == 0) {
+        result = JSR;
+    }
+    else if(strcmp(opcode, "NOT") == 0) {
+        result = NOT;
+    }
+    else if(strcmp(opcode, "RET") == 0) {
+        result = RET;
+    }
+    else if(strcmp(opcode, "LD") == 0) {
+        result = LD;
+    }
+    else if(strcmp(opcode, "ST") == 0) {
+        result = ST;
+    }
+    else if(strcmp(opcode, "LDI") == 0) {
+        result = LDI;
+    }
+    else if(strcmp(opcode, "STI") == 0) {
+        result = STI;
+    }
+    else if(strcmp(opcode, "LEA") == 0) {
+        result = LEA;
+    }
+    else if(strcmp(opcode, "BR") == 0 || strcmp(opcode, "BRnzp") == 0) {
+        result = BR;
+    }
+    else if(strcmp(opcode, "BRn") == 0) {
+        result = BRn;
+    }
+    else if(strcmp(opcode, "BRz") == 0) {
+        result = BRz;
+    }
+    else if(strcmp(opcode, "BRp") == 0) {
+        result = BRp;
+    }
+    else if(strcmp(opcode, "BRnz") == 0) {
+        result = BRnz;
+    }
+    else if(strcmp(opcode, "BRnp") == 0) {
+        result = BRnp;
+    }
+    else if(strcmp(opcode, "BRzp") == 0) {
+        result = BRzp;
+    }
+    else if(strcmp(opcode, "HALT") == 0){
+        result = HALT;
+    }
+    else {
+        assert(false);
+    }
+    return result;
+}
+
+
+

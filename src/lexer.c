@@ -18,72 +18,16 @@ static void free_tokens(char **tokens, bool is_label_line) {
 }
 
 /**
- * @brief Determine the type of a line based on the value of the first token
- *
- * @param first_token first token of the line being parsed
- * @return linetype_t value indicative of the type of line
- */
-static linetype_t compute_line_type(const char *first_token) {
-
-    linetype_t result;
-    if(first_token[0] == '\n') {
-        result = BLANK_LINE;
-    }
-    else if(
-        strcmp(first_token, "ADD") == 0 ||
-        strcmp(first_token, "AND") == 0 ||
-        strcmp(first_token, "JMP") == 0 ||
-        strcmp(first_token, "JSR") == 0 ||
-        strcmp(first_token, "NOT") == 0 ||
-        strcmp(first_token, "RET") == 0 ||
-        strcmp(first_token, "HALT") == 0 ||
-        strcmp(first_token, "LD") == 0 ||
-        strcmp(first_token, "ST") == 0 ||
-        strcmp(first_token, "LDI") == 0 ||
-        strcmp(first_token, "STI") == 0 ||
-        strcmp(first_token, "LEA") == 0 ||
-        strcmp(first_token, "BR") == 0 ||
-        strcmp(first_token, "BRnzp") == 0 ||
-        strcmp(first_token, "BRnz") == 0 ||
-        strcmp(first_token, "BRnp") == 0 ||
-        strcmp(first_token, "BRzp") == 0 ||
-        strcmp(first_token, "BRn") == 0 ||
-        strcmp(first_token, "BRz") == 0 ||
-        strcmp(first_token, "BRp") == 0
-        ) {
-        result = OPCODE;
-    }
-    else if(strcmp(first_token, ".ORIG") == 0) {
-        result = ORIG_DIRECTIVE;
-    }
-    else if(strcmp(first_token, ".END") == 0) {
-        result = END_DIRECTIVE;
-    }
-    else if(strcmp(first_token, ".FILL") == 0) {
-        result = FILL_DIRECTIVE;
-    }
-    else if(first_token[0] == ';') {
-        result = COMMENT;
-    }
-    else {
-        //any unrecognised token is considered to be a label
-        result = LABEL;
-    }
-
-    return result;
-}
-
-/**
  * @brief do the lexical analysis of the asm file
  * 
  * Each line is analyzed separately: lines corresponding to instructions/directives are split into tokens and stored as
  * an element of the array `tokenized_lines`.
- * The symbol table is also created to store the offset of the different labels found during the analysis.
+ * The symbol table is also created to store the offset of the instructions pointed to by the different labels found during the analysis.
  * 
- * This function does not perform any syntactic validation and as a consequence the lexer is not aware of the existence 
+ * This function does not perform any syntax validation and as a consequence the lexer is not aware of the existence 
  * or not of the .ORIG directive. That's why the resulting symbol table only stores offsets instead of the actual memory locations.
  * 
- * Actual memory locations will be determined during syntactic/semantic analysis by adding the previous offsets to the reference
+ * Actual memory locations will be determined during syntax/semantic analysis by adding the previous offsets to the reference
  * memory address given by .ORIG.
  * 
  * @param assembly_file handle to the asm file
@@ -96,7 +40,7 @@ exit_t do_lexical_analysis(FILE *assembly_file, linemetadata_t *tokenized_lines[
     char *resusable_line = NULL;
     size_t len = 0; //length of the current line
 
-    memaddr_t location_counter = 0; //location in memory assigned to each instruction
+    memaddr_t instruction_offset = 0; //real memory location = instruction offset + address given by .ORIG
     int line_counter = 0; //current line number in the assembly file
 
     errno = 0;
@@ -116,7 +60,7 @@ exit_t do_lexical_analysis(FILE *assembly_file, linemetadata_t *tokenized_lines[
 
         linetype_t line_type = compute_line_type(tokens[0]);
         if(line_type == LABEL) {
-            add(tokens[0], location_counter);
+            add(tokens[0], instruction_offset);
             if(num_tokens > 1) {
                 //continue processing the rest of the line as there are more elements after the label
                 tokens++;
@@ -152,8 +96,10 @@ exit_t do_lexical_analysis(FILE *assembly_file, linemetadata_t *tokenized_lines[
         linemetadata->num_tokens = num_tokens;
         linemetadata->is_label_line = is_label_line;
         linemetadata->line = line;
-        tokenized_lines[location_counter] = linemetadata;        
-        location_counter++;
+        linemetadata->line_number = line_counter;
+        linemetadata->instruction_location = instruction_offset;
+        tokenized_lines[instruction_offset] = linemetadata;        
+        instruction_offset++;
     }
 
     free(resusable_line);

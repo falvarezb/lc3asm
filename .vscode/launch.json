@@ -56,7 +56,7 @@
             "environment": [],
             "externalConsole": false,
             "MIMode": "lldb",
-            "preLaunchTask": "C/C++ macos: lexer test"
+            "preLaunchTask": "C/C++ macos: add test"
         },
         {
             "name": "gcc macos - parser file test",

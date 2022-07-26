@@ -36,16 +36,20 @@
  * @param opcode opcode to identify whether it is a LD or STI instruction
  * @return exit_t
  */
-exit_t parse_pcoffset9_pattern(char *operand1, char *operand2, uint16_t instruction_counter, uint16_t *machine_instr, uint16_t line_counter, opcode_t opcode) {
+exit_t parse_pcoffset9_pattern(linemetadata_t *line_metadata, opcode_t opcode) {
+
+    if(line_metadata->num_tokens < 3) {
+        return do_exit(EXIT_FAILURE, "ERROR (line %d): missing operands", line_metadata->line_number);
+    }
     
     int lc3register;    
 
-    if((lc3register = is_register(operand1)) == -1) {
-        return do_exit(EXIT_FAILURE, "ERROR (line %d): Expected register but found %s", line_counter, operand1);
+    if((lc3register = is_register(line_metadata->tokens[1])) == -1) {
+        return do_exit(EXIT_FAILURE, "ERROR (line %d): Expected register but found %s", line_metadata->line_number, line_metadata->tokens[1]);
     }  
 
     long offset;
-    exit_t result = validate_offset(operand2, -256, 255, instruction_counter, line_counter, &offset);
+    exit_t result = validate_offset(line_metadata->tokens[2], -256, 255, line_metadata->instruction_location, line_metadata->line_number, &offset);
     if(result.code) {
         return result;
     }
@@ -76,14 +80,14 @@ exit_t parse_pcoffset9_pattern(char *operand1, char *operand2, uint16_t instruct
     else {
         assert(false);
     }
-    *machine_instr = opcode_binary;
+    line_metadata->machine_instruction = opcode_binary;
 
     //DR
     lc3register = lc3register << 9;
-    *machine_instr += lc3register;
+    line_metadata->machine_instruction += lc3register;
 
     //LABEL
-    *machine_instr += offset;
+    line_metadata->machine_instruction += offset;
 
     return success();
 }
