@@ -9,7 +9,7 @@ void test_add_SR2(void  __attribute__((unused)) **state) {
     char *tokens[] = {"DOES NOT MATTER", "R0", "R1", "R2"};
     linemetadata_t line_metadata = {.tokens = tokens, .num_tokens = 4};
     parse_binary_operation(&line_metadata, ADD);
-    char *bytes = (char *)&line_metadata.machine_instruction;
+    unsigned char *bytes = (unsigned char *)&line_metadata.machine_instruction;
     //assert order is flipped because of little-endian arch
     assert_int_equal(bytes[0], 66);
     assert_int_equal(bytes[1], 16);
@@ -19,7 +19,7 @@ void test_and_SR2(void  __attribute__((unused)) **state) {
     char *tokens[] = {"DOES NOT MATTER", "R0", "R1", "R2"};
     linemetadata_t line_metadata = {.tokens = tokens, .num_tokens = 4};
     parse_binary_operation(&line_metadata, AND);
-    char *bytes = (char *)&line_metadata.machine_instruction;
+    unsigned char *bytes = (unsigned char *)&line_metadata.machine_instruction;
     //assert order is flipped because of little-endian arch
     assert_int_equal(bytes[0], 66);
     assert_int_equal(bytes[1], 80);
@@ -29,7 +29,7 @@ void test_add_imm5_decimal(void  __attribute__((unused)) **state) {
     char *tokens[] = {"DOES NOT MATTER", "R0", "R1", "#13"};
     linemetadata_t line_metadata = {.tokens = tokens, .num_tokens = 4};
     parse_binary_operation(&line_metadata, ADD);
-    char *bytes = (char *)&line_metadata.machine_instruction;
+    unsigned char *bytes = (unsigned char *)&line_metadata.machine_instruction;
     //assert order is flipped because of little-endian arch
     assert_int_equal(bytes[0], 109);
     assert_int_equal(bytes[1], 16);
@@ -39,7 +39,7 @@ void test_add_imm5_hex(void  __attribute__((unused)) **state) {
     char *tokens[] = {"DOES NOT MATTER", "R0", "R1", "xa"};
     linemetadata_t line_metadata = {.tokens = tokens, .num_tokens = 4};
     parse_binary_operation(&line_metadata, ADD);
-    char *bytes = (char *)&line_metadata.machine_instruction;
+    unsigned char *bytes = (unsigned char *)&line_metadata.machine_instruction;
     //assert order is flipped because of little-endian arch
     assert_int_equal(bytes[0], 106);
     assert_int_equal(bytes[1], 16);

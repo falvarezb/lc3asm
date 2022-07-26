@@ -9,7 +9,7 @@ void test_jmp_register(void  __attribute__ ((unused)) **state) {
     char *tokens[] = {"DOES NOT MATTER", "R6"};
     linemetadata_t line_metadata = {.tokens = tokens, .num_tokens = 2};
     parse_jmp(&line_metadata);
-    char *bytes = (char *)(&(line_metadata.machine_instruction));
+    unsigned char *bytes = (unsigned char *)&line_metadata.machine_instruction;
     //assert order is flipped because of little-endian arch
     assert_int_equal(bytes[0], 128);
     assert_int_equal(bytes[1], 193);
