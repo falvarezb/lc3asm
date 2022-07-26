@@ -6,90 +6,103 @@
 #include "../include/lc3.h"
 
 static void test_br(void __attribute__ ((unused)) **state) {    
-    uint16_t machine_instr;
-    parse_br("1", 7,0, &machine_instr,0);
-    unsigned char *bytes = (unsigned char *)&machine_instr;
+    char *tokens[] = {"DOES NOT MATTER", "1"};
+    linemetadata_t line_metadata = {.tokens = tokens, .num_tokens = 2};
+    parse_br(&line_metadata, 7);
+    unsigned char *bytes = (unsigned char *)&line_metadata.machine_instruction;
     //assert order is flipped because of little-endian arch
     assert_int_equal(bytes[0], 1);
     assert_int_equal(bytes[1], 14);
 }
 
 static void test_brp(void __attribute__ ((unused)) **state) {    
-    uint16_t machine_instr;
-    parse_br("1", 1,0, &machine_instr,0);
-    unsigned char *bytes = (unsigned char *)&machine_instr;
+    char *tokens[] = {"DOES NOT MATTER", "1"};
+    linemetadata_t line_metadata = {.tokens = tokens, .num_tokens = 2};
+    parse_br(&line_metadata, 1);
+    unsigned char *bytes = (unsigned char *)&line_metadata.machine_instruction;
     //assert order is flipped because of little-endian arch
     assert_int_equal(bytes[0], 1);
     assert_int_equal(bytes[1], 2);
 }
 
 static void test_brz(void __attribute__ ((unused)) **state) {    
-    uint16_t machine_instr;
-    parse_br("1", 2,0, &machine_instr,0);
-    unsigned char *bytes = (unsigned char *)&machine_instr;
+    char *tokens[] = {"DOES NOT MATTER", "1"};
+    linemetadata_t line_metadata = {.tokens = tokens, .num_tokens = 2};
+    parse_br(&line_metadata, 2);
+    unsigned char *bytes = (unsigned char *)&line_metadata.machine_instruction;
     //assert order is flipped because of little-endian arch
     assert_int_equal(bytes[0], 1);
     assert_int_equal(bytes[1], 4);
 }
 
 static void test_brn(void __attribute__ ((unused)) **state) {    
-    uint16_t machine_instr;
-    parse_br("1", 4,0, &machine_instr,0);
-    unsigned char *bytes = (unsigned char *)&machine_instr;
+    char *tokens[] = {"DOES NOT MATTER", "1"};
+    linemetadata_t line_metadata = {.tokens = tokens, .num_tokens = 2};
+    parse_br(&line_metadata, 4);
+    unsigned char *bytes = (unsigned char *)&line_metadata.machine_instruction;
     //assert order is flipped because of little-endian arch
     assert_int_equal(bytes[0], 1);
     assert_int_equal(bytes[1], 8);
 }
 
 static void test_brzp(void __attribute__ ((unused)) **state) {    
-    uint16_t machine_instr;
-    parse_br("1", 3,0, &machine_instr,0);
-    unsigned char *bytes = (unsigned char *)&machine_instr;
+    char *tokens[] = {"DOES NOT MATTER", "1"};
+    linemetadata_t line_metadata = {.tokens = tokens, .num_tokens = 2};
+    parse_br(&line_metadata, 3);
+    unsigned char *bytes = (unsigned char *)&line_metadata.machine_instruction;
     //assert order is flipped because of little-endian arch
     assert_int_equal(bytes[0], 1);
     assert_int_equal(bytes[1], 6);
 }
 
 static void test_brnp(void __attribute__ ((unused)) **state) {    
-    uint16_t machine_instr;
-    parse_br("1", 5,0, &machine_instr,0);
-    unsigned char *bytes = (unsigned char *)&machine_instr;
+    char *tokens[] = {"DOES NOT MATTER", "1"};
+    linemetadata_t line_metadata = {.tokens = tokens, .num_tokens = 2};
+    parse_br(&line_metadata, 5);
+    unsigned char *bytes = (unsigned char *)&line_metadata.machine_instruction;
     //assert order is flipped because of little-endian arch
     assert_int_equal(bytes[0], 1);
     assert_int_equal(bytes[1], 10);
 }
 
 static void test_brnz(void __attribute__ ((unused)) **state) {    
-    uint16_t machine_instr;
-    parse_br("1", 6,0, &machine_instr,0);
-    unsigned char *bytes = (unsigned char *)&machine_instr;
+    char *tokens[] = {"DOES NOT MATTER", "1"};
+    linemetadata_t line_metadata = {.tokens = tokens, .num_tokens = 2};
+    parse_br(&line_metadata, 6);
+    unsigned char *bytes = (unsigned char *)&line_metadata.machine_instruction;
     //assert order is flipped because of little-endian arch
     assert_int_equal(bytes[0], 1);
     assert_int_equal(bytes[1], 12);
 }
 
 static void test_br_PCoffset9_too_big(void __attribute__ ((unused))  **state) {    
-    uint16_t machine_instr;
-    exit_t result = parse_br("300",1, 0,&machine_instr,0);
+    char *tokens[] = {"DOES NOT MATTER", "300"};
+    linemetadata_t line_metadata = {.tokens = tokens, .num_tokens = 2, .line_number = 1};
+    exit_t result = parse_br(&line_metadata, 7);
+    
     assert_int_equal(result.code, 1);
-    assert_string_equal(result.desc, "ERROR (line 0): Value of offset 300 is outside the range [-256, 255]");
+    assert_string_equal(result.desc, "ERROR (line 1): Value of offset 300 is outside the range [-256, 255]");
 }
 
 static void test_br_PCoffset9_too_small(void __attribute__ ((unused))  **state) {    
-    uint16_t machine_instr;
-    exit_t result = parse_br("-300",1, 0,&machine_instr,0);
+    char *tokens[] = {"DOES NOT MATTER", "-300"};
+    linemetadata_t line_metadata = {.tokens = tokens, .num_tokens = 2, .line_number = 1};
+    exit_t result = parse_br(&line_metadata, 7);
+
     assert_int_equal(result.code, 1);
-    assert_string_equal(result.desc, "ERROR (line 0): Value of offset -300 is outside the range [-256, 255]");
+    assert_string_equal(result.desc, "ERROR (line 1): Value of offset -300 is outside the range [-256, 255]");
 }
 
 
 static void test_br_with_label(void __attribute__ ((unused))  **state) {
     initialize();
-    add("LABEL", 0x3003);    
-    uint16_t machine_instr;
-    parse_br("LABEL",7, 0x3001,&machine_instr,0);
+    add("LABEL", 3); 
 
-    unsigned char *bytes = (unsigned char *)&machine_instr;
+    char *tokens[] = {"DOES NOT MATTER", "LABEL"};
+    linemetadata_t line_metadata = {.tokens = tokens, .num_tokens = 2, .instruction_location = 1};
+    parse_br(&line_metadata, 7);
+    unsigned char *bytes = (unsigned char *)&line_metadata.machine_instruction;
+
     //assert order is flipped because of little-endian arch
     assert_int_equal(bytes[0], 1);
     assert_int_equal(bytes[1], 14);
@@ -98,10 +111,11 @@ static void test_br_with_label(void __attribute__ ((unused))  **state) {
 
 static void test_br_non_existent_label(void __attribute__ ((unused))  **state) {
     initialize();    
-    uint16_t machine_instr;
-    exit_t result = parse_br("NON_EXISTENT_LABEL",1, 0,&machine_instr,0);
+    char *tokens[] = {"DOES NOT MATTER", "NON_EXISTENT_LABEL"};
+    linemetadata_t line_metadata = {.tokens = tokens, .num_tokens = 2, .line_number = 1};
+    exit_t result = parse_br(&line_metadata, 7);
     assert_int_equal(result.code, 1);
-    assert_string_equal(result.desc, "ERROR (line 0): Symbol not found ('NON_EXISTENT_LABEL')");
+    assert_string_equal(result.desc, "ERROR (line 1): Symbol not found ('NON_EXISTENT_LABEL')");
 }
 
 int main(int __attribute__ ((unused)) argc, char const __attribute__ ((unused)) *argv[]) {
