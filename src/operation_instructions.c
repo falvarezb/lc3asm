@@ -93,7 +93,7 @@ exit_t parse_not(linemetadata_t *line_metadata) {
     }
 
     if((SR = is_register(line_metadata->tokens[2])) == -1) {
-        return do_exit(EXIT_FAILURE, "ERROR (line %d): Expected register but found %s", line_metadata->line_number, line_metadata->tokens[1]);
+        return do_exit(EXIT_FAILURE, "ERROR (line %d): Expected register but found %s", line_metadata->line_number, line_metadata->tokens[2]);
     }
 
 
