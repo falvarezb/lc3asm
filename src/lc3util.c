@@ -297,5 +297,21 @@ opcode_t compute_opcode_type(const char *opcode) {
     return result;
 }
 
-
+// void free_line_metadata(linemetadata_t *tokenized_lines[]) {
+//     for(size_t i = 0; i < NUM_LINES; i++) {
+//         if(tokenized_lines[i]) {
+//             linemetadata_t *line_data = tokenized_lines[i];
+//             if(line_data->is_label_line) {                               
+//                 free(line_data->tokens-1);
+//                 free(line_data->line);
+//                 free(line_data);                
+//             }
+//             else {                                
+//                 free(line_data->tokens);
+//                 free(line_data->line);
+//                 free(line_data);
+//             }
+//         }
+//     }
+// }
 

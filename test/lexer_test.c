@@ -29,7 +29,7 @@ static void run_lexer_test(char *filename, linemetadata_t *tokenized_lines[]) {
     fclose(asm_file);
 }
 
-static void free_line_data(linemetadata_t *tokenized_lines[]) {
+static void free_line_metadata(linemetadata_t *tokenized_lines[]) {
     for(size_t i = 0; i < NUM_LINES; i++) {
         if(tokenized_lines[i]) {
             linemetadata_t *line_data = tokenized_lines[i];
@@ -92,7 +92,7 @@ static void test_lexer_without_labels_t1(void  __attribute__((unused)) **state) 
     assert_int_equal(4, tokenized_lines[idx]->line_number);
     assert_int_equal(2, tokenized_lines[idx]->instruction_location);
 
-    free_line_data(tokenized_lines);
+    free_line_metadata(tokenized_lines);
 }
 
 void test_lexer_t2(void  __attribute__((unused)) **state) {
@@ -152,7 +152,7 @@ void test_lexer_t2(void  __attribute__((unused)) **state) {
     assert_int_equal(11, tokenized_lines[idx]->line_number);
     assert_int_equal(4, tokenized_lines[idx]->instruction_location);
 
-    free_line_data(tokenized_lines);
+    free_line_metadata(tokenized_lines);
 }
 
 static void test_lexer_t3(void  __attribute__((unused)) **state) {
@@ -173,7 +173,7 @@ static void test_lexer_t3(void  __attribute__((unused)) **state) {
     assert_int_equal(10, tokenized_lines[idx]->line_number);
     assert_int_equal(4, tokenized_lines[idx]->instruction_location);
 
-    free_line_data(tokenized_lines);
+    free_line_metadata(tokenized_lines);
 }
 
 static void test_lexer_t4(void  __attribute__((unused)) **state) {
@@ -186,7 +186,7 @@ static void test_lexer_t4(void  __attribute__((unused)) **state) {
     assert_symbol_table("LABEL4", 5);
     assert_symbol_table("LABEL5", 4);
 
-    free_line_data(tokenized_lines);
+    free_line_metadata(tokenized_lines);
 }
 
 static void test_lexer_t5(void  __attribute__((unused)) **state) {
@@ -208,7 +208,7 @@ static void test_lexer_t5(void  __attribute__((unused)) **state) {
     assert_int_equal(10, tokenized_lines[idx]->line_number);
     assert_int_equal(4, tokenized_lines[idx]->instruction_location);
 
-    free_line_data(tokenized_lines);
+    free_line_metadata(tokenized_lines);
 }
 
 
