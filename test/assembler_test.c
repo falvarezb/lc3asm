@@ -157,6 +157,51 @@ static void test_wrong_assembly_file_extension(void  __attribute__((unused)) **s
     free(result.desc);
 }
 
+static void test_symbol_table_serialization(void  __attribute__((unused)) **state) {
+    add("LABEL", 0x3003);
+    FILE *actual_sym_file = fopen("./test/t2.sym", "r");
+    serialize_symbol_table(actual_sym_file, 0x3000);
+    fclose(actual_sym_file);
+
+    //test symbol table serialization
+    FILE *expected_sym_file = fopen("./test/t2.expected.sym", "r");
+    actual_sym_file = fopen("./test/t2.sym", "r");
+
+    size_t num_lines = 1;
+    char *line_expected = NULL;
+    char *line_actual = NULL;
+    size_t len_expected = 0;
+    size_t len_actual = 0;
+    ssize_t read_expected;
+    while((read_expected = getline(&line_expected, &len_expected, expected_sym_file)) != -1) {
+        printf("line checked: %zu\n", num_lines);
+        ssize_t read_actual;
+        if((read_actual = getline(&line_actual, &len_actual, actual_sym_file)) != -1) {
+            assert_true(strcmp(line_expected, line_actual) == 0);
+            num_lines++;
+        }
+        else {
+            //this will fail as read_actual == 1 != read_expected
+            assert_int_equal(read_expected, read_actual);
+        }
+    }
+    fclose(expected_sym_file);
+    fclose(actual_sym_file);
+    free(line_expected);
+    free(line_actual);
+}
+
+static void test_symbol_table_serialization_failure(void  __attribute__((unused)) **state) {
+    add("LABEL", 0x3003);
+    FILE *actual_sym_file = fopen("./test/t2.sym", "r");
+    exit_t result = serialize_symbol_table(actual_sym_file, 0x3000);
+    fclose(actual_sym_file);
+    assert_string_equal(result.desc, "error when writing serialized symbol table to file");
+    assert_int_equal(result.code, 1);
+    free(result.desc);
+}
+
+
 static void test_assemble_or_asm(void  __attribute__((unused)) **state) {
     run_assemble_test("./test/or.asm", "./test/or.expected.obj", "./test/or.obj");
 }
@@ -179,6 +224,8 @@ int main(int argc, char const *argv[]) {
         cmocka_unit_test_setup_teardown(test_assemble_missing_orig_address_t8, setup, teardown),
         cmocka_unit_test_setup_teardown(test_missing_assembly_file, setup, teardown),
         cmocka_unit_test_setup_teardown(test_wrong_assembly_file_extension, setup, teardown),
+        cmocka_unit_test_setup_teardown(test_symbol_table_serialization, setup, teardown),
+        cmocka_unit_test_setup_teardown(test_symbol_table_serialization_failure, setup, teardown),
         cmocka_unit_test_setup_teardown(test_assemble_or_asm, setup, teardown),
         cmocka_unit_test_setup_teardown(test_assemble_abs_asm, setup, teardown)
     };
