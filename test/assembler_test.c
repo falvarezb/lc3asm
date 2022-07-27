@@ -122,21 +122,21 @@ static void test_assemble_with_labels_t2(void  __attribute__((unused)) **state) 
     run_assemble_test("./test/t2.asm", "./test/t2.expected.obj", "./test/t2.obj");
 }
 
-static void test_first_pass_wrong_orig_address_t6(void  __attribute__((unused)) **state) {
+static void test_assemble_wrong_orig_address_t6(void  __attribute__((unused)) **state) {
     exit_t result = assemble("./test/t6.asm");
     assert_int_equal(result.code, 1);
     assert_string_equal(result.desc, "ERROR (line 4): Immediate operand (545677767) outside of range (0 to 65535)");
     free(result.desc);
 }
 
-static void test_first_pass_missing_orig_t7(void  __attribute__((unused)) **state) {
+static void test_assemble_missing_orig_t7(void  __attribute__((unused)) **state) {
     exit_t result = assemble("./test/t7.asm");
     assert_int_equal(result.code, 1);
     assert_string_equal(result.desc, "ERROR (line 4): Instruction not preceeded by a .orig directive");
     free(result.desc);
 }
 
-static void test_first_pass_missing_orig_address_t8(void  __attribute__((unused)) **state) {
+static void test_assemble_missing_orig_address_t8(void  __attribute__((unused)) **state) {
     exit_t result = assemble("./test/t8.asm");
     assert_int_equal(result.code, 1);
     assert_string_equal(result.desc, "ERROR (line 4): Immediate expected");
@@ -157,11 +157,11 @@ static void test_wrong_assembly_file_extension(void  __attribute__((unused)) **s
     free(result.desc);
 }
 
-static void assemble_or_asm(void  __attribute__((unused)) **state) {
+static void test_assemble_or_asm(void  __attribute__((unused)) **state) {
     run_assemble_test("./test/or.asm", "./test/or.expected.obj", "./test/or.obj");
 }
 
-static void assemble_abs_asm(void  __attribute__((unused)) **state) {
+static void test_assemble_abs_asm(void  __attribute__((unused)) **state) {
     run_assemble_test("./test/abs.asm", "./test/abs.expected.obj", "./test/abs.obj");
 }
 
@@ -177,13 +177,13 @@ int main(int argc, char const *argv[]) {
 
         cmocka_unit_test_setup_teardown(test_assemble_without_labels_t1, setup, teardown),
         cmocka_unit_test_setup_teardown(test_assemble_with_labels_t2, setup, teardown),
-        cmocka_unit_test_setup_teardown(test_first_pass_wrong_orig_address_t6, setup, teardown),
-        cmocka_unit_test_setup_teardown(test_first_pass_missing_orig_t7, setup, teardown),
-        cmocka_unit_test_setup_teardown(test_first_pass_missing_orig_address_t8, setup, teardown),
+        cmocka_unit_test_setup_teardown(test_assemble_wrong_orig_address_t6, setup, teardown),
+        cmocka_unit_test_setup_teardown(test_assemble_missing_orig_t7, setup, teardown),
+        cmocka_unit_test_setup_teardown(test_assemble_missing_orig_address_t8, setup, teardown),
         cmocka_unit_test_setup_teardown(test_missing_assembly_file, setup, teardown),
         cmocka_unit_test_setup_teardown(test_wrong_assembly_file_extension, setup, teardown),
-        cmocka_unit_test_setup_teardown(assemble_or_asm, setup, teardown),
-        cmocka_unit_test_setup_teardown(assemble_abs_asm, setup, teardown)
+        cmocka_unit_test_setup_teardown(test_assemble_or_asm, setup, teardown),
+        cmocka_unit_test_setup_teardown(test_assemble_abs_asm, setup, teardown)
     };
     return cmocka_run_group_tests(tests, NULL, NULL);
 }
