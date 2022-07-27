@@ -57,7 +57,7 @@ exit_t parse_orig(linemetadata_t *line_metadata) {
 
 exit_t parse_fill(linemetadata_t *line_metadata) {
     if(line_metadata->num_tokens < 2) {
-        do_exit(EXIT_FAILURE, "ERROR (line %d): Immediate expected", line_metadata->line_number);
+        return do_exit(EXIT_FAILURE, "ERROR (line %d): Immediate expected", line_metadata->line_number);
     }
 
     int16_t immediate;

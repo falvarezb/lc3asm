@@ -24,6 +24,30 @@ static int write_machine_instruction(uint16_t machine_instr, FILE *destination_f
     return EXIT_SUCCESS;
 }
 
+/**
+ * @brief Serialize the symbol table as a string and writes it to the given file
+ *
+ * @param destination_file File where the symbol table is serialized
+ * @return int 0 if serialization is successful or 1 if there is a writing error (errdesc is set with error details)
+ */
+exit_t serialize_symbol_table(FILE *destination_file, memaddr_t address_origin) {        
+    int num_chars_written;
+    if((num_chars_written = fprintf(destination_file, "// Symbol table\n// Scope level 0:\n//	Symbol Name       Page Address\n//	----------------  ------------\n")) < 0) {        
+        return do_exit(EXIT_FAILURE, "error when writing serialized symbol table to file");
+    }
+    node_t *node = next(true);
+    while(node) {
+        memaddr_t label_address = node->val - 1 + address_origin;
+        add(node->key, label_address);
+        if((num_chars_written = fprintf(destination_file, "//	%s             %hx\n", node->key, label_address) < 0)) {            
+            return do_exit(EXIT_FAILURE, "error when writing serialized symbol table to file");
+        }
+        node = next(false);
+    }    
+    return success();
+}
+
+
 exit_t assemble(const char *assembly_file_name) {
     //determine .sym and .obj file names
     char *assemby_file_name_dup = strdup(assembly_file_name);
@@ -67,12 +91,28 @@ exit_t assemble(const char *assembly_file_name) {
     memaddr_t address_offset = 0;
     while((line_metadata = tokenized_lines[address_offset])) {
         if(write_machine_instruction(line_metadata->machine_instruction, object_file)) {
+            fclose(object_file);
             return do_exit(EXIT_FAILURE, "ERROR: Couldn't write file (%s)", object_file_name);
         }
         //free_line_metadata(tokenized_lines);
         address_offset++;
     }
     fclose(object_file);
+
+    //symbol table update
+
+
+    FILE *symbol_table_file = fopen(symbol_table_file_name, "w");
+    if(!symbol_table_file) {
+        return do_exit(EXIT_FAILURE, "ERROR: Couldn't open file (%s)", symbol_table_file_name);
+    }
+
+    result = serialize_symbol_table(symbol_table_file, tokenized_lines[0]->machine_instruction);
+    fclose(symbol_table_file);
+    if(result.code) {
+        return result;
+    }
+
     return success();
 }
 

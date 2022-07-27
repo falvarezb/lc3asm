@@ -17,11 +17,11 @@ static int teardown(void **state) {
     return 0;
 }
 
-// static void assert_symbol_table(const char *label, size_t num_instruction) {
-//     node_t *node = lookup(label);
-//     assert_non_null(node);
-//     assert_int_equal(node->val, num_instruction);    
-// }
+static void assert_symbol_table(const char *label, size_t num_instruction) {
+    node_t *node = lookup(label);
+    assert_non_null(node);
+    assert_int_equal(node->val, num_instruction);    
+}
 
 // static void run_second_pass_test(char *asm_file_name, char *expected_obj_file_name, char *actual_obj_file_name) {
 //     second_pass_parse(asm_file_name, actual_obj_file_name);
@@ -88,31 +88,31 @@ static void run_assemble_test(char *asm_file_name, char *expected_obj_file_name,
 //     run_second_pass_test("./test/t2.asm", "./test/t2.expected.obj", "./test/t2.obj");
 // }
 
-// static void test_symbol_table_t2(void  __attribute__((unused)) **state) {
-//     compute_symbol_table("./test/t2.asm");
-//     assert_symbol_table("LABEL", 0x3003);
-// }
+static void test_symbol_table_t2(void  __attribute__((unused)) **state) {
+    assemble("./test/t2.asm");
+    assert_symbol_table("LABEL", 0x3003);
+}
 
-// static void test_symbol_table_t3(void  __attribute__((unused)) **state) {
-//     compute_symbol_table("./test/t3.asm");
-//     assert_symbol_table("LABEL", 0x3003);
-// }
+static void test_symbol_table_t3(void  __attribute__((unused)) **state) {
+    assemble("./test/t3.asm");
+    assert_symbol_table("LABEL", 0x3003);
+}
 
-// static void test_symbol_table_t4(void  __attribute__((unused)) **state) {
-//     compute_symbol_table("./test/t4.asm");
-//     assert_symbol_table("LABEL1", 0x3003);
-//     assert_symbol_table("LABEL2", 0x3001);
-//     assert_symbol_table("LABEL3", 0x3002);
-//     assert_symbol_table("LABEL4", 0x3004);
-//     assert_symbol_table("LABEL5", 0x3003);
-// }
+static void test_symbol_table_t4(void  __attribute__((unused)) **state) {
+    assemble("./test/t4.asm");
+    assert_symbol_table("LABEL1", 0x3003);
+    assert_symbol_table("LABEL2", 0x3001);
+    assert_symbol_table("LABEL3", 0x3002);
+    assert_symbol_table("LABEL4", 0x3004);
+    assert_symbol_table("LABEL5", 0x3003);
+}
 
-// static void test_symbol_table_t5(void  __attribute__((unused)) **state) {
-//     exit_t result = compute_symbol_table("./test/t5.asm");
-//     assert_int_equal(result.code, EXIT_FAILURE);
-//     assert_string_equal(result.desc, "ERROR (line 10): Invalid opcode ('LABEL2')");
-//     free(result.desc);
-// }
+static void test_two_labels_same_line_t5(void  __attribute__((unused)) **state) {
+    exit_t result = assemble("./test/t5.asm");
+    assert_int_equal(result.code, EXIT_FAILURE);
+    assert_string_equal(result.desc, "ERROR (line 10): Invalid opcode ('LABEL2')");
+    free(result.desc);
+}
 
 static void test_assemble_without_labels_t1(void  __attribute__((unused)) **state) {
     run_assemble_test("./test/t1.asm", "./test/t1.expected.obj", "./test/t1.obj");
@@ -167,14 +167,11 @@ static void test_assemble_abs_asm(void  __attribute__((unused)) **state) {
 
 
 int main(int argc, char const *argv[]) {
-    const struct CMUnitTest tests[] = {
-        // cmocka_unit_test_setup_teardown(test_second_pass_without_labels_t1, setup, teardown),
-        // cmocka_unit_test_setup_teardown(test_second_pass_with_labels_t2, setup, teardown),
-        // cmocka_unit_test_setup_teardown(test_symbol_table_t2, setup, teardown),
-        // cmocka_unit_test_setup_teardown(test_symbol_table_t3, setup, teardown),
-        // cmocka_unit_test_setup_teardown(test_symbol_table_t4, setup, teardown),
-        // cmocka_unit_test_setup_teardown(test_symbol_table_t5, setup, teardown),  
-
+    const struct CMUnitTest tests[] = {        
+        cmocka_unit_test_setup_teardown(test_symbol_table_t2, setup, teardown),
+        cmocka_unit_test_setup_teardown(test_symbol_table_t3, setup, teardown),
+        cmocka_unit_test_setup_teardown(test_symbol_table_t4, setup, teardown),
+        cmocka_unit_test_setup_teardown(test_two_labels_same_line_t5, setup, teardown),  
         cmocka_unit_test_setup_teardown(test_assemble_without_labels_t1, setup, teardown),
         cmocka_unit_test_setup_teardown(test_assemble_with_labels_t2, setup, teardown),
         cmocka_unit_test_setup_teardown(test_assemble_wrong_orig_address_t6, setup, teardown),

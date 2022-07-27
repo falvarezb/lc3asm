@@ -26,6 +26,10 @@
         "bitset": "c",
         "ios": "c",
         "iosfwd": "c",
-        "ostream": "c"
+        "ostream": "c",
+        "memory_resource": "c",
+        "iterator": "c",
+        "locale": "c",
+        "functional": "c"
     }
 }

@@ -17,7 +17,7 @@ exit_t do_syntax_analysis(linemetadata_t *tokenized_lines[]) {
         linetype_t line_type = compute_line_type(line_metadata->tokens[0]);
         if(line_type == LABEL) {
             //two labels in the same line is disallowed 
-            do_exit(EXIT_FAILURE, "ERROR (line %d): Invalid opcode ('%s')", line_metadata->line_number, line_metadata->tokens[0]);
+            return do_exit(EXIT_FAILURE, "ERROR (line %d): Invalid opcode ('%s')", line_metadata->line_number, line_metadata->tokens[0]);
         }
         else if(line_type == FILL_DIRECTIVE) {
             result = parse_fill(line_metadata);
