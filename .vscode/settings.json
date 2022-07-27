@@ -19,6 +19,13 @@
         "lc3util.h": "c",
         "__locale": "c",
         "atomic": "c",
-        "cstdint": "c"
+        "cstdint": "c",
+        "__bit_reference": "c",
+        "algorithm": "c",
+        "array": "c",
+        "bitset": "c",
+        "ios": "c",
+        "iosfwd": "c",
+        "ostream": "c"
     }
 }

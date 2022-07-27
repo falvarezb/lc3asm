@@ -123,6 +123,14 @@ $(BUILD_DIR)/lexertest: $(OBJS_PROD) $(BUILD_DIR)/lexer_test.o
 
 #######################
 
+assemblertest: $(BUILD_DIR)/assemblertest
+	$(VALGRIND) ./$^	
+
+$(BUILD_DIR)/assemblertest: $(OBJS_PROD) $(BUILD_DIR)/assembler_test.o
+	$(LINK.c) $^ -o $@ $(LDLIBS) -lcmocka
+
+#######################
+
 filetest: $(BUILD_DIR)/filetest
 	$(VALGRIND) ./$^	
 

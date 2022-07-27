@@ -1,12 +1,12 @@
 /**
  * @file assembler.c
  * @author your name (you@domain.com)
- * @brief 
+ * @brief
  * @version 0.1
  * @date 2022-07-26
- * 
+ *
  * @copyright Copyright (c) 2022
- * 
+ *
  */
 
 #include "../include/lc3.h"
@@ -41,34 +41,38 @@ exit_t assemble(const char *assembly_file_name) {
     strcat(object_file_name, ".obj");
     free(assemby_file_name_dup);
 
-    linemetadata_t *tokenized_lines[100];
+    linemetadata_t *tokenized_lines[100] = { NULL };
     FILE *assembly_file = fopen(assembly_file_name, "r");
     if(!assembly_file) {
         return do_exit(EXIT_FAILURE, "ERROR: Couldn't read file (%s)", assembly_file_name);
     }
-    fclose(assembly_file);
 
-    exit_t result = do_lexical_analysis(assembly_file, tokenized_lines);    
+    exit_t result = do_lexical_analysis(assembly_file, tokenized_lines);
+    fclose(assembly_file);
     if(result.code) {
         return result;
     }
 
     result = do_syntax_analysis(tokenized_lines);
+    if(result.code) {
+        return result;
+    }
 
-    FILE *object_file = fopen(assembly_file_name, "w");
+    FILE *object_file = fopen(object_file_name, "w");
     if(!object_file) {
         return do_exit(EXIT_FAILURE, "ERROR: Couldn't open file (%s)", object_file_name);
     }
 
     linemetadata_t *line_metadata;
-    memaddr_t address_offset = 1;
+    memaddr_t address_offset = 0;
     while((line_metadata = tokenized_lines[address_offset])) {
-        if(write_machine_instruction(line_metadata, object_file)) {
+        if(write_machine_instruction(line_metadata->machine_instruction, object_file)) {
             return do_exit(EXIT_FAILURE, "ERROR: Couldn't write file (%s)", object_file_name);
         }
         //free_line_metadata(tokenized_lines);
         address_offset++;
     }
-    fclose(object_file);    
+    fclose(object_file);
+    return success();
 }
 

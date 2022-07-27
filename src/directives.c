@@ -25,11 +25,11 @@ exit_t orig(char *str, uint16_t *memaddr, uint16_t line_counter) {
 
 exit_t parse_orig(linemetadata_t *line_metadata) {    
     if(strcmp(line_metadata->tokens[0], ".ORIG")) {
-        do_exit(EXIT_FAILURE, "ERROR (line %d): Instruction not preceeded by a .orig directive", line_metadata->line_number);
+        return do_exit(EXIT_FAILURE, "ERROR (line %d): Instruction not preceeded by a .orig directive", line_metadata->line_number);
     }
 
     if(line_metadata->num_tokens < 2) {
-        do_exit(EXIT_FAILURE, "ERROR (line %d): Immediate expected", line_metadata->line_number);
+        return do_exit(EXIT_FAILURE, "ERROR (line %d): Immediate expected", line_metadata->line_number);
     }
 
     memaddr_t origin_address;
@@ -51,16 +51,16 @@ exit_t parse_orig(linemetadata_t *line_metadata) {
  * @param n pointer to store the numeric representation of the operand
  * @return error_t
  */
-exit_t fill(char *str, uint16_t *n, uint16_t line_counter) {
-    return is_valid_16bit(str, n, line_counter);
-}
+// exit_t fill(char *str, uint16_t *n, uint16_t line_counter) {
+//     return is_valid_16bit(str, n, line_counter);
+// }
 
 exit_t parse_fill(linemetadata_t *line_metadata) {
     if(line_metadata->num_tokens < 2) {
         do_exit(EXIT_FAILURE, "ERROR (line %d): Immediate expected", line_metadata->line_number);
     }
 
-    uint16_t immediate;
+    int16_t immediate;
     exit_t result = is_valid_16bit(line_metadata->tokens[1], &immediate, line_metadata->line_number);
     if(result.code) {
         return result;
