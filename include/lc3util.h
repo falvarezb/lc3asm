@@ -23,12 +23,12 @@ typedef struct linemetadata {
     uint16_t machine_instruction; /**< binary representation of the instruction contained by the line */
 } linemetadata_t;
 
-int is_register(char *token);
-exit_t is_imm5(char *str, long *imm5, uint16_t line_counter);
-exit_t is_valid_memory_address(char *str, memaddr_t *n, uint16_t line_counter);
+int parse_register(char *token);
+exit_t parse_imm5(char *str, long *imm5, uint16_t line_counter);
+exit_t parse_memory_address(char *str, memaddr_t *n, uint16_t line_counter);
 uint16_t do_return(uint16_t ret, char **tokens);
 char **instruction_tokens(char *asm_instr, char *instr_name, int num_tokens);
-exit_t validate_offset(char* value, int lower_bound, int upper_bound, uint16_t instruction_number, uint16_t line_counter, long *offset);
+exit_t parse_offset(char* value, int lower_bound, int upper_bound, uint16_t instruction_number, uint16_t line_counter, long *offset);
 linetype_t compute_line_type(const char *first_token);
 opcode_t compute_opcode_type(const char *opcode);
 //void free_line_metadata(linemetadata_t *tokenized_lines[]);

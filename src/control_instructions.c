@@ -36,7 +36,7 @@ exit_t parse_jsr(linemetadata_t *line_metadata) {
     }
 
     long offset;
-    exit_t result = validate_offset(line_metadata->tokens[1], -1024, 1023, line_metadata->instruction_location, line_metadata->line_number, &offset);
+    exit_t result = parse_offset(line_metadata->tokens[1], -1024, 1023, line_metadata->instruction_location, line_metadata->line_number, &offset);
     if(result.code) {
         return result;
     }
@@ -62,7 +62,7 @@ exit_t parse_br(linemetadata_t *line_metadata, int condition_codes) {
     }
 
     long offset;
-    exit_t result = validate_offset(line_metadata->tokens[1], -256, 255, line_metadata->instruction_location, line_metadata->line_number, &offset);
+    exit_t result = parse_offset(line_metadata->tokens[1], -256, 255, line_metadata->instruction_location, line_metadata->line_number, &offset);
     if(result.code) {
         return result;
     }
@@ -103,7 +103,7 @@ exit_t parse_jmp(linemetadata_t *line_metadata) {
     }
     
     int BaseR;
-    if((BaseR = is_register(line_metadata->tokens[1])) == -1) {
+    if((BaseR = parse_register(line_metadata->tokens[1])) == -1) {
         return do_exit(EXIT_FAILURE,"ERROR (line %d): Expected register but found %s", line_metadata->line_number, line_metadata->tokens[1]);       
     }
 

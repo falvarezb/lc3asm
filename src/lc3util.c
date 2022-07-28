@@ -15,7 +15,7 @@
  * @param str 
  * @return int 
  */
-int is_register(char *str) {
+int parse_register(char *str) {
     if(strcmp(str, "R0") == 0) {
         return 0;
     }
@@ -86,11 +86,11 @@ exit_t is_valid_lc3integer(char *token, int16_t *imm, uint16_t line_counter) {
  * @param imm5 immediate value resulting of transforming str
  * @return int 0 if parsing is successful, else 1 (errdesc is set with error details)
  */
-exit_t is_imm5(char *str, long *imm5, uint16_t line_counter) {
+exit_t parse_imm5(char *str, long *imm5, uint16_t line_counter) {
     return parse_numeric_value(str, imm5, -16, 15, line_counter);
 }
 
-exit_t is_valid_memory_address(char *str, memaddr_t *n, uint16_t line_counter) {    
+exit_t parse_memory_address(char *str, memaddr_t *n, uint16_t line_counter) {    
     long tmp;
     exit_t result = parse_numeric_value(str, &tmp, 0, 0xFFFF, line_counter);    
     if(result.code) {
@@ -132,7 +132,7 @@ char **instruction_tokens(char *asm_instr, char *instr_name, int num_tokens) {
     return tokens;
 }
 
-exit_t validate_offset(char* value, int lower_bound, int upper_bound, uint16_t instruction_number, uint16_t line_counter, long *offset) {
+exit_t parse_offset(char* value, int lower_bound, int upper_bound, uint16_t instruction_number, uint16_t line_counter, long *offset) {
 
     //is value a label or a number?
     if(!strtolong(value, offset)) {

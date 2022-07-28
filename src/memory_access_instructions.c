@@ -44,12 +44,12 @@ exit_t parse_pcoffset9_pattern(linemetadata_t *line_metadata, opcode_t opcode) {
     
     int lc3register;    
 
-    if((lc3register = is_register(line_metadata->tokens[1])) == -1) {
+    if((lc3register = parse_register(line_metadata->tokens[1])) == -1) {
         return do_exit(EXIT_FAILURE, "ERROR (line %d): Expected register but found %s", line_metadata->line_number, line_metadata->tokens[1]);
     }  
 
     long offset;
-    exit_t result = validate_offset(line_metadata->tokens[2], -256, 255, line_metadata->instruction_location, line_metadata->line_number, &offset);
+    exit_t result = parse_offset(line_metadata->tokens[2], -256, 255, line_metadata->instruction_location, line_metadata->line_number, &offset);
     if(result.code) {
         return result;
     }

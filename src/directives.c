@@ -18,7 +18,7 @@ exit_t parse_orig(linemetadata_t *line_metadata) {
     }
 
     memaddr_t origin_address;
-    exit_t result = is_valid_memory_address(line_metadata->tokens[1], &origin_address, line_metadata->line_number);
+    exit_t result = parse_memory_address(line_metadata->tokens[1], &origin_address, line_metadata->line_number);
     if(result.code) {
         return result;
     }

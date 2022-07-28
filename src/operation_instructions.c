@@ -21,11 +21,11 @@ exit_t parse_binary_operation(linemetadata_t *line_metadata, opcode_t opcode) {
         return do_exit(EXIT_FAILURE, "ERROR (line %d): missing operands", line_metadata->line_number);
     }
 
-    if((DR = is_register(line_metadata->tokens[1])) == -1) {
+    if((DR = parse_register(line_metadata->tokens[1])) == -1) {
         return do_exit(EXIT_FAILURE, "ERROR (line %d): Expected register but found %s", line_metadata->line_number, line_metadata->tokens[1]);
     }
 
-    if((SR1 = is_register(line_metadata->tokens[2])) == -1) {
+    if((SR1 = parse_register(line_metadata->tokens[2])) == -1) {
         return do_exit(EXIT_FAILURE, "ERROR (line %d): Expected register but found %s", line_metadata->line_number, line_metadata->tokens[2]);
     }
 
@@ -49,11 +49,11 @@ exit_t parse_binary_operation(linemetadata_t *line_metadata, opcode_t opcode) {
     SR1 = SR1 << 6;
     line_metadata->machine_instruction += SR1;
 
-    if((SR2 = is_register(line_metadata->tokens[3])) > -1) {
+    if((SR2 = parse_register(line_metadata->tokens[3])) > -1) {
         line_metadata->machine_instruction += SR2;
     }
     else {
-        exit_t result = is_imm5(line_metadata->tokens[3], &imm5, line_metadata->line_number);
+        exit_t result = parse_imm5(line_metadata->tokens[3], &imm5, line_metadata->line_number);
         if(result.code) {
             return result;
         }
@@ -88,11 +88,11 @@ exit_t parse_not(linemetadata_t *line_metadata) {
         return do_exit(EXIT_FAILURE, "ERROR (line %d): missing operands", line_metadata->line_number);
     }
 
-    if((DR = is_register(line_metadata->tokens[1])) == -1) {
+    if((DR = parse_register(line_metadata->tokens[1])) == -1) {
         return do_exit(EXIT_FAILURE, "ERROR (line %d): Expected register but found %s", line_metadata->line_number, line_metadata->tokens[1]);
     }
 
-    if((SR = is_register(line_metadata->tokens[2])) == -1) {
+    if((SR = parse_register(line_metadata->tokens[2])) == -1) {
         return do_exit(EXIT_FAILURE, "ERROR (line %d): Expected register but found %s", line_metadata->line_number, line_metadata->tokens[2]);
     }
 
