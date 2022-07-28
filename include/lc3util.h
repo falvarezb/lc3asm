@@ -31,7 +31,8 @@ char **instruction_tokens(char *asm_instr, char *instr_name, int num_tokens);
 exit_t parse_offset(char* value, int lower_bound, int upper_bound, uint16_t instruction_number, uint16_t line_counter, long *offset);
 linetype_t compute_line_type(const char *first_token);
 opcode_t compute_opcode_type(const char *opcode);
-//void free_line_metadata(linemetadata_t *tokenized_lines[]);
+void free_line_metadata(linemetadata_t *line_metadata);
+void free_tokenized_lines(linemetadata_t *tokenized_lines[]);
 
 
 #endif

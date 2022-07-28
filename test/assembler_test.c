@@ -158,9 +158,10 @@ static void test_wrong_assembly_file_extension(void  __attribute__((unused)) **s
 }
 
 static void test_symbol_table_serialization(void  __attribute__((unused)) **state) {
-    add("LABEL", 0x3003);
-    FILE *actual_sym_file = fopen("./test/t2.sym", "r");
-    serialize_symbol_table(actual_sym_file, 0x3000);
+    add("LABEL", 4);
+    FILE *actual_sym_file = fopen("./test/t2.sym", "w");
+    exit_t result = serialize_symbol_table(actual_sym_file, 0x3000);
+    assert_int_equal(0, result.code);
     fclose(actual_sym_file);
 
     //test symbol table serialization
@@ -192,11 +193,11 @@ static void test_symbol_table_serialization(void  __attribute__((unused)) **stat
 }
 
 static void test_symbol_table_serialization_failure(void  __attribute__((unused)) **state) {
-    add("LABEL", 0x3003);
+    add("LABEL", 4);
     FILE *actual_sym_file = fopen("./test/t2.sym", "r");
     exit_t result = serialize_symbol_table(actual_sym_file, 0x3000);
     fclose(actual_sym_file);
-    assert_string_equal(result.desc, "error when writing serialized symbol table to file");
+    assert_string_equal(result.desc, "error when writing serialized symbol table to file: 9");
     assert_int_equal(result.code, 1);
     free(result.desc);
 }

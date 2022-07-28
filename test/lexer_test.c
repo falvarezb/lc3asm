@@ -29,24 +29,6 @@ static void run_lexer_test(char *filename, linemetadata_t *tokenized_lines[]) {
     fclose(asm_file);
 }
 
-static void free_line_metadata(linemetadata_t *tokenized_lines[]) {
-    for(size_t i = 0; i < NUM_LINES; i++) {
-        if(tokenized_lines[i]) {
-            linemetadata_t *line_data = tokenized_lines[i];
-            if(line_data->is_label_line) {                               
-                free(line_data->tokens-1);
-                free(line_data->line);
-                free(line_data);                
-            }
-            else {                                
-                free(line_data->tokens);
-                free(line_data->line);
-                free(line_data);
-            }
-        }
-    }
-}
-
 static void assert_symbol_table(const char *label, size_t num_instruction) {
     node_t *node = lookup(label);
     assert_non_null(node);

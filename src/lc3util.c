@@ -3,18 +3,18 @@
  * @brief util functions used during the assembly process
  * @version 0.1
  * @date 2022-07-12
- * 
+ *
  */
 
 #include "../include/lc3util.h"
 #define LC3_WORD_SIZE 16 // bits
 
-/**
- * @brief Returns numeric value of the register or -1 if `str` is not a register
- * 
- * @param str 
- * @return int 
- */
+ /**
+  * @brief Returns numeric value of the register or -1 if `str` is not a register
+  *
+  * @param str
+  * @return int
+  */
 int parse_register(char *str) {
     if(strcmp(str, "R0") == 0) {
         return 0;
@@ -50,38 +50,38 @@ static exit_t parse_numeric_value(char *token, long *imm, long min, long max, ui
             return do_exit(EXIT_FAILURE, "ERROR (line %d): Immediate %s is not a numeric value", line_counter, token);
         }
         if(*imm < min || *imm > max) {
-            return do_exit(EXIT_FAILURE, "ERROR (line %d): Immediate operand (%s) outside of range (%ld to %ld)", line_counter, token + 1, min, max);            
-        }        
+            return do_exit(EXIT_FAILURE, "ERROR (line %d): Immediate operand (%s) outside of range (%ld to %ld)", line_counter, token + 1, min, max);
+        }
         return success();
     }
     else if(first_ch == 'x') { //hex literal
         if(sscanf(token + 1, "%lx", imm) < 1) {
-            return do_exit(EXIT_FAILURE, "ERROR (line %d): Error while reading immediate %s", line_counter, token);            
+            return do_exit(EXIT_FAILURE, "ERROR (line %d): Error while reading immediate %s", line_counter, token);
         }
         if(*imm < min || *imm > max) {
-            return do_exit(EXIT_FAILURE, "ERROR (line %d): Immediate operand (%s) outside of range (%ld to %ld)", line_counter, token + 1, min, max);            
-        }        
+            return do_exit(EXIT_FAILURE, "ERROR (line %d): Immediate operand (%s) outside of range (%ld to %ld)", line_counter, token + 1, min, max);
+        }
         return success();
     }
-    return do_exit(EXIT_FAILURE, "ERROR (line %d): Immediate %s must be decimal or hex", line_counter, token);    
+    return do_exit(EXIT_FAILURE, "ERROR (line %d): Immediate %s must be decimal or hex", line_counter, token);
 }
 
 exit_t is_valid_lc3integer(char *token, int16_t *imm, uint16_t line_counter) {
     long tmp;
-    exit_t result = parse_numeric_value(token, &tmp, -32768, 32767, line_counter);    
+    exit_t result = parse_numeric_value(token, &tmp, -32768, 32767, line_counter);
     if(result.code) {
         return result;
     }
-    *imm = (int16_t) tmp;
+    *imm = (int16_t)tmp;
     return success();
 }
 
 /**
  * @brief Transforms the given string into imm5
- * 
+ *
  * imm5 is a 5-bit value, range [-16,15]
  * it can be expressed in decimal and hex notation
- * 
+ *
  * @param str string to be parsed
  * @param imm5 immediate value resulting of transforming str
  * @return int 0 if parsing is successful, else 1 (errdesc is set with error details)
@@ -90,13 +90,13 @@ exit_t parse_imm5(char *str, long *imm5, uint16_t line_counter) {
     return parse_numeric_value(str, imm5, -16, 15, line_counter);
 }
 
-exit_t parse_memory_address(char *str, memaddr_t *n, uint16_t line_counter) {    
+exit_t parse_memory_address(char *str, memaddr_t *n, uint16_t line_counter) {
     long tmp;
-    exit_t result = parse_numeric_value(str, &tmp, 0, 0xFFFF, line_counter);    
+    exit_t result = parse_numeric_value(str, &tmp, 0, 0xFFFF, line_counter);
     if(result.code) {
         return result;
     }
-    *n = (memaddr_t) tmp;
+    *n = (memaddr_t)tmp;
     return success();
 }
 
@@ -132,7 +132,7 @@ char **instruction_tokens(char *asm_instr, char *instr_name, int num_tokens) {
     return tokens;
 }
 
-exit_t parse_offset(char* value, int lower_bound, int upper_bound, uint16_t instruction_number, uint16_t line_counter, long *offset) {
+exit_t parse_offset(char *value, int lower_bound, int upper_bound, uint16_t instruction_number, uint16_t line_counter, long *offset) {
 
     //is value a label or a number?
     if(!strtolong(value, offset)) {
@@ -271,7 +271,7 @@ opcode_t compute_opcode_type(const char *opcode) {
     else if(strcmp(opcode, "BRzp") == 0) {
         result = BRzp;
     }
-    else if(strcmp(opcode, "HALT") == 0){
+    else if(strcmp(opcode, "HALT") == 0) {
         result = HALT;
     }
     else {
@@ -280,21 +280,22 @@ opcode_t compute_opcode_type(const char *opcode) {
     return result;
 }
 
-// void free_line_metadata(linemetadata_t *tokenized_lines[]) {
-//     for(size_t i = 0; i < NUM_LINES; i++) {
-//         if(tokenized_lines[i]) {
-//             linemetadata_t *line_data = tokenized_lines[i];
-//             if(line_data->is_label_line) {                               
-//                 free(line_data->tokens-1);
-//                 free(line_data->line);
-//                 free(line_data);                
-//             }
-//             else {                                
-//                 free(line_data->tokens);
-//                 free(line_data->line);
-//                 free(line_data);
-//             }
-//         }
-//     }
-// }
+void free_line_metadata(linemetadata_t *line_metadata) {
+    if(line_metadata->is_label_line) {
+        free(line_metadata->tokens - 1);
+    }
+    else {
+        free(line_metadata->tokens);
+    }
+    free(line_metadata->line);
+    free(line_metadata);
+}
+
+void free_tokenized_lines(linemetadata_t *tokenized_lines[]) {
+    linemetadata_t *line_metadata;
+    memaddr_t address_offset = 0;
+    while((line_metadata = tokenized_lines[address_offset++])) {
+        free_line_metadata(line_metadata);
+    }
+}
 

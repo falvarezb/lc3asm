@@ -33,14 +33,14 @@ static int write_machine_instruction(uint16_t machine_instr, FILE *destination_f
 exit_t serialize_symbol_table(FILE *destination_file, memaddr_t address_origin) {        
     int num_chars_written;
     if((num_chars_written = fprintf(destination_file, "// Symbol table\n// Scope level 0:\n//	Symbol Name       Page Address\n//	----------------  ------------\n")) < 0) {        
-        return do_exit(EXIT_FAILURE, "error when writing serialized symbol table to file");
+        return do_exit(EXIT_FAILURE, "error when writing serialized symbol table to file: %d", errno);
     }
     node_t *node = next(true);
     while(node) {
         memaddr_t label_address = node->val - 1 + address_origin;
         add(node->key, label_address);
         if((num_chars_written = fprintf(destination_file, "//	%s             %hx\n", node->key, label_address) < 0)) {            
-            return do_exit(EXIT_FAILURE, "error when writing serialized symbol table to file");
+            return do_exit(EXIT_FAILURE, "error when writing serialized symbol table to file: %d", errno);
         }
         node = next(false);
     }    
@@ -74,16 +74,34 @@ exit_t assemble(const char *assembly_file_name) {
     exit_t result = do_lexical_analysis(assembly_file, tokenized_lines);
     fclose(assembly_file);
     if(result.code) {
+        free_tokenized_lines(tokenized_lines);
         return result;
     }
 
     result = do_syntax_analysis(tokenized_lines);
     if(result.code) {
+        free_tokenized_lines(tokenized_lines);
         return result;
     }
 
+    //symbol table update
+    FILE *symbol_table_file = fopen(symbol_table_file_name, "w");
+    if(!symbol_table_file) {
+        free_tokenized_lines(tokenized_lines);
+        return do_exit(EXIT_FAILURE, "ERROR: Couldn't open file (%s)", symbol_table_file_name);
+    }
+
+    result = serialize_symbol_table(symbol_table_file, tokenized_lines[0]->machine_instruction);
+    fclose(symbol_table_file);
+    if(result.code) {
+        free_tokenized_lines(tokenized_lines);
+        return result;
+    }
+
+    //object file
     FILE *object_file = fopen(object_file_name, "w");
     if(!object_file) {
+        free_tokenized_lines(tokenized_lines);
         return do_exit(EXIT_FAILURE, "ERROR: Couldn't open file (%s)", object_file_name);
     }
 
@@ -94,24 +112,12 @@ exit_t assemble(const char *assembly_file_name) {
             fclose(object_file);
             return do_exit(EXIT_FAILURE, "ERROR: Couldn't write file (%s)", object_file_name);
         }
-        //free_line_metadata(tokenized_lines);
+        free_line_metadata(line_metadata);
         address_offset++;
     }
     fclose(object_file);
 
-    //symbol table update
-
-
-    FILE *symbol_table_file = fopen(symbol_table_file_name, "w");
-    if(!symbol_table_file) {
-        return do_exit(EXIT_FAILURE, "ERROR: Couldn't open file (%s)", symbol_table_file_name);
-    }
-
-    result = serialize_symbol_table(symbol_table_file, tokenized_lines[0]->machine_instruction);
-    fclose(symbol_table_file);
-    if(result.code) {
-        return result;
-    }
+    
 
     return success();
 }

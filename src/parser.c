@@ -9,8 +9,7 @@ exit_t do_syntax_analysis(linemetadata_t *tokenized_lines[]) {
     linemetadata_t *line_metadata = tokenized_lines[0];
     if((result = parse_orig(line_metadata)).code) {
         return result;
-    }
-    //memaddr_t origin_address = line_metadata->machine_instruction; // incremental value that represents the memory address of each instruction    
+    }    
 
     memaddr_t address_offset = 1;
     while((line_metadata = tokenized_lines[address_offset])) {
@@ -87,12 +86,8 @@ exit_t do_syntax_analysis(linemetadata_t *tokenized_lines[]) {
             return result;
         }        
         address_offset++;
-    }
-
-    //update symbol table?
-
+    }    
     return result;
-
 }
 
 
