@@ -69,7 +69,9 @@ static exit_t is_valid_immediate(char *token, uint16_t *imm, long min, long max,
     return do_exit(EXIT_FAILURE, "ERROR (line %d): Immediate %s must be decimal or hex", line_counter, token);    
 }
 
-static exit_t is_valid_immediate2(char *token, int16_t *imm, long min, long max, uint16_t line_counter) {
+exit_t is_valid_lc3integer(char *token, int16_t *imm, uint16_t line_counter) {
+    long min = -32768;
+    long max = 32767;
     long tmp;
     char first_ch = *token;
     if(first_ch == '#') { //decimal literal
@@ -111,10 +113,6 @@ exit_t is_imm5(char *str, uint16_t *imm5, uint16_t line_counter) {
 
 exit_t is_valid_u16bit(char *str, uint16_t *n, uint16_t line_counter) {
     return is_valid_immediate(str, n, 0, 0xFFFF, line_counter);
-}
-
-exit_t is_valid_16bit(char *str, int16_t *n, uint16_t line_counter) {
-    return is_valid_immediate2(str, n, -32768, 32767, line_counter);
 }
 
 uint16_t do_return(uint16_t ret, char **tokens) {
