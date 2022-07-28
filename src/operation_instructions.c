@@ -14,7 +14,7 @@
 exit_t parse_binary_operation(linemetadata_t *line_metadata, opcode_t opcode) {
 
     int DR, SR1, SR2;
-    uint16_t imm5;
+    long imm5;
 
     //VALIDATING OPERANDS
     if(line_metadata->num_tokens < 4) {

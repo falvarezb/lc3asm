@@ -43,58 +43,37 @@ int is_register(char *str) {
     return -1;
 }
 
-static exit_t is_valid_immediate(char *token, uint16_t *imm, long min, long max, uint16_t line_counter) {
-    long tmp;
+static exit_t parse_numeric_value(char *token, long *imm, long min, long max, uint16_t line_counter) {
     char first_ch = *token;
     if(first_ch == '#') { //decimal literal
-        if(!strtolong(token + 1, &tmp)) {
+        if(!strtolong(token + 1, imm)) {
             return do_exit(EXIT_FAILURE, "ERROR (line %d): Immediate %s is not a numeric value", line_counter, token);
         }
-        if(tmp < min || tmp > max) {
+        if(*imm < min || *imm > max) {
             return do_exit(EXIT_FAILURE, "ERROR (line %d): Immediate operand (%s) outside of range (%ld to %ld)", line_counter, token + 1, min, max);            
-        }
-        *imm = (uint16_t)tmp;
-        return do_exit(EXIT_SUCCESS, NULL);
+        }        
+        return success();
     }
     else if(first_ch == 'x') { //hex literal
-        if(sscanf(token + 1, "%lx", &tmp) < 1) {
+        if(sscanf(token + 1, "%lx", imm) < 1) {
             return do_exit(EXIT_FAILURE, "ERROR (line %d): Error while reading immediate %s", line_counter, token);            
         }
-        if(tmp < min || tmp > max) {
+        if(*imm < min || *imm > max) {
             return do_exit(EXIT_FAILURE, "ERROR (line %d): Immediate operand (%s) outside of range (%ld to %ld)", line_counter, token + 1, min, max);            
-        }
-        *imm = (uint16_t)tmp;
-        return do_exit(EXIT_SUCCESS, NULL);
+        }        
+        return success();
     }
     return do_exit(EXIT_FAILURE, "ERROR (line %d): Immediate %s must be decimal or hex", line_counter, token);    
 }
 
 exit_t is_valid_lc3integer(char *token, int16_t *imm, uint16_t line_counter) {
-    long min = -32768;
-    long max = 32767;
     long tmp;
-    char first_ch = *token;
-    if(first_ch == '#') { //decimal literal
-        if(!strtolong(token + 1, &tmp)) {
-            return do_exit(EXIT_FAILURE, "ERROR (line %d): Immediate %s is not a numeric value", line_counter, token);
-        }
-        if(tmp < min || tmp > max) {
-            return do_exit(EXIT_FAILURE, "ERROR (line %d): Immediate operand (%s) outside of range (%ld to %ld)", line_counter, token + 1, min, max);            
-        }
-        *imm = (int16_t)tmp;
-        return do_exit(EXIT_SUCCESS, NULL);
+    exit_t result = parse_numeric_value(token, &tmp, -32768, 32767, line_counter);    
+    if(result.code) {
+        return result;
     }
-    else if(first_ch == 'x') { //hex literal
-        if(sscanf(token + 1, "%lx", &tmp) < 1) {
-            return do_exit(EXIT_FAILURE, "ERROR (line %d): Error while reading immediate %s", line_counter, token);            
-        }
-        if(tmp < min || tmp > max) {
-            return do_exit(EXIT_FAILURE, "ERROR (line %d): Immediate operand (%s) outside of range (%ld to %ld)", line_counter, token + 1, min, max);            
-        }
-        *imm = (int16_t)tmp;
-        return do_exit(EXIT_SUCCESS, NULL);
-    }
-    return do_exit(EXIT_FAILURE, "ERROR (line %d): Immediate %s must be decimal or hex", line_counter, token);    
+    *imm = (int16_t) tmp;
+    return success();
 }
 
 /**
@@ -107,12 +86,18 @@ exit_t is_valid_lc3integer(char *token, int16_t *imm, uint16_t line_counter) {
  * @param imm5 immediate value resulting of transforming str
  * @return int 0 if parsing is successful, else 1 (errdesc is set with error details)
  */
-exit_t is_imm5(char *str, uint16_t *imm5, uint16_t line_counter) {
-    return is_valid_immediate(str, imm5, -16, 15, line_counter);
+exit_t is_imm5(char *str, long *imm5, uint16_t line_counter) {
+    return parse_numeric_value(str, imm5, -16, 15, line_counter);
 }
 
-exit_t is_valid_u16bit(char *str, uint16_t *n, uint16_t line_counter) {
-    return is_valid_immediate(str, n, 0, 0xFFFF, line_counter);
+exit_t is_valid_memory_address(char *str, memaddr_t *n, uint16_t line_counter) {    
+    long tmp;
+    exit_t result = parse_numeric_value(str, &tmp, 0, 0xFFFF, line_counter);    
+    if(result.code) {
+        return result;
+    }
+    *n = (memaddr_t) tmp;
+    return success();
 }
 
 uint16_t do_return(uint16_t ret, char **tokens) {
