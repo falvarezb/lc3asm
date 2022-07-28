@@ -1,12 +1,12 @@
 /**
- * @file common.c
- * @brief Generic util functions
+ * @file util.c
+ * @brief generic util functions (they might be used outside this application)
  * @version 0.1
  * @date 2022-07-12
  *
  */
 
-#include "../include/common.h"
+#include "../include/util.h"
 char errdesc[ERR_DESC_LENGTH];
 
 /**

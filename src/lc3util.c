@@ -1,6 +1,6 @@
 /**
  * @file lc3util.c
- * @brief functions common to the parsing of different instructions and directives
+ * @brief util functions used during the assembly process
  * @version 0.1
  * @date 2022-07-12
  * 

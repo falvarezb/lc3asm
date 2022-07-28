@@ -1,7 +1,7 @@
 
 #ifndef FAB_LC3_COMMON
 #define FAB_LC3_COMMON
-#include "common.h"
+#include "util.h"
 #include "dict.h"
 
 typedef enum {
@@ -13,7 +13,6 @@ typedef enum {
 } opcode_t;
 
 typedef uint16_t memaddr_t;
-typedef uint16_t wordsize_t;
 typedef struct linemetadata {
     char *line;
     char **tokens; /**< tokens the line is split into; initial label, if any, is not included */
