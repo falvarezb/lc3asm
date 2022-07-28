@@ -106,52 +106,7 @@ bool strtolong(char *str, long *num) {
     }
 }
 
-/**
- * @brief Splits the given string into tokens
- *
- * This function generates an array of pointers, each pointing to the location of `str` corresponding to the
- * beginning of that token. Tokens are delimited by the characters in `delimiters`.
- *
- * Since `str` is mangled, it should not be used after this function. The tokens are available as long
- * as `str` remains allocated.
- *
- * @param str string to parse
- * @param num_tokens pointer used to store the number of tokens found
- * @return char** array of pointers to each of the tokens or null if no tokens are found (size of the array is given by num_tokens)
- */
 char **split_tokens(char *str, int *num_tokens, const char *delimiters) {
-    const int max_num_tokens = 200;
-    char **tokens = malloc(max_num_tokens * sizeof(char *));
-    if(tokens == NULL) {
-        seterrdesc("out of memory\n");
-        return NULL;
-    }
-    char *str_copy = strdup(str);
-
-    *num_tokens = 0;
-    char *pch = strtok(str_copy, delimiters);
-    while(pch != NULL) {
-        tokens[(*num_tokens)++] = pch;
-        pch = strtok(NULL, delimiters);
-    }
-
-    if(*num_tokens == 0) {
-        free(tokens);
-        return NULL;
-    }
-
-    char **resized_tokens = realloc(tokens, *num_tokens * sizeof(char *));
-    if(resized_tokens == NULL) {
-        seterrdesc("out of memory\n");
-        free(str_copy);
-        free(tokens);
-        return NULL;
-    }    
-
-    return resized_tokens;
-}
-
-char **split_tokens2(char *str, int *num_tokens, const char *delimiters) {
     const int max_num_tokens = 200;
     char **tokens = malloc(max_num_tokens * sizeof(char *));
     if(tokens == NULL) {

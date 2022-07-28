@@ -52,7 +52,7 @@ exit_t do_lexical_analysis(FILE *assembly_file, linemetadata_t *tokenized_lines[
 
         char *line = strdup(resusable_line);
         int num_tokens = 0;
-        char **tokens = split_tokens2(line, &num_tokens, " ,\n");
+        char **tokens = split_tokens(line, &num_tokens, " ,\n");
         if(num_tokens == 0) {               
             free(line);         
             continue;
