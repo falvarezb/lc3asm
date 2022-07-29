@@ -36,7 +36,7 @@
  * @param opcode opcode to identify whether it is a LD or STI instruction
  * @return exit_t
  */
-exit_t parse_pcoffset9_pattern(linemetadata_t *line_metadata, opcode_t opcode) {
+exit_t parse_pc_relative_addressing_mode(linemetadata_t *line_metadata, opcode_t opcode) {
 
     if(line_metadata->num_tokens < 3) {
         return do_exit(EXIT_FAILURE, "ERROR (line %d): missing operands", line_metadata->line_number);

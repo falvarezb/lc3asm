@@ -25,7 +25,7 @@ exit_t do_syntax_analysis(linemetadata_t *tokenized_lines[]) {
             opcode_t opcode_type = compute_opcode_type(line_metadata->tokens[0]);
             switch(opcode_type) {
             case ADD: case AND:
-                result = parse_binary_operation(line_metadata, opcode_type);
+                result = parse_add_and(line_metadata, opcode_type);
                 break;
             case NOT:
                 result = parse_not(line_metadata);
@@ -75,7 +75,7 @@ exit_t do_syntax_analysis(linemetadata_t *tokenized_lines[]) {
                 result = success();
                 break;
             case LD: case ST: case LDI: case STI: case LEA:
-                result = parse_pcoffset9_pattern(line_metadata, opcode_type);
+                result = parse_pc_relative_addressing_mode(line_metadata, opcode_type);
                 break;
             default:
                 break;

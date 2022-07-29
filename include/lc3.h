@@ -2,12 +2,12 @@
 #define FAB_LC3
 #include "lc3util.h"
 
-exit_t parse_binary_operation(linemetadata_t *line_metadata, opcode_t opcode);
+exit_t parse_add_and(linemetadata_t *line_metadata, opcode_t opcode);
 exit_t parse_not(linemetadata_t *line_metadata);
 exit_t parse_jmp(linemetadata_t *line_metadata);
 exit_t parse_jsr(linemetadata_t *line_metadata);
 exit_t parse_br(linemetadata_t *line_metadata, int condition_codes);
-exit_t parse_pcoffset9_pattern(linemetadata_t *line_metadata, opcode_t opcode);
+exit_t parse_pc_relative_addressing_mode(linemetadata_t *line_metadata, opcode_t opcode);
 
 exit_t first_pass_parse(const char *assembly_file_name, const char *symbol_table_file_name);
 exit_t second_pass_parse(const char *assembly_file_name, const char *object_file_name);

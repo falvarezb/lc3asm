@@ -11,7 +11,7 @@
 
 #include "../include/lc3.h"
 
-exit_t parse_binary_operation(linemetadata_t *line_metadata, opcode_t opcode) {
+exit_t parse_add_and(linemetadata_t *line_metadata, opcode_t opcode) {
 
     int DR, SR1, SR2;
     long imm5;
