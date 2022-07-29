@@ -30,6 +30,7 @@
         "memory_resource": "c",
         "iterator": "c",
         "locale": "c",
-        "functional": "c"
+        "functional": "c",
+        "util.h": "c"
     }
 }

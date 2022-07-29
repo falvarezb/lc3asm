@@ -66,14 +66,8 @@ static exit_t parse_numeric_value(char *token, long *imm, long min, long max, ui
     return do_exit(EXIT_FAILURE, "ERROR (line %d): Immediate %s must be decimal or hex", line_counter, token);
 }
 
-exit_t is_valid_lc3integer(char *token, int16_t *imm, uint16_t line_counter) {
-    long tmp;
-    exit_t result = parse_numeric_value(token, &tmp, -32768, 32767, line_counter);
-    if(result.code) {
-        return result;
-    }
-    *imm = (int16_t)tmp;
-    return success();
+exit_t is_valid_lc3integer(char *token, long *imm, uint16_t line_counter) {    
+    return parse_numeric_value(token, imm, -32768, 32767, line_counter);
 }
 
 /**
@@ -90,19 +84,8 @@ exit_t parse_imm5(char *str, long *imm5, uint16_t line_counter) {
     return parse_numeric_value(str, imm5, -16, 15, line_counter);
 }
 
-exit_t parse_memory_address(char *str, memaddr_t *n, uint16_t line_counter) {
-    long tmp;
-    exit_t result = parse_numeric_value(str, &tmp, 0, 0xFFFF, line_counter);
-    if(result.code) {
-        return result;
-    }
-    *n = (memaddr_t)tmp;
-    return success();
-}
-
-uint16_t do_return(uint16_t ret, char **tokens) {
-    free(tokens);
-    return ret;
+exit_t parse_memory_address(char *str, long *n, uint16_t line_counter) {    
+    return parse_numeric_value(str, n, 0, 0xFFFF, line_counter);
 }
 
 char **instruction_tokens(char *asm_instr, char *instr_name, int num_tokens) {

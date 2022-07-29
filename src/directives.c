@@ -17,7 +17,7 @@ exit_t parse_orig(linemetadata_t *line_metadata) {
         return do_exit(EXIT_FAILURE, "ERROR (line %d): Immediate expected", line_metadata->line_number);
     }
 
-    memaddr_t origin_address;
+    long origin_address;
     exit_t result = parse_memory_address(line_metadata->tokens[1], &origin_address, line_metadata->line_number);
     if(result.code) {
         return result;
@@ -41,7 +41,7 @@ exit_t parse_fill(linemetadata_t *line_metadata) {
         return do_exit(EXIT_FAILURE, "ERROR (line %d): Immediate expected", line_metadata->line_number);
     }
 
-    int16_t immediate;
+    long immediate;
     exit_t result = is_valid_lc3integer(line_metadata->tokens[1], &immediate, line_metadata->line_number);
     if(result.code) {
         return result;
