@@ -135,6 +135,21 @@ exit_t parse_offset(char *value, int lower_bound, int upper_bound, uint16_t inst
     return success();
 }
 
+exit_t parse_trapvector(char *value, uint16_t line_counter, long *trapvector) {
+
+    //is value a label or a number?
+    if(!strtolong(value, trapvector)) {
+        return do_exit(EXIT_FAILURE, "ERROR (line %d): Value of trapvector %s is not a numeric value", line_counter, value);
+    }
+
+    //validate trapvector numerical range
+    if(*trapvector < 0 || *trapvector > 255) {
+        return do_exit(EXIT_FAILURE, "ERROR (line %d): Value of trapvector %ld is outside the range [0, 255]", line_counter, *trapvector);
+    }
+
+    return success();
+}
+
 /**
  * @brief Determine the type of a line based on the value of the first token
  *

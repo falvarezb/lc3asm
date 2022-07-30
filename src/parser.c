@@ -88,6 +88,9 @@ exit_t do_syntax_analysis(linemetadata_t *tokenized_lines[]) {
                 line_metadata->machine_instruction = 0x8000;
                 result = success();
                 break;
+            case TRAP:
+                result = parse_trap(line_metadata);
+                break;
             default:
                 return do_exit(EXIT_FAILURE, "ERROR (line %d): Unknown opcode ('%s')", line_metadata->line_number, opcode_type);
                 break;

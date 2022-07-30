@@ -84,7 +84,7 @@ exit_t parse_jsrr(linemetadata_t *line_metadata) {
 exit_t parse_br(linemetadata_t *line_metadata, int condition_codes) {
 
     //VALIDATING OPERANDS
-    
+
     if(line_metadata->num_tokens < 2) {
         return do_exit(EXIT_FAILURE, "ERROR (line %d): missing operands", line_metadata->line_number);
     }
@@ -143,6 +143,31 @@ exit_t parse_jmp(linemetadata_t *line_metadata) {
     //BaseR
     BaseR = BaseR << 6;
     line_metadata->machine_instruction += BaseR;
+
+    return do_exit(EXIT_SUCCESS, NULL);  
+}
+
+exit_t parse_trap(linemetadata_t *line_metadata) {
+
+    //VALIDATING OPERAND
+
+    if(line_metadata->num_tokens < 2) {
+        return do_exit(EXIT_FAILURE, "ERROR (line %d): missing operands", line_metadata->line_number);
+    }
+    
+    long trapvector;    
+    exit_t result = parse_trapvector(line_metadata->tokens[1], line_metadata->line_number, &trapvector);
+    if(result.code) {
+        return result;
+    }
+
+    //CONVERTING TO BINARY REPRESENTATION
+
+    //ops code: 1111
+    line_metadata->machine_instruction = 15 << 12;
+
+    //trapvector    
+    line_metadata->machine_instruction += trapvector;
 
     return do_exit(EXIT_SUCCESS, NULL);  
 }

@@ -10,6 +10,7 @@ exit_t parse_jsrr(linemetadata_t *line_metadata);
 exit_t parse_br(linemetadata_t *line_metadata, int condition_codes);
 exit_t parse_pc_relative_addressing_mode(linemetadata_t *line_metadata, opcode_t opcode);
 exit_t parse_base_plus_offset_addressing_mode(linemetadata_t *line_metadata, opcode_t opcode);
+exit_t parse_trap(linemetadata_t *line_metadata);
 
 exit_t serialize_symbol_table(FILE *symbol_table_file, memaddr_t address_origin);
 exit_t assemble(const char *assembly_file_name);
