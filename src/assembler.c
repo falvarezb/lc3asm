@@ -47,23 +47,36 @@ exit_t serialize_symbol_table(FILE *destination_file, memaddr_t address_origin) 
     return success();
 }
 
-
-exit_t assemble(const char *assembly_file_name) {
-    //determine .sym and .obj file names
+static exit_t sym_obj_file_names(char *symbol_table_file_name, char *object_file_name, const char *assembly_file_name) {
     char *assemby_file_name_dup = strdup(assembly_file_name);
     char *file_extension = split_by_last_delimiter(assemby_file_name_dup, '.');
     if(strcmp(file_extension, "asm") != 0) {
         free(assemby_file_name_dup);
         return do_exit(EXIT_FAILURE, "ERROR: Input file must have .asm suffix ('%s')", assembly_file_name);
     }
-    char symbol_table_file_name[strlen(assemby_file_name_dup) + strlen(".sym") + 1];
+    
+    //.sym
     strcpy(symbol_table_file_name, assemby_file_name_dup);
     strcat(symbol_table_file_name, ".sym");
-
-    char object_file_name[strlen(assemby_file_name_dup) + strlen(".obj") + 1];
+    
+    //.obj
     strcpy(object_file_name, assemby_file_name_dup);
     strcat(object_file_name, ".obj");
+
     free(assemby_file_name_dup);
+    return success();
+}
+
+
+exit_t assemble(const char *assembly_file_name) {
+    //determine .sym and .obj file names
+    char symbol_table_file_name[strlen(assembly_file_name) + strlen(".sym") + 1];
+    char object_file_name[strlen(assembly_file_name) + strlen(".obj") + 1];
+    exit_t result;
+
+    if((result = sym_obj_file_names(symbol_table_file_name, object_file_name, assembly_file_name)).code) {
+        return result;
+    }
 
     linemetadata_t *tokenized_lines[100] = { NULL };
     FILE *assembly_file = fopen(assembly_file_name, "r");
@@ -71,15 +84,14 @@ exit_t assemble(const char *assembly_file_name) {
         return do_exit(EXIT_FAILURE, "ERROR: Couldn't read file (%s)", assembly_file_name);
     }
 
-    exit_t result = do_lexical_analysis(assembly_file, tokenized_lines);
+    result = do_lexical_analysis(assembly_file, tokenized_lines);
     fclose(assembly_file);
     if(result.code) {
         free_tokenized_lines(tokenized_lines);
         return result;
     }
-
-    result = do_syntax_analysis(tokenized_lines);
-    if(result.code) {
+    
+    if((result = do_syntax_analysis(tokenized_lines)).code) {
         free_tokenized_lines(tokenized_lines);
         return result;
     }
@@ -116,8 +128,6 @@ exit_t assemble(const char *assembly_file_name) {
         address_offset++;
     }
     fclose(object_file);
-
-    
 
     return success();
 }
