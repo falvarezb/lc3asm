@@ -108,6 +108,10 @@ static void test_assemble_missing_orig_address_t8(void  __attribute__((unused)) 
     free(result.desc);
 }
 
+static void test_assemble_stringz_t9(void  __attribute__((unused)) **state) {
+    run_assemble_test("./test/t9.asm", "./test/t9.expected.obj", "./test/t9.obj");
+}
+
 static void test_missing_assembly_file(void  __attribute__((unused)) **state) {
     exit_t result = assemble("./test/test/random.asm");
     assert_int_equal(result.code, 1);
@@ -188,6 +192,7 @@ int main(int argc, char const *argv[]) {
         cmocka_unit_test_setup_teardown(test_assemble_wrong_orig_address_t6, setup, teardown),
         cmocka_unit_test_setup_teardown(test_assemble_missing_orig_t7, setup, teardown),
         cmocka_unit_test_setup_teardown(test_assemble_missing_orig_address_t8, setup, teardown),
+        cmocka_unit_test_setup_teardown(test_assemble_stringz_t9, setup, teardown),
         cmocka_unit_test_setup_teardown(test_missing_assembly_file, setup, teardown),
         cmocka_unit_test_setup_teardown(test_wrong_assembly_file_extension, setup, teardown),
         cmocka_unit_test_setup_teardown(test_symbol_table_serialization, setup, teardown),

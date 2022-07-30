@@ -9,10 +9,15 @@ exit_t do_syntax_analysis(linemetadata_t *tokenized_lines[]) {
     linemetadata_t *line_metadata = tokenized_lines[0];
     if((result = parse_orig(line_metadata)).code) {
         return result;
-    }    
+    }
 
     memaddr_t address_offset = 1;
     while((line_metadata = tokenized_lines[address_offset])) {
+        if(!line_metadata->tokens) {
+            //instruction has already been parsed
+            address_offset++;
+            continue;
+        }
         linetype_t line_type = compute_line_type(line_metadata->tokens[0]);
         if(line_type == LABEL) {
             //two labels in the same line is disallowed 
@@ -82,7 +87,7 @@ exit_t do_syntax_analysis(linemetadata_t *tokenized_lines[]) {
                 break;
             case LDR: case STR:
                 result = parse_base_plus_offset_addressing_mode(line_metadata, opcode_type);
-                break; 
+                break;
             case RTI:
                 //instruction: 1000 000000 000000
                 line_metadata->machine_instruction = 0x8000;
@@ -99,9 +104,9 @@ exit_t do_syntax_analysis(linemetadata_t *tokenized_lines[]) {
 
         if(result.code) {
             return result;
-        }        
+        }
         address_offset++;
-    }    
+    }
     return result;
 }
 

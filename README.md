@@ -88,7 +88,7 @@ An assembler directive is a message to help the assembler in the assembly proces
 - __.ORIG__: tells the assembler where in memory to place the LC-3 program
 - __.FILL__: tells the assembler to set aside the next location in the program and initialize it with the value of the operand.
 - __.BLKW__: tells the assembler to set aside some number of sequential memory locations (BLocK of Words) in the program
-_ __.STRINGZ__: tells the assembler to initialize a sequence of n + 1 memory locations; the argument is a sequence of n characters, inside double quotation marks; the  first n words of memory are initialized with the zero-extended ASCII codes of the corresponding characters in the string; the final word of memory is initialized to 0.
+- __.STRINGZ__: tells the assembler to initialize a sequence of n + 1 memory locations; the argument is a sequence of n characters, inside double quotation marks; the  first n words of memory are initialized with the zero-extended ASCII codes of the corresponding characters in the string; the final word of memory is initialized to 0.
 - __.END__: tells the assembler where the program ends; any characters that come after .END are ignored by the assembler.
 
 

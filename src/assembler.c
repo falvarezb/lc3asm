@@ -30,20 +30,20 @@ static int write_machine_instruction(uint16_t machine_instr, FILE *destination_f
  * @param destination_file File where the symbol table is serialized
  * @return int 0 if serialization is successful or 1 if there is a writing error (errdesc is set with error details)
  */
-exit_t serialize_symbol_table(FILE *destination_file, memaddr_t address_origin) {        
+exit_t serialize_symbol_table(FILE *destination_file, memaddr_t address_origin) {
     int num_chars_written;
-    if((num_chars_written = fprintf(destination_file, "// Symbol table\n// Scope level 0:\n//	Symbol Name       Page Address\n//	----------------  ------------\n")) < 0) {        
+    if((num_chars_written = fprintf(destination_file, "// Symbol table\n// Scope level 0:\n//	Symbol Name       Page Address\n//	----------------  ------------\n")) < 0) {
         return do_exit(EXIT_FAILURE, "error when writing serialized symbol table to file: %d", errno);
     }
     node_t *node = next(true);
     while(node) {
         memaddr_t label_address = node->val - 1 + address_origin;
         add(node->key, label_address);
-        if((num_chars_written = fprintf(destination_file, "//	%s             %hx\n", node->key, label_address) < 0)) {            
+        if((num_chars_written = fprintf(destination_file, "//	%s             %hx\n", node->key, label_address) < 0)) {
             return do_exit(EXIT_FAILURE, "error when writing serialized symbol table to file: %d", errno);
         }
         node = next(false);
-    }    
+    }
     return success();
 }
 
@@ -54,11 +54,11 @@ static exit_t sym_obj_file_names(char *symbol_table_file_name, char *object_file
         free(assemby_file_name_dup);
         return do_exit(EXIT_FAILURE, "ERROR: Input file must have .asm suffix ('%s')", assembly_file_name);
     }
-    
+
     //.sym
     strcpy(symbol_table_file_name, assemby_file_name_dup);
     strcat(symbol_table_file_name, ".sym");
-    
+
     //.obj
     strcpy(object_file_name, assemby_file_name_dup);
     strcat(object_file_name, ".obj");
@@ -91,7 +91,7 @@ exit_t assemble(const char *assembly_file_name) {
         free_tokenized_lines(tokenized_lines);
         return result;
     }
-    
+
     if((result = do_syntax_analysis(tokenized_lines)).code) {
         free_tokenized_lines(tokenized_lines);
         return result;

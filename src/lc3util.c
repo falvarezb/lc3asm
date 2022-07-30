@@ -66,7 +66,7 @@ static exit_t parse_numeric_value(char *token, long *imm, long min, long max, ui
     return do_exit(EXIT_FAILURE, "ERROR (line %d): Immediate %s must be decimal or hex", line_counter, token);
 }
 
-exit_t is_valid_lc3integer(char *token, long *imm, uint16_t line_counter) {    
+exit_t is_valid_lc3integer(char *token, long *imm, uint16_t line_counter) {
     return parse_numeric_value(token, imm, -32768, 32767, line_counter);
 }
 
@@ -84,7 +84,7 @@ exit_t parse_imm5(char *str, long *imm5, uint16_t line_counter) {
     return parse_numeric_value(str, imm5, -16, 15, line_counter);
 }
 
-exit_t parse_memory_address(char *str, long *n, uint16_t line_counter) {    
+exit_t parse_memory_address(char *str, long *n, uint16_t line_counter) {
     return parse_numeric_value(str, n, 0, 0xFFFF, line_counter);
 }
 
@@ -187,7 +187,7 @@ linetype_t compute_line_type(const char *first_token) {
         strcmp(first_token, "LDR") == 0 ||
         strcmp(first_token, "STR") == 0 ||
         strcmp(first_token, "RTI") == 0 ||
-        strcmp(first_token, "TRAP") == 0        
+        strcmp(first_token, "TRAP") == 0
         ) {
         result = OPCODE;
     }
@@ -199,6 +199,12 @@ linetype_t compute_line_type(const char *first_token) {
     }
     else if(strcmp(first_token, ".FILL") == 0) {
         result = FILL_DIRECTIVE;
+    }
+    else if(strcmp(first_token, ".BLKW") == 0) {
+        result = BLKW_DIRECTIVE;
+    }
+    else if(strcmp(first_token, ".STRINGZ") == 0) {
+        result = STRINGZ_DIRECTIVE;
     }
     else if(first_token[0] == ';') {
         result = COMMENT;
@@ -302,13 +308,15 @@ opcode_t compute_opcode_type(const char *opcode) {
 }
 
 void free_line_metadata(linemetadata_t *line_metadata) {
-    if(line_metadata->is_label_line) {
-        free(line_metadata->tokens - 1);
+    if(line_metadata->tokens) {
+        if(line_metadata->is_label_line) {
+            free(line_metadata->tokens - 1);
+        }
+        else {
+            free(line_metadata->tokens);
+        }
+        free(line_metadata->line);
     }
-    else {
-        free(line_metadata->tokens);
-    }
-    free(line_metadata->line);
     free(line_metadata);
 }
 
