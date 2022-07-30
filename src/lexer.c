@@ -117,9 +117,9 @@ exit_t do_lexical_analysis(FILE *assembly_file, linemetadata_t *tokenized_lines[
                 line_metadata->machine_instruction = 0;
                 tokenized_lines[instruction_offset] = line_metadata;
                 instruction_offset++;
-                free(line);
-                free_tokens(tokens, is_label_line);
             }
+            free(line);
+            free_tokens(tokens, is_label_line);
         }
         else if(line_type == STRINGZ_DIRECTIVE) {
             exit_t result = parse_stringz(line_metadata);
