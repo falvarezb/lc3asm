@@ -44,9 +44,9 @@ exit_t parse_pc_relative_addressing_mode(linemetadata_t *line_metadata, opcode_t
         return do_exit(EXIT_FAILURE, "ERROR (line %d): missing operands", line_metadata->line_number);
     }
 
-    int lc3register;
+    int SR_DR;
 
-    if((lc3register = parse_register(line_metadata->tokens[1])) == -1) {
+    if((SR_DR = parse_register(line_metadata->tokens[1])) == -1) {
         return do_exit(EXIT_FAILURE, "ERROR (line %d): Expected register but found %s", line_metadata->line_number, line_metadata->tokens[1]);
     }
 
@@ -86,9 +86,8 @@ exit_t parse_pc_relative_addressing_mode(linemetadata_t *line_metadata, opcode_t
     }
     line_metadata->machine_instruction = opcode_binary;
 
-    //DR
-    lc3register = lc3register << 9;
-    line_metadata->machine_instruction += lc3register;
+    //SR, DR
+    line_metadata->machine_instruction += (SR_DR << 9);
 
     //LABEL
     line_metadata->machine_instruction += offset;
@@ -96,9 +95,59 @@ exit_t parse_pc_relative_addressing_mode(linemetadata_t *line_metadata, opcode_t
     return success();
 }
 
-// exit_t parse_base_plus_offset_addressing_mode(linemetadata_t *line_metadata, opcode_t opcode) {
+exit_t parse_base_plus_offset_addressing_mode(linemetadata_t *line_metadata, opcode_t opcode) {
+    
+    //VALIDATING OPERANDS
 
-// }
+    if(line_metadata->num_tokens < 4) {
+        return do_exit(EXIT_FAILURE, "ERROR (line %d): missing operands", line_metadata->line_number);
+    }
+
+    int SR_DR, BaseR;
+
+    if((SR_DR = parse_register(line_metadata->tokens[1])) == -1) {
+        return do_exit(EXIT_FAILURE, "ERROR (line %d): Expected register but found %s", line_metadata->line_number, line_metadata->tokens[1]);
+    }
+
+    if((BaseR = parse_register(line_metadata->tokens[2])) == -1) {
+        return do_exit(EXIT_FAILURE, "ERROR (line %d): Expected register but found %s", line_metadata->line_number, line_metadata->tokens[2]);
+    }
+
+    long offset;
+    exit_t result = parse_offset(line_metadata->tokens[3], -32, 31, line_metadata->instruction_location, line_metadata->line_number, &offset);
+    if(result.code) {
+        return result;
+    }
+
+    //CONVERTING TO BINARY REPRESENTATION
+
+    uint16_t opcode_binary;
+    switch(opcode) {
+    case LDR:
+        //ops code: 0110
+        opcode_binary = 6 << 12;
+        break;
+    case STR:
+        //ops code: 0111
+        opcode_binary = 7 << 12;
+        break;    
+    default:
+        assert(false);
+        break;
+    }
+    line_metadata->machine_instruction = opcode_binary;
+
+    //SR,DR    
+    line_metadata->machine_instruction += (SR_DR << 9);
+
+    //BaseR
+    line_metadata->machine_instruction += (BaseR << 6);
+
+    //offset6
+    line_metadata->machine_instruction += offset;
+
+    return success();
+}
 
 
 #ifdef FAB_MAIN

@@ -9,7 +9,7 @@ typedef enum {
 } linetype_t;
 
 typedef enum {
-    ADD, AND, JMP, JSR, NOT, RET, HALT, LD, ST, LDI, STI, LEA, BR, BRp, BRz, BRn, BRzp, BRnp, BRnz, BRnzp
+    ADD, AND, JMP, JSR, JSRR, NOT, RET, HALT, LD, ST, LDI, STI, LEA, BR, BRp, BRz, BRn, BRzp, BRnp, BRnz, BRnzp, LDR, STR
 } opcode_t;
 
 typedef uint16_t memaddr_t;
