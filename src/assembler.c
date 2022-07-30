@@ -78,6 +78,7 @@ exit_t assemble(const char *assembly_file_name) {
         return result;
     }
 
+    //assembly file processing
     linemetadata_t *tokenized_lines[100] = { NULL };
     FILE *assembly_file = fopen(assembly_file_name, "r");
     if(!assembly_file) {
