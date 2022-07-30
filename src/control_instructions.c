@@ -31,6 +31,8 @@
   */
 exit_t parse_jsr(linemetadata_t *line_metadata) {
 
+    //VALIDATING OPERANDS
+
     if(line_metadata->num_tokens < 2) {
         return do_exit(EXIT_FAILURE, "ERROR (line %d): missing operands", line_metadata->line_number);
     }
@@ -81,6 +83,8 @@ exit_t parse_jsrr(linemetadata_t *line_metadata) {
 
 exit_t parse_br(linemetadata_t *line_metadata, int condition_codes) {
 
+    //VALIDATING OPERANDS
+    
     if(line_metadata->num_tokens < 2) {
         return do_exit(EXIT_FAILURE, "ERROR (line %d): missing operands", line_metadata->line_number);
     }
