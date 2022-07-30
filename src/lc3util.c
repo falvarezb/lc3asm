@@ -170,7 +170,9 @@ linetype_t compute_line_type(const char *first_token) {
         strcmp(first_token, "BRz") == 0 ||
         strcmp(first_token, "BRp") == 0 ||
         strcmp(first_token, "LDR") == 0 ||
-        strcmp(first_token, "STR") == 0        
+        strcmp(first_token, "STR") == 0 ||
+        strcmp(first_token, "RTI") == 0 ||
+        strcmp(first_token, "TRAP") == 0        
         ) {
         result = OPCODE;
     }
@@ -236,8 +238,11 @@ opcode_t compute_opcode_type(const char *opcode) {
     else if(strcmp(opcode, "LEA") == 0) {
         result = LEA;
     }
-    else if(strcmp(opcode, "BR") == 0 || strcmp(opcode, "BRnzp") == 0) {
+    else if(strcmp(opcode, "BR") == 0) {
         result = BR;
+    }
+    else if(strcmp(opcode, "BRnzp") == 0) {
+        result = BRnzp;
     }
     else if(strcmp(opcode, "BRn") == 0) {
         result = BRn;
@@ -268,6 +273,12 @@ opcode_t compute_opcode_type(const char *opcode) {
     }
     else if(strcmp(opcode, "STR") == 0) {
         result = STR;
+    }
+    else if(strcmp(opcode, "RTI") == 0) {
+        result = RTI;
+    }
+    else if(strcmp(opcode, "TRAP") == 0) {
+        result = TRAP;
     }
     else {
         assert(false);

@@ -33,6 +33,9 @@ exit_t do_syntax_analysis(linemetadata_t *tokenized_lines[]) {
             case JSR:
                 result = parse_jsr(line_metadata);
                 break;
+            case JSRR:
+                result = parse_jsrr(line_metadata);
+                break;
             case JMP:
                 result = parse_jmp(line_metadata);
                 break;
@@ -66,7 +69,7 @@ exit_t do_syntax_analysis(linemetadata_t *tokenized_lines[]) {
                 break;
             case RET:
                 //instruction: 1100 000 111 000000
-                line_metadata->machine_instruction = 49600;
+                line_metadata->machine_instruction = 0xc1c0;
                 result = success();
                 break;
             case HALT:
@@ -77,7 +80,16 @@ exit_t do_syntax_analysis(linemetadata_t *tokenized_lines[]) {
             case LD: case ST: case LDI: case STI: case LEA:
                 result = parse_pc_relative_addressing_mode(line_metadata, opcode_type);
                 break;
+            case LDR: case STR:
+                result = parse_base_plus_offset_addressing_mode(line_metadata, opcode_type);
+                break; 
+            case RTI:
+                //instruction: 1000 000000 000000
+                line_metadata->machine_instruction = 0x8000;
+                result = success();
+                break;
             default:
+                return do_exit(EXIT_FAILURE, "ERROR (line %d): Unknown opcode ('%s')", line_metadata->line_number, opcode_type);
                 break;
             }
         }
