@@ -1,6 +1,6 @@
         
     .ORIG x3000    
-    ADD R0,R0,#1 ; comment
+    JSRR R0
     HALT
     
     .END

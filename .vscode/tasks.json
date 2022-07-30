@@ -97,7 +97,7 @@
                 "-g",
                 "-Wall",    
                 "-Wno-missing-braces ",                  
-                "${workspaceFolder}/test/data_movement_instructions_test.c",
+                "${workspaceFolder}/test/parser_jsrr_test.c",
                 "${workspaceFolder}/src/assembler.c", 
                 "${workspaceFolder}/src/lexer.c",                
                 "${workspaceFolder}/src/parser.c", 

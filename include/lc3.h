@@ -6,6 +6,7 @@ exit_t parse_add_and(linemetadata_t *line_metadata, opcode_t opcode);
 exit_t parse_not(linemetadata_t *line_metadata);
 exit_t parse_jmp(linemetadata_t *line_metadata);
 exit_t parse_jsr(linemetadata_t *line_metadata);
+exit_t parse_jsrr(linemetadata_t *line_metadata);
 exit_t parse_br(linemetadata_t *line_metadata, int condition_codes);
 exit_t parse_pc_relative_addressing_mode(linemetadata_t *line_metadata, opcode_t opcode);
 
