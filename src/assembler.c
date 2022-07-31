@@ -79,7 +79,12 @@ exit_t assemble(const char *assembly_file_name) {
     }
 
     //assembly file processing
-    linemetadata_t *tokenized_lines[100] = { NULL };
+    linemetadata_t **tokenized_lines = malloc(ADDRESS_SPACE_CARDINALITY * sizeof(linemetadata_t *));
+    for(size_t i = 0; i < ADDRESS_SPACE_CARDINALITY; i++) {
+        //setting sentinel values
+        tokenized_lines[i] = NULL;
+    }
+
     FILE *assembly_file = fopen(assembly_file_name, "r");
     if(!assembly_file) {
         return do_exit(EXIT_FAILURE, "ERROR: Couldn't read file (%s)", assembly_file_name);

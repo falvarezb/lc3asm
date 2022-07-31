@@ -170,8 +170,8 @@ static void test_symbol_table_serialization_failure(void  __attribute__((unused)
     FILE *actual_sym_file = fopen("./test/t2.sym", "r");
     exit_t result = serialize_symbol_table(actual_sym_file, 0x3000);
     fclose(actual_sym_file);
-    assert_string_equal(result.desc, "error when writing serialized symbol table to file: 9");
     assert_int_equal(result.code, 1);
+    assert_string_equal(result.desc, "error when writing serialized symbol table to file: 9");    
     free(result.desc);
 }
 

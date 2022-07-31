@@ -4,6 +4,8 @@
 #include "util.h"
 #include "dict.h"
 
+#define ADDRESS_SPACE_CARDINALITY 65536
+
 typedef enum {
     ORIG_DIRECTIVE, END_DIRECTIVE, OPCODE, LABEL, COMMENT, BLANK_LINE, FILL_DIRECTIVE, BLKW_DIRECTIVE, STRINGZ_DIRECTIVE
 } linetype_t;
