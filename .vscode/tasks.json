@@ -102,7 +102,7 @@
                 "${workspaceFolder}/src/lexer.c",                
                 "${workspaceFolder}/src/parser.c", 
                 "${workspaceFolder}/src/directives.c", 
-                "${workspaceFolder}/src/operation_instructions.c",
+                "${workspaceFolder}/src/operate_instructions.c",
                 "${workspaceFolder}/src/control_instructions.c",
                 "${workspaceFolder}/src/data_movement_instructions.c",
                 "${workspaceFolder}/src/lc3util.c",

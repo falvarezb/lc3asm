@@ -1,5 +1,5 @@
 /**
- * @file operation_instructions.c
+ * @file operate_instructions.c
  * @author your name (you@domain.com)
  * @brief
  * @version 0.1
