@@ -108,18 +108,19 @@ exit_t do_lexical_analysis(FILE *assembly_file, linemetadata_t *tokenized_lines[
 
             uint16_t blkw_operand = line_metadata->machine_instruction;
             for(size_t i = 0; i < blkw_operand; i++) {
-                linemetadata_t *line_metadata = malloc(sizeof(linemetadata_t));
-                if(!line_metadata) {
+                linemetadata_t *blkw_line_metadata = malloc(sizeof(linemetadata_t));
+                if(!blkw_line_metadata) {
                     //out of memory error
                 }
-                line_metadata->tokens = NULL;
-                line_metadata->line = NULL;
-                line_metadata->machine_instruction = 0;
-                tokenized_lines[instruction_offset] = line_metadata;
+                blkw_line_metadata->tokens = NULL;
+                blkw_line_metadata->line = NULL;
+                blkw_line_metadata->machine_instruction = 0;
+                tokenized_lines[instruction_offset] = blkw_line_metadata;
                 instruction_offset++;
             }
             free(line);
             free_tokens(tokens, is_label_line);
+            free(line_metadata);
         }
         else if(line_type == STRINGZ_DIRECTIVE) {
             exit_t result = parse_stringz(line_metadata);
@@ -130,28 +131,29 @@ exit_t do_lexical_analysis(FILE *assembly_file, linemetadata_t *tokenized_lines[
             char *str_literal = line_metadata->tokens[1];
             for(size_t i = 1; i < strlen(str_literal) - 1; i++) {
                 //i=1...len-1 to omit quotation marks
-                linemetadata_t *line_metadata = malloc(sizeof(linemetadata_t));
-                if(!line_metadata) {
+                linemetadata_t *stringz_line_metadata = malloc(sizeof(linemetadata_t));
+                if(!stringz_line_metadata) {
                     //out of memory error
                 }
-                line_metadata->tokens = NULL;
-                line_metadata->line = NULL;
-                line_metadata->machine_instruction = str_literal[i];
-                tokenized_lines[instruction_offset] = line_metadata;
+                stringz_line_metadata->tokens = NULL;
+                stringz_line_metadata->line = NULL;
+                stringz_line_metadata->machine_instruction = str_literal[i];
+                tokenized_lines[instruction_offset] = stringz_line_metadata;
                 instruction_offset++;
             }
             //final '\0'
-            linemetadata_t *line_metadata = malloc(sizeof(linemetadata_t));
-            if(!line_metadata) {
+            linemetadata_t *stringz_line_metadata = malloc(sizeof(linemetadata_t));
+            if(!stringz_line_metadata) {
                 //out of memory error
             }
-            line_metadata->tokens = NULL;
-            line_metadata->line = NULL;
-            line_metadata->machine_instruction = 0;
-            tokenized_lines[instruction_offset] = line_metadata;
+            stringz_line_metadata->tokens = NULL;
+            stringz_line_metadata->line = NULL;
+            stringz_line_metadata->machine_instruction = 0;
+            tokenized_lines[instruction_offset] = stringz_line_metadata;
             instruction_offset++;
             free(line);
             free_tokens(tokens, is_label_line);
+            free(line_metadata);
         }
         else {
             instruction_offset++;
