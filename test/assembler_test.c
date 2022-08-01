@@ -184,6 +184,9 @@ static void test_assemble_abs_asm(void  __attribute__((unused)) **state) {
     run_assemble_test("./test/abs.asm", "./test/abs.expected.obj", "./test/abs.obj");
 }
 
+static void test_assemble_lcrng_asm(void  __attribute__((unused)) **state) {
+    run_assemble_test("./test/lcrng.asm", "./test/lcrng.expected.obj", "./test/lcrng.obj");
+}
 
 int main(int argc, char const *argv[]) {
     const struct CMUnitTest tests[] = {        
@@ -203,7 +206,8 @@ int main(int argc, char const *argv[]) {
         cmocka_unit_test_setup_teardown(test_symbol_table_serialization, setup, teardown),
         cmocka_unit_test_setup_teardown(test_symbol_table_serialization_failure, setup, teardown),
         cmocka_unit_test_setup_teardown(test_assemble_or_asm, setup, teardown),
-        cmocka_unit_test_setup_teardown(test_assemble_abs_asm, setup, teardown)
+        cmocka_unit_test_setup_teardown(test_assemble_abs_asm, setup, teardown),
+        cmocka_unit_test_setup_teardown(test_assemble_lcrng_asm, setup, teardown)
     };
     return cmocka_run_group_tests(tests, NULL, NULL);
 }

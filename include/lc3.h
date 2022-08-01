@@ -22,7 +22,7 @@ exit_t parse_orig(linemetadata_t *line_metadata);
 exit_t parse_fill(linemetadata_t *line_metadata);
 exit_t parse_blkw(linemetadata_t *line_metadata);
 exit_t parse_stringz(linemetadata_t *line_metadata);
-exit_t is_valid_lc3integer(char *token, long *imm, uint16_t line_counter);
+exit_t is_valid_lc3integer(char *token, int16_t *imm, uint16_t line_counter);
 
 
 #endif
