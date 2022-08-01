@@ -77,6 +77,26 @@ exit_t do_syntax_analysis(linemetadata_t *tokenized_lines[]) {
                 line_metadata->machine_instruction = 0xc1c0;
                 result = success();
                 break;
+            case GETC:                
+                line_metadata->machine_instruction = 0xf020;
+                result = success();
+                break;
+            case OUT:                
+                line_metadata->machine_instruction = 0xf021;
+                result = success();
+                break;
+            case PUTS:                
+                line_metadata->machine_instruction = 0xf022;
+                result = success();
+                break;
+            case IN:                
+                line_metadata->machine_instruction = 0xf023;
+                result = success();
+                break;
+            case PUTSP:                
+                line_metadata->machine_instruction = 0xf024;
+                result = success();
+                break;
             case HALT:
                 //instruction: 1100 000 111 000000
                 line_metadata->machine_instruction = 0xf025;

@@ -82,6 +82,17 @@ Labels always make reference to the memory location of the first instruction aft
 Two consecutive labels on the same line is considered illegal. However, two consecutive labels
 on different lines is permitted.
 
+### Trap service routines
+
+The assembly language provides some aliases for the TRAP instructions:
+
+- GETC: TRAP x20
+- OUT: TRAP x21
+- PUTS: TRAP x22
+- IN: TRAP x23
+- PUTSP: TRAP x24
+- HALT: TRAP x25
+
 ### Pseoud-ops (assembler directives)
 An assembler directive is a message to help the assembler in the assembly process. Once the assembler handles the message, the pseudo-op is discarded.
 
