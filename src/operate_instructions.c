@@ -41,13 +41,11 @@ exit_t parse_add_and(linemetadata_t *line_metadata, opcode_t opcode) {
         line_metadata->machine_instruction = 5 << 12;
     }
 
-    //DR
-    DR = DR << 9;
-    line_metadata->machine_instruction += DR;
+    //DR    
+    line_metadata->machine_instruction += (DR << 9);
 
-    //SR1
-    SR1 = SR1 << 6;
-    line_metadata->machine_instruction += SR1;
+    //SR1    
+    line_metadata->machine_instruction += (SR1 << 6);
 
     if((SR2 = parse_register(line_metadata->tokens[3])) > -1) {
         line_metadata->machine_instruction += SR2;
@@ -56,6 +54,10 @@ exit_t parse_add_and(linemetadata_t *line_metadata, opcode_t opcode) {
         exit_t result = parse_imm5(line_metadata->tokens[3], &imm5, line_metadata->line_number);
         if(result.code) {
             return result;
+        }
+        //5-bit 2's complement
+        if(imm5 < 0) {
+            imm5 += (1 << 5);
         }
         line_metadata->machine_instruction += (1 << 5);
         line_metadata->machine_instruction += imm5;

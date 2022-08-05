@@ -156,7 +156,7 @@ exit_t parse_trap(linemetadata_t *line_metadata) {
     }
     
     long trapvector;    
-    exit_t result = parse_trapvector(line_metadata->tokens[1], line_metadata->line_number, &trapvector);
+    exit_t result = parse_trapvector(line_metadata->tokens[1], &trapvector, line_metadata->line_number);
     if(result.code) {
         return result;
     }

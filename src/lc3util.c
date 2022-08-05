@@ -45,19 +45,25 @@ int parse_register(char *str) {
 
 static exit_t parse_numeric_value(char *token, long *imm, uint16_t line_counter) {
     char first_ch = *token;
+    char *value_to_check;
+    int base;
     if(first_ch == '#') { //decimal literal
-        if(!strtolong(token + 1, imm)) {
+        value_to_check = token + 1;
+        base = 10;
+    }
+    else if(first_ch == 'x') { //hex literal
+        value_to_check = token + 1;
+        base = 16;
+    }
+    else { // decimal literal without prefix
+        value_to_check = token;
+        base = 10;
+    }
+
+    if(!strtolong(value_to_check, imm, base)) {
             return do_exit(EXIT_FAILURE, "ERROR (line %d): Immediate %s is not a numeric value", line_counter, token);
         }
         return success();
-    }
-    else if(first_ch == 'x') { //hex literal
-        if(sscanf(token + 1, "%lx", imm) < 1) {
-            return do_exit(EXIT_FAILURE, "ERROR (line %d): Error while reading immediate %s", line_counter, token);
-        }
-        return success();
-    }
-    return do_exit(EXIT_FAILURE, "ERROR (line %d): Immediate %s must be decimal or hex", line_counter, token);
 }
 
 exit_t is_valid_lc3integer(char *token, int16_t *imm, uint16_t line_counter) {
@@ -88,7 +94,7 @@ exit_t parse_imm5(char *str, long *imm5, uint16_t line_counter) {
     int min = -16;
     int max = 15;
     if(*imm5 < min || *imm5 > max) {
-        return do_exit(EXIT_FAILURE, "ERROR (line %d): Immediate operand (%s) outside of range (%ld to %ld)", line_counter, str + 1, min, max);
+        return do_exit(EXIT_FAILURE, "ERROR (line %d): Immediate operand (%s) outside of range (%d to %d)", line_counter, str + 1, min, max);
     }
     return success();
 }
@@ -102,7 +108,7 @@ exit_t parse_memory_address(char *str, long *n, uint16_t line_counter) {
     int min = 0;
     int max = 0xFFFF;
     if(*n < min || *n > max) {
-        return do_exit(EXIT_FAILURE, "ERROR (line %d): Immediate operand (%s) outside of range (%ld to %ld)", line_counter, str + 1, min, max);
+        return do_exit(EXIT_FAILURE, "ERROR (line %d): Immediate operand (%s) outside of range (%d to %d)", line_counter, str + 1, min, max);
     }
     return success();
 }
@@ -134,17 +140,34 @@ char **instruction_tokens(char *asm_instr, char *instr_name, int num_tokens) {
     return tokens;
 }
 
-exit_t parse_offset(char *value, int lower_bound, int upper_bound, uint16_t instruction_number, uint16_t line_counter, long *offset) {
+exit_t parse_offset(char *token, int lower_bound, int upper_bound, uint16_t instruction_number, uint16_t line_counter, long *offset) {
+
+    char first_ch = *token;
+    char *value_to_check;
+    int base;
+    if(first_ch == '#') { //decimal literal
+        value_to_check = token + 1;
+        base = 10;
+    }
+    else if(first_ch == 'x') { //hex literal
+        value_to_check = token + 1;     
+        base = 16;   
+    }
+    else { //decimal without prefix
+        value_to_check = token;
+        base = 10;
+    }
 
     //is value a label or a number?
-    if(!strtolong(value, offset)) {
+    if(!strtolong(value_to_check, offset, base)) {
         //transform label into offset by retrieving the memory location corresponding to the label from symbol table
-        node_t *node = lookup(value);
+        node_t *node = lookup(token);
         if(!node) {
-            return do_exit(EXIT_FAILURE, "ERROR (line %d): Symbol not found ('%s')", line_counter, value);
+            return do_exit(EXIT_FAILURE, "ERROR (line %d): Symbol not found ('%s')", line_counter, token);
         }
         *offset = node->val - instruction_number - 1;
     }
+
 
     //validate offset numerical range
     if(*offset < lower_bound || *offset > upper_bound) {
@@ -154,11 +177,11 @@ exit_t parse_offset(char *value, int lower_bound, int upper_bound, uint16_t inst
     return success();
 }
 
-exit_t parse_trapvector(char *value, uint16_t line_counter, long *trapvector) {
+exit_t parse_trapvector(char *token, long *trapvector, uint16_t line_counter) {
 
-    //is value a label or a number?
-    if(!strtolong(value, trapvector)) {
-        return do_exit(EXIT_FAILURE, "ERROR (line %d): Value of trapvector %s is not a numeric value", line_counter, value);
+    exit_t result = parse_numeric_value(token, trapvector, line_counter);
+    if(result.code) {
+        return result;
     }
 
     //validate trapvector numerical range
@@ -189,6 +212,11 @@ linetype_t compute_line_type(const char *first_token) {
         strcmp(first_token, "JSRR") == 0 ||
         strcmp(first_token, "NOT") == 0 ||
         strcmp(first_token, "RET") == 0 ||
+        strcmp(first_token, "GETC") == 0 ||
+        strcmp(first_token, "OUT") == 0 ||
+        strcmp(first_token, "PUTS") == 0 ||
+        strcmp(first_token, "IN") == 0 ||
+        strcmp(first_token, "PUTSP") == 0 ||
         strcmp(first_token, "HALT") == 0 ||
         strcmp(first_token, "LD") == 0 ||
         strcmp(first_token, "ST") == 0 ||
@@ -301,6 +329,21 @@ opcode_t compute_opcode_type(const char *opcode) {
     }
     else if(strcmp(opcode, "BRzp") == 0) {
         result = BRzp;
+    }
+    else if(strcmp(opcode, "GETC") == 0) {
+        result = GETC;
+    }
+    else if(strcmp(opcode, "OUT") == 0) {
+        result = OUT;
+    }
+    else if(strcmp(opcode, "PUTS") == 0) {
+        result = PUTS;
+    }
+    else if(strcmp(opcode, "IN") == 0) {
+        result = IN;
+    }
+    else if(strcmp(opcode, "PUTSP") == 0) {
+        result = PUTSP;
     }
     else if(strcmp(opcode, "HALT") == 0) {
         result = HALT;

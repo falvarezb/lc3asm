@@ -30,7 +30,7 @@ void error_exit(const char *format, const char *text);
 char *bin(unsigned int decimal);
 int seterrdesc(char *format, ...);
 void clearerrdesc();
-bool strtolong(char *str, long *num);
+bool strtolong(char *str, long *num, int base);
 char **split_tokens(char *str, int *num_tokens, const char *delimiters);
 char *split_by_last_delimiter(char *str, char delimiter);
 exit_t do_exit(int exit_code, char *format, ...);

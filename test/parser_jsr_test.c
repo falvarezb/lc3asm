@@ -5,8 +5,18 @@
 #include <stdbool.h>
 #include "../include/lc3.h"
 
-void test_jsr_right_PCoffset11(void __attribute__ ((unused)) **state) {    
+void test_jsr_right_no_hash_symbol(void __attribute__ ((unused)) **state) {    
     char *tokens[] = {"DOES NOT MATTER", "1"};
+    linemetadata_t line_metadata = {.tokens = tokens, .num_tokens = 2};
+    parse_jsr(&line_metadata);
+    unsigned char *bytes = (unsigned char *)&line_metadata.machine_instruction;
+    //assert order is flipped because of little-endian arch
+    assert_int_equal(bytes[0], 1);
+    assert_int_equal(bytes[1], 72);
+}
+
+void test_jsr_right_with_hash_symbol(void __attribute__ ((unused)) **state) {    
+    char *tokens[] = {"DOES NOT MATTER", "#1"};
     linemetadata_t line_metadata = {.tokens = tokens, .num_tokens = 2};
     parse_jsr(&line_metadata);
     unsigned char *bytes = (unsigned char *)&line_metadata.machine_instruction;
@@ -57,7 +67,8 @@ void test_jsr_non_existent_label(void __attribute__ ((unused))  **state) {
 
 int main(int __attribute__ ((unused)) argc, char const __attribute__ ((unused)) *argv[]) {
     const struct CMUnitTest tests[] = {
-        cmocka_unit_test(test_jsr_right_PCoffset11),
+        cmocka_unit_test(test_jsr_right_no_hash_symbol),
+        cmocka_unit_test(test_jsr_right_with_hash_symbol),
         cmocka_unit_test(test_jsr_PCoffset11_too_big),
         cmocka_unit_test(test_jsr_PCoffset11_too_small),             
         cmocka_unit_test(test_jsr_with_label),

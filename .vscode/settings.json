@@ -32,6 +32,8 @@
         "locale": "c",
         "functional": "c",
         "util.h": "c",
-        "dict.h": "c"
+        "dict.h": "c",
+        "complex": "c",
+        "new": "c"
     }
 }

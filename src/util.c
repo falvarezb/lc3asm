@@ -94,9 +94,9 @@ char *bin(unsigned int decimal) {
  * @param num pointer to store resulting number
  * @return bool false if string cannot be converted to a number, true otherwise
  */
-bool strtolong(char *str, long *num) {
+bool strtolong(char *str, long *num, int base) {
     char *pEnd;
-    long l = strtol(str, &pEnd, 10);
+    long l = strtol(str, &pEnd, base);
     if(str == pEnd) {
         return false;
     }

@@ -35,6 +35,16 @@ void test_add_imm5_decimal(void  __attribute__((unused)) **state) {
     assert_int_equal(bytes[1], 16);
 }
 
+void test_imm5_negative(void  __attribute__((unused)) **state) {
+    char *tokens[] = {"DOES NOT MATTER", "R5", "R5", "#-1"};
+    linemetadata_t line_metadata = {.tokens = tokens, .num_tokens = 4};
+    parse_add_and(&line_metadata, ADD);
+    unsigned char *bytes = (unsigned char *)&line_metadata.machine_instruction;
+    //assert order is flipped because of little-endian arch
+    assert_int_equal(bytes[0], 0x7f);
+    assert_int_equal(bytes[1], 0x1b);
+}
+
 void test_add_imm5_hex(void  __attribute__((unused)) **state) {
     char *tokens[] = {"DOES NOT MATTER", "R0", "R1", "xa"};
     linemetadata_t line_metadata = {.tokens = tokens, .num_tokens = 4};
@@ -94,12 +104,14 @@ void test_add_wrong_imm5_too_small_hex(void  __attribute__((unused)) **state) {
     assert_string_equal(result.desc, "ERROR (line 0): Immediate operand (-f2) outside of range (-16 to 15)");
 }
 
-void test_add_wrong_imm5_format(void  __attribute__((unused)) **state) {
-    char *tokens[] = {"DOES NOT MATTER", "R0", "R1", "0"};
-    linemetadata_t line_metadata = {.tokens = tokens, .num_tokens = 4, .line_number = 0};
-    exit_t result = parse_add_and(&line_metadata, ADD);
-    assert_int_equal(result.code, 1);
-    assert_string_equal(result.desc, "ERROR (line 0): Immediate 0 must be decimal or hex");
+void test_add_imm5_without_prefix(void  __attribute__((unused)) **state) {
+    char *tokens[] = {"DOES NOT MATTER", "R0", "R1", "13"};
+    linemetadata_t line_metadata = {.tokens = tokens, .num_tokens = 4};
+    parse_add_and(&line_metadata, ADD);
+    unsigned char *bytes = (unsigned char *)&line_metadata.machine_instruction;
+    //assert order is flipped because of little-endian arch
+    assert_int_equal(bytes[0], 109);
+    assert_int_equal(bytes[1], 16);
 }
 
 void test_add_wrong_imm5_number(void  __attribute__((unused)) **state) {
@@ -123,8 +135,9 @@ int main(int argc, char const *argv[]) {
         cmocka_unit_test(test_add_wrong_imm5_too_small_dec),
         cmocka_unit_test(test_add_wrong_imm5_too_big_hex),
         cmocka_unit_test(test_add_wrong_imm5_too_small_hex),
-        cmocka_unit_test(test_add_wrong_imm5_format),
-        cmocka_unit_test(test_add_wrong_imm5_number)
+        cmocka_unit_test(test_add_imm5_without_prefix),
+        cmocka_unit_test(test_add_wrong_imm5_number),
+        cmocka_unit_test(test_imm5_negative)
     };
     return cmocka_run_group_tests(tests, NULL, NULL);
 }

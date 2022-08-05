@@ -54,7 +54,7 @@ compiletest: $(OBJS_PROD) $(OBJS_TEST)
 addtest: $(BUILD_DIR)/addtest
 	$(VALGRIND) ./$^	
 
-$(BUILD_DIR)/addtest: $(OBJS_PROD) $(BUILD_DIR)/parser_add_test.o
+$(BUILD_DIR)/addtest: $(OBJS_PROD) $(BUILD_DIR)/parser_add_and_test.o
 	$(LINK.c) $^ -o $@ $(LDLIBS) -lcmocka
 
 #######################

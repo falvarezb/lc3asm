@@ -1,0 +1,47 @@
+// Symbol table
+// Scope level 0:
+//	Symbol Name       Page Address
+//	----------------  ------------
+//	MINUS_STACK_BASE  306D
+//	POP               3078
+//	LOOP_MULT         3035
+//	END_LOOP          301D
+//	LOOP_WRITE        3055
+//	ISEMPTY           307B
+//	PUSH              3075
+//	N                 3022
+//	M                 3020
+//	SAVE_R7           302B
+//	SAVE_R6           302A
+//	END_LOOP_WRITE    305C
+//	SAVE_R5           3029
+//	SAVE_R4           3028
+//	SAVE_R3           3027
+//	END_LOOP_DIV      3049
+//	WRITE             304A
+//	SAVE_R2           3026
+//	SAVE_R1           3025
+//	A                 301F
+//	SAVE_XDIVQ        302C
+//	STACK_LOOP        305E
+//	LOOP_DIV          3044
+//	LOOP              3007
+//	SAVE_R            3024
+//	SAVE_Q            3023
+//	END_STACK_LOOP    3063
+//	NEWLINE           301E
+//	EMPTY_STACK       3081
+//	SHIFT_LEFT        3039
+//	DIVISION2         306E
+//	END_LOOP_DIV2     3074
+//	STACK_BASE        306C
+//	NOT_SUM           3018
+//	SUM               3016
+//	SEED              3021
+//	END_ISEMPTY       3082
+//	LOOP_DIV2         306F
+//	DIVISION          3041
+//	END_LOOP_MULT     303D
+//	ASCII             306B
+//	MULTIPLICATION    302D
+
