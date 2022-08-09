@@ -6,7 +6,7 @@
  *
  */
 
-#include "../include/lc3util.h"
+#include "../include/lc3.h"
 #define LC3_WORD_SIZE 16 // bits
 
  /**
