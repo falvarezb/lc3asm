@@ -38,7 +38,11 @@ static void assert_symbol_table(const char *label, size_t num_instruction) {
 ///////////////////////////////////////////////////
 
 static void test_lexer_without_labels_t1(void  __attribute__((unused)) **state) {    
-    linemetadata_t *tokenized_lines[NUM_LINES] = { NULL };
+    linemetadata_t **tokenized_lines = malloc(ADDRESS_SPACE_CARDINALITY * sizeof(linemetadata_t *));
+    for(size_t i = 0; i < ADDRESS_SPACE_CARDINALITY; i++) {
+        //setting sentinel values
+        tokenized_lines[i] = NULL;
+    }
     run_lexer_test("./test/t1.asm", tokenized_lines);
 
     assert_null(next(true));

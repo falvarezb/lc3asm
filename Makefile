@@ -34,7 +34,7 @@ endif
 
 .PHONY: all clean compile compiletest unittest runobjdump
 
-unittest: addtest andtest jmptest nottest rettest jsrtest brtest ldfamilytest filetest
+unittest: addandtest jmptest nottest jsrtest jsrrtest brtest traptest pcoffset9test offset6test lexertest assemblertest
 
 all: clean compile unittest
 
@@ -51,19 +51,12 @@ compiletest: $(OBJS_PROD) $(OBJS_TEST)
 #######################
 
 #### run unit tests using cmocka library  ######
-addtest: $(BUILD_DIR)/addtest
+addandtest: $(BUILD_DIR)/addandtest
 	$(VALGRIND) ./$^	
 
-$(BUILD_DIR)/addtest: $(OBJS_PROD) $(BUILD_DIR)/parser_add_and_test.o
+$(BUILD_DIR)/addandtest: $(OBJS_PROD) $(BUILD_DIR)/parser_add_and_test.o
 	$(LINK.c) $^ -o $@ $(LDLIBS) -lcmocka
 
-#######################
-
-andtest: $(BUILD_DIR)/andtest
-	$(VALGRIND) ./$^	
-
-$(BUILD_DIR)/andtest: $(OBJS_PROD) $(BUILD_DIR)/parser_and_test.o
-	$(LINK.c) $^ -o $@ $(LDLIBS) -lcmocka
 
 #######################
 
@@ -81,13 +74,6 @@ nottest: $(BUILD_DIR)/nottest
 $(BUILD_DIR)/nottest: $(OBJS_PROD) $(BUILD_DIR)/parser_not_test.o
 	$(LINK.c) $^ -o $@ $(LDLIBS) -lcmocka
 
-#######################
-
-rettest: $(BUILD_DIR)/rettest
-	$(VALGRIND) ./$^	
-
-$(BUILD_DIR)/rettest: $(OBJS_PROD) $(BUILD_DIR)/parser_ret_test.o
-	$(LINK.c) $^ -o $@ $(LDLIBS) -lcmocka
 
 #######################
 
@@ -95,6 +81,14 @@ jsrtest: $(BUILD_DIR)/jsrtest
 	$(VALGRIND) ./$^
 
 $(BUILD_DIR)/jsrtest: $(OBJS_PROD) $(BUILD_DIR)/parser_jsr_test.o
+	$(LINK.c) $^ -o $@ $(LDLIBS) -lcmocka
+
+#######################
+
+jsrrtest: $(BUILD_DIR)/jsrrtest
+	$(VALGRIND) ./$^
+
+$(BUILD_DIR)/jsrrtest: $(OBJS_PROD) $(BUILD_DIR)/parser_jsrr_test.o
 	$(LINK.c) $^ -o $@ $(LDLIBS) -lcmocka
 
 #######################
@@ -107,10 +101,26 @@ $(BUILD_DIR)/brtest: $(OBJS_PROD) $(BUILD_DIR)/parser_br_test.o
 
 #######################
 
-ldfamilytest: $(BUILD_DIR)/ldfamilytest
+traptest: $(BUILD_DIR)/traptest
 	$(VALGRIND) ./$^
 
-$(BUILD_DIR)/ldfamilytest: $(OBJS_PROD) $(BUILD_DIR)/memory_access_instr_test.o
+$(BUILD_DIR)/traptest: $(OBJS_PROD) $(BUILD_DIR)/parser_trap_test.o
+	$(LINK.c) $^ -o $@ $(LDLIBS) -lcmocka
+
+#######################
+
+pcoffset9test: $(BUILD_DIR)/pcoffset9test
+	$(VALGRIND) ./$^
+
+$(BUILD_DIR)/pcoffset9test: $(OBJS_PROD) $(BUILD_DIR)/parser_pcoffset9_test.o
+	$(LINK.c) $^ -o $@ $(LDLIBS) -lcmocka
+
+#######################
+
+offset6test: $(BUILD_DIR)/offset6test
+	$(VALGRIND) ./$^
+
+$(BUILD_DIR)/offset6test: $(OBJS_PROD) $(BUILD_DIR)/parser_BaseR_offset6_test.o
 	$(LINK.c) $^ -o $@ $(LDLIBS) -lcmocka
 
 #######################
@@ -127,14 +137,6 @@ assemblertest: $(BUILD_DIR)/assemblertest
 	$(VALGRIND) ./$^	
 
 $(BUILD_DIR)/assemblertest: $(OBJS_PROD) $(BUILD_DIR)/assembler_test.o
-	$(LINK.c) $^ -o $@ $(LDLIBS) -lcmocka
-
-#######################
-
-filetest: $(BUILD_DIR)/filetest
-	$(VALGRIND) ./$^	
-
-$(BUILD_DIR)/filetest: $(OBJS_PROD) $(BUILD_DIR)/parser_file_test.o
 	$(LINK.c) $^ -o $@ $(LDLIBS) -lcmocka
 
 #######################
