@@ -388,7 +388,7 @@ void free_line_metadata(linemetadata_t *line_metadata) {
     free(line_metadata);
 }
 
-void free_tokenized_lines(linemetadata_t *tokenized_lines[]) {
+void free_tokenized_lines(linemetadata_t **tokenized_lines) {
     linemetadata_t *line_metadata;
     memaddr_t address_offset = 0;
     while((line_metadata = tokenized_lines[address_offset++])) {

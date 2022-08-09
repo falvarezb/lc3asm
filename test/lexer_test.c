@@ -11,11 +11,19 @@
 static int setup(void **state) {
     clearerrdesc();
     initialize();
+    linemetadata_t **tokenized_lines = malloc(ADDRESS_SPACE_CARDINALITY * sizeof(linemetadata_t *));
+    for(size_t i = 0; i < ADDRESS_SPACE_CARDINALITY; i++) {
+        //setting sentinel values
+        tokenized_lines[i] = NULL;
+    }
+    *state = tokenized_lines;
     return 0;
 }
 
 static int teardown(void **state) {
     initialize();
+    linemetadata_t **tokenized_lines = *state;
+    free_tokenized_lines(tokenized_lines);
     return 0;
 }
 
@@ -37,12 +45,8 @@ static void assert_symbol_table(const char *label, size_t num_instruction) {
 
 ///////////////////////////////////////////////////
 
-static void test_lexer_without_labels_t1(void  __attribute__((unused)) **state) {    
-    linemetadata_t **tokenized_lines = malloc(ADDRESS_SPACE_CARDINALITY * sizeof(linemetadata_t *));
-    for(size_t i = 0; i < ADDRESS_SPACE_CARDINALITY; i++) {
-        //setting sentinel values
-        tokenized_lines[i] = NULL;
-    }
+static void test_lexer_without_labels_t1(void  __attribute__((unused)) **state) {
+    linemetadata_t **tokenized_lines = *state;
     run_lexer_test("./test/t1.asm", tokenized_lines);
 
     assert_null(next(true));
@@ -78,11 +82,11 @@ static void test_lexer_without_labels_t1(void  __attribute__((unused)) **state) 
     assert_int_equal(4, tokenized_lines[idx]->line_number);
     assert_int_equal(2, tokenized_lines[idx]->instruction_location);
 
-    free_line_metadata(tokenized_lines);
+    // free_line_metadata(tokenized_lines);
 }
 
 void test_lexer_t2(void  __attribute__((unused)) **state) {
-    linemetadata_t *tokenized_lines[NUM_LINES] = { NULL };
+    linemetadata_t **tokenized_lines = *state;
     run_lexer_test("./test/t2.asm", tokenized_lines);
 
     assert_symbol_table("LABEL", 4);
@@ -136,13 +140,11 @@ void test_lexer_t2(void  __attribute__((unused)) **state) {
     assert_string_equal("comment", tokenized_lines[idx]->tokens[5]);
     assert_false(tokenized_lines[idx]->is_label_line);
     assert_int_equal(11, tokenized_lines[idx]->line_number);
-    assert_int_equal(4, tokenized_lines[idx]->instruction_location);
-
-    free_line_metadata(tokenized_lines);
+    assert_int_equal(4, tokenized_lines[idx]->instruction_location);    
 }
 
 static void test_lexer_t3(void  __attribute__((unused)) **state) {
-    linemetadata_t *tokenized_lines[NUM_LINES] = { NULL };
+    linemetadata_t **tokenized_lines = *state;
     run_lexer_test("./test/t3.asm", tokenized_lines);
 
     assert_symbol_table("LABEL", 4);
@@ -157,13 +159,11 @@ static void test_lexer_t3(void  __attribute__((unused)) **state) {
     assert_string_equal("R2", tokenized_lines[idx]->tokens[3]);
     assert_true(tokenized_lines[idx]->is_label_line);
     assert_int_equal(10, tokenized_lines[idx]->line_number);
-    assert_int_equal(4, tokenized_lines[idx]->instruction_location);
-
-    free_line_metadata(tokenized_lines);
+    assert_int_equal(4, tokenized_lines[idx]->instruction_location);    
 }
 
 static void test_lexer_t4(void  __attribute__((unused)) **state) {
-    linemetadata_t *tokenized_lines[NUM_LINES] = { NULL };
+    linemetadata_t **tokenized_lines = *state;
     run_lexer_test("./test/t4.asm", tokenized_lines);
 
     assert_symbol_table("LABEL1", 4);
@@ -172,11 +172,11 @@ static void test_lexer_t4(void  __attribute__((unused)) **state) {
     assert_symbol_table("LABEL4", 5);
     assert_symbol_table("LABEL5", 4);
 
-    free_line_metadata(tokenized_lines);
+    //free_line_metadata(tokenized_lines);
 }
 
 static void test_lexer_t5(void  __attribute__((unused)) **state) {
-    linemetadata_t *tokenized_lines[NUM_LINES] = { NULL };
+    linemetadata_t **tokenized_lines = *state;
     run_lexer_test("./test/t5.asm", tokenized_lines);
 
     assert_symbol_table("LABEL1", 4);
@@ -192,9 +192,7 @@ static void test_lexer_t5(void  __attribute__((unused)) **state) {
     assert_string_equal("R2", tokenized_lines[idx]->tokens[4]);
     assert_true(tokenized_lines[idx]->is_label_line);
     assert_int_equal(10, tokenized_lines[idx]->line_number);
-    assert_int_equal(4, tokenized_lines[idx]->instruction_location);
-
-    free_line_metadata(tokenized_lines);
+    assert_int_equal(4, tokenized_lines[idx]->instruction_location);    
 }
 
 
