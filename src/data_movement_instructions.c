@@ -51,7 +51,7 @@ exit_t parse_pc_relative_addressing_mode(linemetadata_t *line_metadata, opcode_t
     }
 
     long offset;
-    exit_t result = parse_offset(line_metadata->tokens[2], -256, 255, line_metadata->instruction_location, line_metadata->line_number, &offset);
+    exit_t result = parse_offset(line_metadata->tokens[2], -256, 255, line_metadata->instruction_location, line_metadata->line_number, &offset, 9);
     if(result.code) {
         return result;
     }
@@ -114,7 +114,7 @@ exit_t parse_base_plus_offset_addressing_mode(linemetadata_t *line_metadata, opc
     }
 
     long offset;
-    exit_t result = parse_offset(line_metadata->tokens[3], -32, 31, line_metadata->instruction_location, line_metadata->line_number, &offset);
+    exit_t result = parse_offset(line_metadata->tokens[3], -32, 31, line_metadata->instruction_location, line_metadata->line_number, &offset, 6);
     if(result.code) {
         return result;
     }

@@ -140,7 +140,7 @@ char **instruction_tokens(char *asm_instr, char *instr_name, int num_tokens) {
     return tokens;
 }
 
-exit_t parse_offset(char *token, int lower_bound, int upper_bound, uint16_t instruction_number, uint16_t line_counter, long *offset) {
+exit_t parse_offset(char *token, int lower_bound, int upper_bound, uint16_t instruction_number, uint16_t line_counter, long *offset, int num_bits) {
 
     char first_ch = *token;
     char *value_to_check;
@@ -172,6 +172,12 @@ exit_t parse_offset(char *token, int lower_bound, int upper_bound, uint16_t inst
     //validate offset numerical range
     if(*offset < lower_bound || *offset > upper_bound) {
         return do_exit(EXIT_FAILURE, "ERROR (line %d): Value of offset %ld is outside the range [%d, %d]", line_counter, *offset, lower_bound, upper_bound);
+    }
+
+    
+    //n-bit 2's complement
+    if(*offset < 0) {
+        *offset += (1 << num_bits);
     }
 
     return success();

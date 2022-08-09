@@ -38,7 +38,7 @@ exit_t parse_jsr(linemetadata_t *line_metadata) {
     }
 
     long offset;
-    exit_t result = parse_offset(line_metadata->tokens[1], -1024, 1023, line_metadata->instruction_location, line_metadata->line_number, &offset);
+    exit_t result = parse_offset(line_metadata->tokens[1], -1024, 1023, line_metadata->instruction_location, line_metadata->line_number, &offset, 11);
     if(result.code) {
         return result;
     }
@@ -90,7 +90,7 @@ exit_t parse_br(linemetadata_t *line_metadata, int condition_codes) {
     }
 
     long offset;
-    exit_t result = parse_offset(line_metadata->tokens[1], -256, 255, line_metadata->instruction_location, line_metadata->line_number, &offset);
+    exit_t result = parse_offset(line_metadata->tokens[1], -256, 255, line_metadata->instruction_location, line_metadata->line_number, &offset, 9);
     if(result.code) {
         return result;
     }
