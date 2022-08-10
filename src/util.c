@@ -151,18 +151,13 @@ char **split_tokens(char *str, int *num_tokens, const char *delimiters) {
  * @return char* pointer to the second token
  */
 char *split_by_last_delimiter(char *str, char delimiter) {
-    size_t last_delimiter_position = strlen(str);
-    for(size_t i = 0; i < strlen(str); i++) {
-        if(str[i] == delimiter) {
-            last_delimiter_position = i;
-        }
-    }
-    if(last_delimiter_position == strlen(str)) {
+    char *pch = strrchr(str, delimiter);
+    if(pch == NULL) {
         return NULL;
     }
     else {
-        str[last_delimiter_position] = '\0';
-        return str + (last_delimiter_position + 1);
+        *pch = '\0';
+        return pch+1;
     }
 }
 
