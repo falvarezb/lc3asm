@@ -113,33 +113,6 @@ exit_t parse_memory_address(char *str, long *n, uint16_t line_counter) {
     return success();
 }
 
-char **instruction_tokens(char *asm_instr, char *instr_name, int num_tokens) {
-    char **tokens = malloc(num_tokens * sizeof(char *));
-    if(tokens == NULL) {
-        seterrdesc("out of memory\n");
-        return NULL;
-    }
-    int i = 0;
-    char *delimiters = " ,";
-    char *pch = strtok(asm_instr, delimiters);
-    while(pch != NULL) {
-        if(i > num_tokens - 1) {
-            if(pch[0] == ';') {
-                //comments at the end of line are ignored
-                return tokens;
-            }
-
-            seterrdesc("unexpected token in %s instruction\n", instr_name);
-            free(tokens);
-            return NULL;
-        }
-
-        tokens[i++] = pch;
-        pch = strtok(NULL, delimiters);
-    }
-    return tokens;
-}
-
 exit_t parse_offset(char *token, int lower_bound, int upper_bound, uint16_t instruction_number, uint16_t line_counter, long *offset, int num_bits) {
 
     char first_ch = *token;

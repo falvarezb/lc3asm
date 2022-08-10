@@ -47,7 +47,6 @@ exit_t is_valid_lc3integer(char *token, int16_t *imm, uint16_t line_counter);
 int parse_register(char *token);
 exit_t parse_imm5(char *str, long *imm5, uint16_t line_counter);
 exit_t parse_memory_address(char *str, long *n, uint16_t line_counter);
-char **instruction_tokens(char *asm_instr, char *instr_name, int num_tokens);
 exit_t parse_offset(char* value, int lower_bound, int upper_bound, uint16_t instruction_number, uint16_t line_counter, long *offset, int num_bits);
 exit_t parse_trapvector(char *token,  long *trapvector, uint16_t line_counter);
 linetype_t compute_line_type(const char *first_token);
