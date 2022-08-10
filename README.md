@@ -1,17 +1,27 @@
 # LC-3 Assembler
 
-This project is an assembler written in C for [Little Computer 3 (LC-3)]((https://en.wikipedia.org/wiki/Little_Computer_3))
+This project is an assembler written in C for [Little Computer 3 (LC-3)](https://en.wikipedia.org/wiki/Little_Computer_3) as described by [Introduction to Computing Systems: From bits and gates to C and beyond](https://highered.mheducation.com/sites/0072467509/)
+
+Here's the list of resources taken as reference for the implementation
+
+- [GUI simulator](https://www.cis.upenn.edu/~milom/cse240-Fall05/handouts/lc3guide.html)
+
+- [simulator (Virtual Machine) implementation](https://justinmeiners.github.io/lc3-vm/)
+
+- [learning resources](https://highered.mheducation.com/sites/0072467509/student_view0/index.html)
+
+- [LC-3 details](https://people.cs.georgetown.edu/~squier/Teaching/HardwareFundamentals/LC3-trunk/docs/)
 
 
 ## LC-3 Instruction Set Architecture (ISA)
 
 ### Memory organisation
-The LC-3 memory has an address space of 2^16 (65536) locations, and an addressability of 16 bits.
+The LC-3 memory has an address space of 2^16 (65,536) locations, and an addressability of 16 bits.
 
 The normal unit of data that is processed in the LC-3 is 16 bits, we refer to 16 bits as one word, and we say the LC-3 is word-addressable.
 
 ### Registers
-The LC-3 specifies eight general purpose registers, each identified by a 3-bit register number. They are referred to as RO, R1 ... R7.
+The LC-3 specifies eight general purpose registers, each identified by a 3-bit register number. They are referred to as R0, R1 ... R7.
 
 Registers are used as memory locations to store information. The number of bits stored in each register is 16 (one word).
 
@@ -102,37 +112,24 @@ An assembler directive is a message to help the assembler in the assembly proces
 - __.STRINGZ__: tells the assembler to initialize a sequence of n + 1 memory locations; the argument is a sequence of n characters, inside double quotation marks; the  first n words of memory are initialized with the zero-extended ASCII codes of the corresponding characters in the string; the final word of memory is initialized to 0.
 - __.END__: tells the assembler where the program ends; any characters that come after .END are ignored by the assembler.
 
-
-Here's the list of resources taken as reference for the implementation
-
-- [GUI simulator](https://www.cis.upenn.edu/~milom/cse240-Fall05/handouts/lc3guide.html)
-
-- [simulator (Virtual Machine) implementation](https://justinmeiners.github.io/lc3-vm/)
-
-- [learning resources](https://highered.mheducation.com/sites/0072467509/student_view0/index.html)
-
-![learning resources](./images/student_resources.png)
-
-
-- [LC-3 details](https://people.cs.georgetown.edu/~squier/Teaching/HardwareFundamentals/LC3-trunk/docs/)
-
-![learning resources](./images/lc3_resources.png)
-
-
 ## Implementation notes
 
-Each line of the assembly file corresponding to an instruction is converted into a 16-bit integer (using __big-endian__ format).
+Assembly is done in two phases: lexer and parser.
+
+During the first pass, lines of the assembly file corresponding to instructions and
+directives are tokenized.
+
+Additionally, directives are parsed and expanded into the corresponding instructions. For instance, `.BLKW 2` is translated into two instructions to write `0`. This parsing of the directives by the lexer is needed in order to make sure that the offsets used to create the symbol table are correct. Ultimately, this is a consequence of instructions and data sharing the same address space and therefore being intermingled in memory.
+
+The second pass consists in the parsing of the previously tokenized instructions and the generation of their binary representation.
+
+### Symbol table
 
 Strictly speaking, the assembler does not need to know where the program will be loaded in memory as it only deals with offsets.
 
-It's enough for the assembler to write the operand of .ORIG as the first instruction of the object file so that the LC-3 virtual machine knows where to load the program (the memory address in which an instruction is stored has a direct correspondence to the position of said instruction inside the assembly file (after discarding labels, comments and directives): the position is the offset to be added to the value defined by the .ORIG directive.)
+It's enough for the assembler to write the operand of __.ORIG__ as the first instruction of the object file so that the LC-3 knows where to load the program. The memory address in which an instruction is stored has a direct correspondence to the position of said instruction inside the assembly file (after discarding labels, comments and directives): concretely, that position is the offset to be added to the value defined by the __.ORIG__ directive.
 
-Having said that, in order to generate a symbol table useful for debugging, it is desirable for the assembler to take into account the value given by .ORIG when generating the symbol table.
-
-It's worth noting that instructions and data shared the same address space and therefore can be intermingled in memory.
-
-The number of memory cells is 2**16, therefore a memory address fits in a memory cell
-(making it possible to have pointers)
+Having said that, in order to generate a symbol table useful for debugging, it is desirable for the assembler to take into account the value given by __.ORIG__ when generating the symbol table.
 
 
 ## Build
