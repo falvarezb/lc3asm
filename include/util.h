@@ -13,7 +13,7 @@
 #include <assert.h>
 #include <unistd.h>
 
-#define ERR_DESC_LENGTH 200
+#define ERR_DESC_LENGTH 300
 extern char errdesc[];
 
 typedef struct split_t {
@@ -26,7 +26,7 @@ typedef struct exit_t {
     char *desc;
 } exit_t;
 
-void error_exit(const char *format, const char *text);
+void error_exit(const char *format, ...);
 char *bin(unsigned int decimal);
 int seterrdesc(char *format, ...);
 void clearerrdesc();

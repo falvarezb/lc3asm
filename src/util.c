@@ -15,8 +15,11 @@ char errdesc[ERR_DESC_LENGTH];
  * @param format
  * @param text
  */
-void error_exit(const char *format, const char *text) {
-    printf(format, text);
+void error_exit(const char *format, ...) {
+    va_list ap;
+    va_start(ap, format);
+    vprintf(format, ap);
+    va_end(ap);
     exit(EXIT_FAILURE);
 }
 
@@ -49,7 +52,7 @@ exit_t do_exit(int exit_code, char *format, ...) {
         int result = vsnprintf(errdesc, errdesc_length, format, ap);
         va_end(ap);
         if(result < 0 || result > errdesc_length) {
-            printf("error when creating 'errdesc'");
+            printf("error when formatting error description");
         }
     }
     else {
@@ -112,7 +115,7 @@ char **split_tokens(char *str, int *num_tokens, const char *delimiters) {
     if(tokens == NULL) {
         seterrdesc("out of memory\n");
         return NULL;
-    }    
+    }
 
     *num_tokens = 0;
     char *pch = strtok(str, delimiters);
@@ -128,10 +131,10 @@ char **split_tokens(char *str, int *num_tokens, const char *delimiters) {
 
     char **resized_tokens = realloc(tokens, *num_tokens * sizeof(char *));
     if(resized_tokens == NULL) {
-        seterrdesc("out of memory\n");        
+        seterrdesc("out of memory\n");
         free(tokens);
         return NULL;
-    }    
+    }
 
     return resized_tokens;
 }
