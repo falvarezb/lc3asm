@@ -192,6 +192,14 @@ static void test_assemble_lcrng_asm(void  __attribute__((unused)) **state) {
     run_assemble_test("./test/lcrng.asm", "./test/lcrng.expected.obj", "./test/lcrng.obj");
 }
 
+static void test_assemble_charcounter_asm(void  __attribute__((unused)) **state) {
+    run_assemble_test("./test/charcounter.asm", "./test/charcounter.expected.obj", "./test/charcounter.obj");
+}
+
+static void test_assemble_lc3os_asm(void  __attribute__((unused)) **state) {
+    run_assemble_test("./test/lc3os.asm", "./test/lc3os.expected.obj", "./test/lc3os.obj");
+}
+
 int main(int argc, char const *argv[]) {
     const struct CMUnitTest tests[] = {        
         cmocka_unit_test_setup_teardown(test_symbol_table_t2, setup, teardown),
@@ -212,7 +220,9 @@ int main(int argc, char const *argv[]) {
         cmocka_unit_test_setup_teardown(test_symbol_table_serialization_failure, setup, teardown),
         cmocka_unit_test_setup_teardown(test_assemble_or_asm, setup, teardown),
         cmocka_unit_test_setup_teardown(test_assemble_abs_asm, setup, teardown),
-        cmocka_unit_test_setup_teardown(test_assemble_lcrng_asm, setup, teardown)
+        cmocka_unit_test_setup_teardown(test_assemble_lcrng_asm, setup, teardown),
+        cmocka_unit_test_setup_teardown(test_assemble_charcounter_asm, setup, teardown)
+        //cmocka_unit_test_setup_teardown(test_assemble_lc3os_asm, setup, teardown)
     };
     return cmocka_run_group_tests(tests, NULL, NULL);
 }
