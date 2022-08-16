@@ -77,11 +77,5 @@ exit_t parse_stringz(linemetadata_t *line_metadata) {
     if(line_metadata->num_tokens < 2) {
         return do_exit(EXIT_FAILURE, "ERROR (line %d): Immediate expected", line_metadata->line_number);
     }
-
-    if(is_valid_string_literal(line_metadata->tokens[1])) {
-        return success();
-    }
-    else {
-        return do_exit(EXIT_FAILURE, "ERROR (line %d): Bad string", line_metadata->line_number);
-    }    
+    return success();   
 }

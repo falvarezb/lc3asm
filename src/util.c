@@ -120,6 +120,9 @@ char **split_tokens(char *str, int *num_tokens, const char *delimiters) {
     *num_tokens = 0;
     char *pch = strtok(str, delimiters);
     while(pch != NULL) {
+        if(strcmp(pch, ".STRINGZ") == 0) {
+            delimiters = "\""; // string is taken as a single token
+        }
         tokens[(*num_tokens)++] = pch;
         pch = strtok(NULL, delimiters);
     }

@@ -129,8 +129,7 @@ exit_t do_lexical_analysis(FILE *assembly_file, linemetadata_t *tokenized_lines[
             }
 
             char *str_literal = line_metadata->tokens[1];
-            for(size_t i = 1; i < strlen(str_literal) - 1; i++) {
-                //i=1...len-1 to omit quotation marks
+            for(size_t i = 0; i < strlen(str_literal); i++) {                
                 linemetadata_t *stringz_line_metadata = malloc(sizeof(linemetadata_t));
                 if(!stringz_line_metadata) {
                     //out of memory error
