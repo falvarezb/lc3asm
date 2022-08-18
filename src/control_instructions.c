@@ -122,7 +122,7 @@ exit_t parse_br(linemetadata_t *line_metadata, int condition_codes) {
  * @param line_counter line number of the assembly file
  * @return exit_t
  */
-exit_t parse_jmp(linemetadata_t *line_metadata) {
+exit_t parse_jmp(linemetadata_t *line_metadata, opcode_t opcode) {
 
     //VALIDATING OPERAND
 
@@ -143,6 +143,10 @@ exit_t parse_jmp(linemetadata_t *line_metadata) {
     //BaseR
     BaseR = BaseR << 6;
     line_metadata->machine_instruction += BaseR;
+
+    if(opcode == JMPT) {
+        line_metadata->machine_instruction += 1;
+    }
 
     return do_exit(EXIT_SUCCESS, NULL);  
 }

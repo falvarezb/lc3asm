@@ -187,10 +187,12 @@ linetype_t compute_line_type(const char *first_token) {
         strcmp(first_token, "ADD") == 0 ||
         strcmp(first_token, "AND") == 0 ||
         strcmp(first_token, "JMP") == 0 ||
+        strcmp(first_token, "JMPT") == 0 ||
         strcmp(first_token, "JSR") == 0 ||
         strcmp(first_token, "JSRR") == 0 ||
         strcmp(first_token, "NOT") == 0 ||
         strcmp(first_token, "RET") == 0 ||
+        strcmp(first_token, "RTT") == 0 ||
         strcmp(first_token, "GETC") == 0 ||
         strcmp(first_token, "OUT") == 0 ||
         strcmp(first_token, "PUTS") == 0 ||
@@ -261,6 +263,9 @@ opcode_t compute_opcode_type(const char *opcode) {
     else if(strcmp(opcode, "JMP") == 0) {
         result = JMP;
     }
+    else if(strcmp(opcode, "JMPT") == 0) {
+        result = JMPT;
+    }
     else if(strcmp(opcode, "JSR") == 0) {
         result = JSR;
     }
@@ -269,6 +274,9 @@ opcode_t compute_opcode_type(const char *opcode) {
     }
     else if(strcmp(opcode, "RET") == 0) {
         result = RET;
+    }
+    else if(strcmp(opcode, "RTT") == 0) {
+        result = RTT;
     }
     else if(strcmp(opcode, "LD") == 0) {
         result = LD;

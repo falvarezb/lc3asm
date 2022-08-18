@@ -42,8 +42,8 @@ exit_t do_syntax_analysis(linemetadata_t *tokenized_lines[]) {
             case JSRR:
                 result = parse_jsrr(line_metadata);
                 break;
-            case JMP:
-                result = parse_jmp(line_metadata);
+            case JMP: case JMPT:
+                result = parse_jmp(line_metadata, opcode_type);
                 break;
             case BR: case BRnzp:
                 //condition codes: 111
@@ -76,6 +76,11 @@ exit_t do_syntax_analysis(linemetadata_t *tokenized_lines[]) {
             case RET:
                 //instruction: 1100 000 111 000000
                 line_metadata->machine_instruction = 0xc1c0;
+                result = success();
+                break;
+            case RTT:
+                //instruction: 1100 000 111 000001
+                line_metadata->machine_instruction = 0xc1c1;
                 result = success();
                 break;
             case GETC:                

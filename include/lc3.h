@@ -10,7 +10,7 @@ typedef enum {
 } linetype_t;
 
 typedef enum {
-    ADD, AND, JMP, JSR, JSRR, NOT, RET, LD, ST, LDI, STI, LEA, BR, BRp, BRz, BRn, BRzp, BRnp, BRnz, BRnzp, LDR, STR, RTI, TRAP, HALT, GETC, OUT, PUTS, IN, PUTSP
+    ADD, AND, JMP, JMPT, JSR, JSRR, NOT, RET, RTT, LD, ST, LDI, STI, LEA, BR, BRp, BRz, BRn, BRzp, BRnp, BRnz, BRnzp, LDR, STR, RTI, TRAP, HALT, GETC, OUT, PUTS, IN, PUTSP
 } opcode_t;
 
 typedef uint16_t memaddr_t;
@@ -26,7 +26,7 @@ typedef struct linemetadata {
 
 exit_t parse_add_and(linemetadata_t *line_metadata, opcode_t opcode);
 exit_t parse_not(linemetadata_t *line_metadata);
-exit_t parse_jmp(linemetadata_t *line_metadata);
+exit_t parse_jmp(linemetadata_t *line_metadata, opcode_t opcode);
 exit_t parse_jsr(linemetadata_t *line_metadata);
 exit_t parse_jsrr(linemetadata_t *line_metadata);
 exit_t parse_br(linemetadata_t *line_metadata, int condition_codes);
