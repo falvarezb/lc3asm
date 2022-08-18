@@ -45,6 +45,8 @@ There are three different types of instructions, which means three different typ
     - TRAP (system calls, PC changes to a memory address that is part of the operating system so that the operating system will perform some task on behalf of the program)
     - return from interrupt
 
+__Note__: in addition to the instructions described in the specification, this assembler also supports [JMPT](https://acg.cis.upenn.edu/milom/cse240-Fall05/handouts/Ch09-a.pdf) and [RRT](https://acg.cis.upenn.edu/milom/cse240-Fall05/handouts/Ch09-a.pdf). This instructions are a variant of `JMP` and `RET`, respectively, that have the additional effect of setting the privilege bit in __PSR__ (Process Status Register).
+
 ### Data types
 The data type of the operands is 16-bit 2's complement integers.
 
@@ -96,12 +98,12 @@ on different lines is permitted.
 
 The assembly language provides some aliases for the TRAP instructions:
 
-- GETC: TRAP x20
-- OUT: TRAP x21
-- PUTS: TRAP x22
-- IN: TRAP x23
-- PUTSP: TRAP x24
-- HALT: TRAP x25
+- __GETC__: TRAP x20
+- __OUT__: TRAP x21
+- __PUTS__: TRAP x22
+- __IN__: TRAP x23
+- __PUTSP__: TRAP x24
+- __HALT__: TRAP x25
 
 ### Pseoud-ops (assembler directives)
 An assembler directive is a message to help the assembler in the assembly process. Once the assembler handles the message, the pseudo-op is discarded.
@@ -114,6 +116,8 @@ An assembler directive is a message to help the assembler in the assembly proces
 
 ## Implementation notes
 
+### 2-pass process
+
 Assembly is done in two phases: lexer and parser.
 
 During the first pass, lines of the assembly file corresponding to instructions and
@@ -123,13 +127,17 @@ Additionally, directives are parsed and expanded into the corresponding instruct
 
 The second pass consists in the parsing of the previously tokenized instructions and the generation of their binary representation.
 
-### Symbol table
+### Program loading in memory
 
-Strictly speaking, the assembler does not need to know where the program will be loaded in memory as it only deals with offsets.
+In most of the cases, the assembler does not need to know where the program will be loaded in memory as it only deals with offsets.
 
-It's enough for the assembler to write the operand of __.ORIG__ as the first instruction of the object file so that the LC-3 knows where to load the program. The memory address in which an instruction is stored has a direct correspondence to the position of said instruction inside the assembly file (after discarding labels, comments and directives): concretely, that position is the offset to be added to the value defined by the __.ORIG__ directive.
+It is enough for the assembler to write the operand of __.ORIG__ as the first instruction of the object file so that the LC-3 knows where to load the program. The memory address in which an instruction is stored has a direct correspondence to the position of said instruction inside the assembly file (after discarding labels, comments and directives): concretely, that position is the offset to be added to the value defined by the __.ORIG__ directive.
 
-Having said that, in order to generate a symbol table useful for debugging, it is desirable for the assembler to take into account the value given by __.ORIG__ when generating the symbol table.
+There is a case though where the actual location in memory is needed: when using labels with the `FILL` directive. In this case, the label represents an absolute value and not just an offset, and therefore __.ORIG__ needs to be known.
+
+### Known issues
+
+Escaped characters like `\n` are not supported in __.STRINGZ__ strings. This is due to the function `getLine` not recognising the escaped characters and escaping the backtick, resulting in the 2 characters `\\n` (`\` + `n`).
 
 
 ## Build
