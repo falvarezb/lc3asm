@@ -8,7 +8,7 @@
 void test_jmp_register(void  __attribute__ ((unused)) **state) {    
     char *tokens[] = {"DOES NOT MATTER", "R6"};
     linemetadata_t line_metadata = {.tokens = tokens, .num_tokens = 2};
-    parse_jmp(&line_metadata);
+    parse_jmp(&line_metadata, JMP);
     unsigned char *bytes = (unsigned char *)&line_metadata.machine_instruction;
     //assert order is flipped because of little-endian arch
     assert_int_equal(bytes[0], 128);
@@ -18,7 +18,7 @@ void test_jmp_register(void  __attribute__ ((unused)) **state) {
 void test_jmp_wrong_register_BaseR(void  __attribute__ ((unused)) **state) {    
     char *tokens[] = {"DOES NOT MATTER", "R8"};
     linemetadata_t line_metadata = {.tokens = tokens, .num_tokens = 2, .line_number = 1};
-    exit_t result = parse_jmp(&line_metadata);
+    exit_t result = parse_jmp(&line_metadata, JMP);
 
     assert_int_equal(result.code, 1);
     assert_string_equal(result.desc, "ERROR (line 1): Expected register but found R8");

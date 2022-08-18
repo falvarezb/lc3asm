@@ -97,7 +97,7 @@
                 "-g",
                 "-Wall",    
                 "-Wno-missing-braces ",                  
-                "${workspaceFolder}/test/assembler_test.c",
+                "${workspaceFolder}/test/directives_test.c",
                 "${workspaceFolder}/src/assembler.c", 
                 "${workspaceFolder}/src/lexer.c",                
                 "${workspaceFolder}/src/parser.c", 

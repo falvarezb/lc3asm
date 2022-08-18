@@ -20,14 +20,14 @@ static int teardown(void **state) {
 static void assert_symbol_table(const char *label, size_t num_instruction) {
     node_t *node = lookup(label);
     assert_non_null(node);
-    assert_int_equal(node->val, num_instruction);    
+    assert_int_equal(node->val, num_instruction);
 }
 
 static void run_assemble_test(char *asm_file_name, char *expected_obj_file_name, char *actual_obj_file_name) {
     exit_t result = assemble(asm_file_name);
     if(result.code) {
         printf("\n\n==========================================\n");
-        printf("%s\n", result.desc);    
+        printf("%s\n", result.desc);
         printf("==========================================\n\n");
     }
     assert_int_equal(result.code, 0);
@@ -175,7 +175,7 @@ static void test_symbol_table_serialization_failure(void  __attribute__((unused)
     exit_t result = serialize_symbol_table(actual_sym_file, 0x3000);
     fclose(actual_sym_file);
     assert_int_equal(result.code, 1);
-    assert_string_equal(result.desc, "error when writing serialized symbol table to file: 9");    
+    assert_string_equal(result.desc, "error when writing serialized symbol table to file: 9");
     free(result.desc);
 }
 
@@ -201,11 +201,11 @@ static void test_assemble_lc3os_asm(void  __attribute__((unused)) **state) {
 }
 
 int main(int argc, char const *argv[]) {
-    const struct CMUnitTest tests[] = {        
+    const struct CMUnitTest tests[] = {
         cmocka_unit_test_setup_teardown(test_symbol_table_t2, setup, teardown),
         cmocka_unit_test_setup_teardown(test_symbol_table_t3, setup, teardown),
         cmocka_unit_test_setup_teardown(test_symbol_table_t4, setup, teardown),
-        cmocka_unit_test_setup_teardown(test_two_labels_same_line_t5, setup, teardown),  
+        cmocka_unit_test_setup_teardown(test_two_labels_same_line_t5, setup, teardown),
         cmocka_unit_test_setup_teardown(test_assemble_without_labels_t1, setup, teardown),
         cmocka_unit_test_setup_teardown(test_assemble_with_labels_t2, setup, teardown),
         cmocka_unit_test_setup_teardown(test_assemble_wrong_orig_address_t6, setup, teardown),
@@ -221,8 +221,8 @@ int main(int argc, char const *argv[]) {
         cmocka_unit_test_setup_teardown(test_assemble_or_asm, setup, teardown),
         cmocka_unit_test_setup_teardown(test_assemble_abs_asm, setup, teardown),
         cmocka_unit_test_setup_teardown(test_assemble_lcrng_asm, setup, teardown),
-        cmocka_unit_test_setup_teardown(test_assemble_charcounter_asm, setup, teardown)
-        //cmocka_unit_test_setup_teardown(test_assemble_lc3os_asm, setup, teardown)
+        cmocka_unit_test_setup_teardown(test_assemble_charcounter_asm, setup, teardown),
+        cmocka_unit_test_setup_teardown(test_assemble_lc3os_asm, setup, teardown)
     };
     return cmocka_run_group_tests(tests, NULL, NULL);
 }

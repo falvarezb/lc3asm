@@ -36,7 +36,7 @@ exit_t parse_trap(linemetadata_t *line_metadata);
 exit_t parse_orig(linemetadata_t *line_metadata);
 exit_t parse_fill(linemetadata_t *line_metadata, memaddr_t address_origin);
 exit_t parse_blkw(linemetadata_t *line_metadata);
-exit_t parse_stringz(linemetadata_t *line_metadata);
+exit_t parse_stringz(linemetadata_t *line_metadata, linemetadata_t *tokenized_lines[], memaddr_t *instruction_offset);
 
 exit_t serialize_symbol_table(FILE *symbol_table_file, memaddr_t address_origin);
 exit_t assemble(const char *assembly_file_name);

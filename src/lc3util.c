@@ -73,6 +73,7 @@ exit_t is_valid_lc3integer(char *token, int16_t *imm, uint16_t line_counter) {
         return result;
     }
     *imm = (int16_t)tmp;
+    return success();
 }
 
 /**

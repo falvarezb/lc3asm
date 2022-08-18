@@ -43,22 +43,22 @@ void clearerrdesc() {
 }
 
 exit_t do_exit(int exit_code, char *format, ...) {
-    size_t errdesc_length = ERR_DESC_LENGTH;
-    char *errdesc = NULL;
+    int errdesc_length = ERR_DESC_LENGTH;
+    char *err = NULL;
     if(format) {
-        errdesc = malloc(errdesc_length * sizeof(char));
+        err = malloc(errdesc_length * sizeof(char));
         va_list ap;
         va_start(ap, format);
-        int result = vsnprintf(errdesc, errdesc_length, format, ap);
+        int result = vsnprintf(err, errdesc_length, format, ap);
         va_end(ap);
         if(result < 0 || result > errdesc_length) {
             printf("error when formatting error description");
         }
     }
     else {
-        errdesc = NULL;
+        err = NULL;
     }
-    return (exit_t) { .code = exit_code, .desc = errdesc };
+    return (exit_t) { .code = exit_code, .desc = err };
 }
 
 exit_t success() {

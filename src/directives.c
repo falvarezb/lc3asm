@@ -8,7 +8,7 @@
 
 #include "../include/lc3.h"
 
-exit_t parse_orig(linemetadata_t *line_metadata) {    
+exit_t parse_orig(linemetadata_t *line_metadata) {
     if(strcmp(line_metadata->tokens[0], ".ORIG")) {
         return do_exit(EXIT_FAILURE, "ERROR (line %d): Instruction not preceeded by a .orig directive", line_metadata->line_number);
     }
@@ -66,10 +66,10 @@ exit_t parse_fill(linemetadata_t *line_metadata, memaddr_t address_origin) {
         if(!node) {
             return do_exit(EXIT_FAILURE, "ERROR (line %d): Symbol not found ('%s')", line_metadata->line_number, token);
         }
-        offset = node->val - 1 + address_origin;        
+        offset = node->val - 1 + address_origin;
     }
 
-    int16_t immediate = (int16_t) offset;
+    int16_t immediate = (int16_t)offset;
     line_metadata->machine_instruction = immediate;
 
     return success();
@@ -90,9 +90,32 @@ exit_t parse_blkw(linemetadata_t *line_metadata) {
     return success();
 }
 
-exit_t parse_stringz(linemetadata_t *line_metadata) {
+exit_t parse_stringz(linemetadata_t *line_metadata, linemetadata_t *tokenized_lines[], memaddr_t *instruction_offset) {
     if(line_metadata->num_tokens < 2) {
         return do_exit(EXIT_FAILURE, "ERROR (line %d): Immediate expected", line_metadata->line_number);
     }
-    return success();   
+
+    char *str_literal = line_metadata->tokens[1];
+    for(size_t i = 0; i < strlen(str_literal); i++) {
+        linemetadata_t *stringz_line_metadata = malloc(sizeof(linemetadata_t));
+        if(!stringz_line_metadata) {
+            return do_exit(EXIT_FAILURE, "ERROR (line %d): Out of memory error", line_metadata->line_number);
+        }
+        stringz_line_metadata->tokens = NULL;
+        stringz_line_metadata->line = NULL;
+        stringz_line_metadata->machine_instruction = str_literal[i];
+        tokenized_lines[*instruction_offset] = stringz_line_metadata;
+        (*instruction_offset)++;
+    }
+    //final '\0'
+    linemetadata_t *stringz_line_metadata = malloc(sizeof(linemetadata_t));
+    if(!stringz_line_metadata) {
+        return do_exit(EXIT_FAILURE, "ERROR (line %d): Out of memory error", line_metadata->line_number);
+    }
+    stringz_line_metadata->tokens = NULL;
+    stringz_line_metadata->machine_instruction = 0;
+    tokenized_lines[*instruction_offset] = stringz_line_metadata;
+    (*instruction_offset)++;
+
+    return success();
 }

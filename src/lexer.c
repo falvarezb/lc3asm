@@ -123,36 +123,13 @@ exit_t do_lexical_analysis(FILE *assembly_file, linemetadata_t *tokenized_lines[
             free(line_metadata);
         }
         else if(line_type == STRINGZ_DIRECTIVE) {
-            exit_t result = parse_stringz(line_metadata);
+            exit_t result = parse_stringz(line_metadata, tokenized_lines, &instruction_offset);
             if(result.code) {
+                free(line);
+                free_tokens(tokens, is_label_line);
+                free(line_metadata);
                 return result;
             }
-
-            char *str_literal = line_metadata->tokens[1];
-            for(size_t i = 0; i < strlen(str_literal); i++) {                
-                linemetadata_t *stringz_line_metadata = malloc(sizeof(linemetadata_t));
-                if(!stringz_line_metadata) {
-                    //out of memory error
-                }
-                stringz_line_metadata->tokens = NULL;
-                stringz_line_metadata->line = NULL;
-                stringz_line_metadata->machine_instruction = str_literal[i];
-                tokenized_lines[instruction_offset] = stringz_line_metadata;
-                instruction_offset++;
-            }
-            //final '\0'
-            linemetadata_t *stringz_line_metadata = malloc(sizeof(linemetadata_t));
-            if(!stringz_line_metadata) {
-                //out of memory error
-            }
-            stringz_line_metadata->tokens = NULL;
-            stringz_line_metadata->line = NULL;
-            stringz_line_metadata->machine_instruction = 0;
-            tokenized_lines[instruction_offset] = stringz_line_metadata;
-            instruction_offset++;
-            free(line);
-            free_tokens(tokens, is_label_line);
-            free(line_metadata);
         }
         else {
             instruction_offset++;
