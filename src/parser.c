@@ -10,6 +10,7 @@ exit_t do_syntax_analysis(linemetadata_t *tokenized_lines[]) {
     if((result = parse_orig(line_metadata)).code) {
         return result;
     }
+    memaddr_t origin = line_metadata->machine_instruction;
 
     memaddr_t address_offset = 1;
     while((line_metadata = tokenized_lines[address_offset])) {
@@ -24,7 +25,7 @@ exit_t do_syntax_analysis(linemetadata_t *tokenized_lines[]) {
             return do_exit(EXIT_FAILURE, "ERROR (line %d): Invalid opcode ('%s')", line_metadata->line_number, line_metadata->tokens[0]);
         }
         else if(line_type == FILL_DIRECTIVE) {
-            result = parse_fill(line_metadata);
+            result = parse_fill(line_metadata, origin);
         }
         else if(line_type == OPCODE) {
             opcode_t opcode_type = compute_opcode_type(line_metadata->tokens[0]);

@@ -34,7 +34,7 @@ exit_t parse_pc_relative_addressing_mode(linemetadata_t *line_metadata, opcode_t
 exit_t parse_base_plus_offset_addressing_mode(linemetadata_t *line_metadata, opcode_t opcode);
 exit_t parse_trap(linemetadata_t *line_metadata);
 exit_t parse_orig(linemetadata_t *line_metadata);
-exit_t parse_fill(linemetadata_t *line_metadata);
+exit_t parse_fill(linemetadata_t *line_metadata, memaddr_t address_origin);
 exit_t parse_blkw(linemetadata_t *line_metadata);
 exit_t parse_stringz(linemetadata_t *line_metadata);
 

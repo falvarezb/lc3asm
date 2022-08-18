@@ -61,9 +61,9 @@ static exit_t parse_numeric_value(char *token, long *imm, uint16_t line_counter)
     }
 
     if(!strtolong(value_to_check, imm, base)) {
-            return do_exit(EXIT_FAILURE, "ERROR (line %d): Immediate %s is not a numeric value", line_counter, token);
-        }
-        return success();
+        return do_exit(EXIT_FAILURE, "ERROR (line %d): Immediate %s is not a numeric value", line_counter, token);
+    }
+    return success();
 }
 
 exit_t is_valid_lc3integer(char *token, int16_t *imm, uint16_t line_counter) {
@@ -123,8 +123,8 @@ exit_t parse_offset(char *token, int lower_bound, int upper_bound, uint16_t inst
         base = 10;
     }
     else if(first_ch == 'x') { //hex literal
-        value_to_check = token + 1;     
-        base = 16;   
+        value_to_check = token + 1;
+        base = 16;
     }
     else { //decimal without prefix
         value_to_check = token;
@@ -147,7 +147,7 @@ exit_t parse_offset(char *token, int lower_bound, int upper_bound, uint16_t inst
         return do_exit(EXIT_FAILURE, "ERROR (line %d): Value of offset %ld is outside the range [%d, %d]", line_counter, *offset, lower_bound, upper_bound);
     }
 
-    
+
     //n-bit 2's complement
     if(*offset < 0) {
         *offset += (1 << num_bits);
