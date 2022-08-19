@@ -46,9 +46,50 @@ static void test_parse_stringz(void  __attribute__((unused)) **state) {
     compare_chars('y', tokenized_lines[6]->machine_instruction);
 }
 
+static void test_parse_fill_success(void  __attribute__((unused)) **state) {       
+    memaddr_t address_origin = 1;
+    char *tokens[] = { ".FILL", "10" };
+    linemetadata_t line_metadata = { .tokens = tokens, .num_tokens = 2 };
+    exit_t result = parse_fill(&line_metadata, address_origin);
+    if(result.code) {
+        printf("\n\n==========================================\n");
+        printf("%s\n", result.desc);
+        printf("==========================================\n\n");
+    }
+    assert_int_equal(result.code, 0);
+
+    unsigned char *bytes = (unsigned char *)&line_metadata.machine_instruction;
+    //assert order is flipped because of little-endian arch
+    assert_int_equal(bytes[0], 10);
+    assert_int_equal(bytes[1], 0);
+}
+
+static void test_parse_fill_immediate_too_big(void  __attribute__((unused)) **state) {       
+    memaddr_t address_origin = 1;
+    char *tokens[] = { ".FILL", "#70000" };
+    linemetadata_t line_metadata = { .tokens = tokens, .num_tokens = 2, .line_number = 1 };
+    exit_t result = parse_fill(&line_metadata, address_origin);
+    assert_int_equal(result.code, 1);
+    assert_string_equal(result.desc, "ERROR (line 1): Immediate operand (#70000) out of range (-32768 to 65535)");
+    free(result.desc);
+}
+
+static void test_parse_fill_immediate_too_small(void  __attribute__((unused)) **state) {       
+    memaddr_t address_origin = 1;
+    char *tokens[] = { ".FILL", "#-33000" };
+    linemetadata_t line_metadata = { .tokens = tokens, .num_tokens = 2, .line_number = 1 };
+    exit_t result = parse_fill(&line_metadata, address_origin);
+    assert_int_equal(result.code, 1);
+    assert_string_equal(result.desc, "ERROR (line 1): Immediate operand (#-33000) out of range (-32768 to 65535)");
+    free(result.desc);
+}
+
 int main(int argc, char const *argv[]) {
     const struct CMUnitTest tests[] = {
-        cmocka_unit_test_setup_teardown(test_parse_stringz, setup, teardown)
+        cmocka_unit_test_setup_teardown(test_parse_stringz, setup, teardown),
+        cmocka_unit_test_setup_teardown(test_parse_fill_success, setup, teardown),
+        cmocka_unit_test_setup_teardown(test_parse_fill_immediate_too_big, setup, teardown),
+        cmocka_unit_test_setup_teardown(test_parse_fill_immediate_too_small, setup, teardown)
     };
     return cmocka_run_group_tests(tests, NULL, NULL);
 }

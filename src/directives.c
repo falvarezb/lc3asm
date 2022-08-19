@@ -27,14 +27,20 @@ exit_t parse_orig(linemetadata_t *line_metadata) {
     return success();
 }
 
+
 /**
- * @brief Parse the operand of the .FILL directive
+ * @brief Parse the the .FILL directive
  *
- * `.FILL n` allocate one word and initialize with value n
- *
- * @param str operand representing the value to be allocated
- * @param n pointer to store the numeric representation of the operand
- * @return error_t
+ * `.FILL n` allocate one word and initialize with value n, where n can be:
+ *  - an immediate value representing a memory address 
+ *  - a label representing a memory address
+ *  - an immediate value representing an LC3 integer
+ * 
+ *  Therefore, n can take values in the interval [-32768, 65535]
+ * 
+ * @param line_metadata 
+ * @param address_origin if `n` is a label, then `address_origin` is needed to work out the final memory address
+ * @return exit_t 
  */
 exit_t parse_fill(linemetadata_t *line_metadata, memaddr_t address_origin) {
     if(line_metadata->num_tokens < 2) {
@@ -58,18 +64,24 @@ exit_t parse_fill(linemetadata_t *line_metadata, memaddr_t address_origin) {
         base = 10;
     }
 
-    long offset;
+    long numeric_value;
     //is value a label or a number?
-    if(!strtolong(value_to_check, &offset, base)) {
-        //transform label into offset by retrieving the memory location corresponding to the label from symbol table
+    if(!strtolong(value_to_check, &numeric_value, base)) {        
         node_t *node = lookup(token);
         if(!node) {
             return do_exit(EXIT_FAILURE, "ERROR (line %d): Symbol not found ('%s')", line_metadata->line_number, token);
         }
-        offset = node->val - 1 + address_origin;
+        numeric_value = node->val - 1 + address_origin;
     }
 
-    int16_t immediate = (int16_t)offset;
+    //validate numeric value range
+    int min = -32768;
+    int max = 65535;
+    if(numeric_value < min || numeric_value > max) {
+        return do_exit(EXIT_FAILURE, "ERROR (line %d): Immediate operand (%s) out of range (%d to %d)", line_metadata->line_number, token, min, max);
+    }
+
+    int16_t immediate = (int16_t)numeric_value;
     line_metadata->machine_instruction = immediate;
 
     return success();
@@ -92,7 +104,7 @@ exit_t parse_blkw(linemetadata_t *line_metadata) {
 
 exit_t parse_stringz(linemetadata_t *line_metadata, linemetadata_t *tokenized_lines[], memaddr_t *instruction_offset) {
     if(line_metadata->num_tokens < 2) {
-        return do_exit(EXIT_FAILURE, "ERROR (line %d): Immediate expected", line_metadata->line_number);
+        return do_exit(EXIT_FAILURE, "ERROR (line %d): Bad string", line_metadata->line_number);
     }
 
     char *str_literal = line_metadata->tokens[1];
