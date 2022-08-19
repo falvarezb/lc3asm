@@ -6,16 +6,31 @@
             "command": "/usr/bin/gcc",
             "args": [
                 "-g",
-                "-Wall",
-                "-Wno-missing-braces ",
-                "-DFAB_MAIN",
-                "${file}",
-                //"${fileDirname}/util.c",            
-                "-o",
-                "${fileDirname}/out/${fileBasenameNoExtension}"
+                "-Wall",    
+                "-Wno-missing-braces ",    
+                "-c",  
+                "${file}",                            
+                // "./src/assembler.c", 
+                // "./src/lexer.c",                
+                // "./src/parser.c", 
+                // "./src/directives.c", 
+                // "./src/operate_instructions.c",
+                // "./src/control_instructions.c",
+                // "./src/data_movement_instructions.c",
+                // "./src/lc3util.c",
+                // "./src/util.c",
+                // "./src/dict.c",                             
+                // "-I/usr/local/include/glib-2.0",
+                // "-I/usr/local/lib/glib-2.0/include",    
+                // "-lglib-2.0",                                                      
+                "-fno-common",
+                "-fsanitize=address",
+                "-fsanitize=undefined",  
+                "-o",                     
+                "${workspaceFolder}/out/${fileBasenameNoExtension}.o"
             ],
             "options": {
-                "cwd": "${fileDirname}"
+                "cwd": "${workspaceFolder}"
             },
             "problemMatcher": [
                 "$gcc"
@@ -62,42 +77,7 @@
                 "-g",
                 "-Wall",    
                 "-Wno-missing-braces ",                  
-                "${workspaceFolder}/test/memory_access_instr_test.c",
-                "${workspaceFolder}/src/memory_access_instr.c",
-                "${workspaceFolder}/src/lc3util.c",
-                "${workspaceFolder}/src/common.c",
-                "${workspaceFolder}/src/dict.c",                
-                "-I/usr/local/include/glib-2.0",
-                "-I/usr/local/lib/glib-2.0/include",              
-                "-lcmocka",
-                "-lglib-2.0",
-                "-fno-common",
-                "-fsanitize=address",
-                "-fsanitize=undefined",
-                "-o",
-                "${workspaceFolder}/out/test.out"
-            ],
-            "options": {
-                "cwd": "${fileDirname}"
-            },
-            "problemMatcher": [
-                "$gcc"
-            ],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "detail": "Task to run tests"
-        },
-        {
-            "type": "cppbuild",
-            "label": "C/C++ macos: add test",
-            "command": "/usr/bin/gcc",
-            "args": [
-                "-g",
-                "-Wall",    
-                "-Wno-missing-braces ",                  
-                "${workspaceFolder}/test/directives_test.c",
+                "${workspaceFolder}/test/assembler_test.c",
                 "${workspaceFolder}/src/assembler.c", 
                 "${workspaceFolder}/src/lexer.c",                
                 "${workspaceFolder}/src/parser.c", 
@@ -108,7 +88,10 @@
                 "${workspaceFolder}/src/lc3util.c",
                 "${workspaceFolder}/src/util.c",
                 "${workspaceFolder}/src/dict.c",                             
-                "-lcmocka",                
+                // "-I/usr/local/include/glib-2.0",
+                // "-I/usr/local/lib/glib-2.0/include",    
+                // "-lglib-2.0",           
+                "-lcmocka",                              
                 "-fno-common",
                 "-fsanitize=address",
                 "-fsanitize=undefined",
@@ -116,7 +99,7 @@
                 "${workspaceFolder}/out/test.out"
             ],
             "options": {
-                "cwd": "${fileDirname}"
+                "cwd": "${workspaceFolder}"
             },
             "problemMatcher": [
                 "$gcc"
@@ -133,20 +116,28 @@
             "command": "/usr/bin/gcc",
             "args": [
                 "-g",
-                "-Wall",
-                "-Wno-missing-braces ",                               
-                "${workspaceFolder}/test/parser_add_test.c",
-                "${workspaceFolder}/src/parser_add.c",
+                "-Wall",    
+                "-Wno-missing-braces ",                  
+                "${workspaceFolder}/test/assembler_test.c",
+                "${workspaceFolder}/src/assembler.c", 
+                "${workspaceFolder}/src/lexer.c",                
+                "${workspaceFolder}/src/parser.c", 
+                "${workspaceFolder}/src/directives.c", 
+                "${workspaceFolder}/src/operate_instructions.c",
+                "${workspaceFolder}/src/control_instructions.c",
+                "${workspaceFolder}/src/data_movement_instructions.c",
                 "${workspaceFolder}/src/lc3util.c",
-                "${workspaceFolder}/src/common.c",                                          
-                "-I/usr/include/glib-2.0",
-                "-I/usr/lib/x86_64-linux-gnu/glib-2.0/include",              
-                "-lcmocka",
-                "-lglib-2.0",
-                // "-lm",
-                // "-lpthread",
+                "${workspaceFolder}/src/util.c",
+                "${workspaceFolder}/src/dict.c",                             
+                // "-I/usr/include/glib-2.0",
+                // "-I/usr/lib/x86_64-linux-gnu/glib-2.0/include",                              
+                // "-lglib-2.0",         
+                "-lcmocka",                              
+                "-fno-common",
+                "-fsanitize=address",
+                "-fsanitize=undefined",
                 "-o",
-                "${workspaceFolder}/c/out/test.out"
+                "${workspaceFolder}/out/test.out"                
             ],
             "options": {
                 "cwd": "${fileDirname}"
@@ -159,123 +150,7 @@
                 "isDefault": true
             },
             "detail": "Task to run tests"
-        },
-        {
-            "type": "cppbuild",
-            "label": "C/C++ macos: parse file test",
-            "command": "/usr/bin/gcc",
-            "args": [
-                "-g",
-                "-Wall",    
-                "-Wno-missing-braces ",  
-                "${workspaceFolder}/test/parser_file_test.c",                
-                "${workspaceFolder}/src/parser_file.c",              
-                "${workspaceFolder}/src/parser_add.c",
-                "${workspaceFolder}/src/parser_and.c",
-                "${workspaceFolder}/src/parser_jmp.c",                
-                "${workspaceFolder}/src/parser_not.c",
-                "${workspaceFolder}/src/parser_ret.c",
-                "${workspaceFolder}/src/memory_access_instr.c",
-                "${workspaceFolder}/src/branching_instr.c",
-                "${workspaceFolder}/src/common.c",        
-                "${workspaceFolder}/src/lc3util.c",
-                "${workspaceFolder}/src/dict.c",
-                "${workspaceFolder}/src/directives.c",       
-                // "-I/usr/local/include/glib-2.0",
-                // "-I/usr/local/lib/glib-2.0/include",              
-                "-lcmocka", //linking with the dynamic version of the library
-                //"/usr/local/Cellar/cmocka/1.1.5/lib/libcmocka-static.a", //linking with the static version of the library
-                //"-lglib-2.0",
-                "-fno-common",
-                "-fsanitize=address",
-                "-fsanitize=undefined",
-                "-o",
-                "${workspaceFolder}/out/test.out"
-            ],
-            "options": {
-                "cwd": "${workspaceFolder}"
-            },
-            "problemMatcher": [
-                "$gcc"
-            ],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "detail": "Task to run tests"
-        },
-        {
-            "type": "cppbuild",
-            "label": "C/C++ macos: lexer test",
-            "command": "/usr/bin/gcc",
-            "args": [
-                "-g",
-                "-Wall",    
-                "-Wno-missing-braces ",  
-                "${workspaceFolder}/test/lexer_test.c",                
-                "${workspaceFolder}/src/lexer.c",
-                "${workspaceFolder}/src/common.c",        
-                "${workspaceFolder}/src/lc3util.c",
-                "${workspaceFolder}/src/dict.c",                            
-                "-lcmocka",
-                "-fno-common",
-                "-fsanitize=address",
-                "-fsanitize=undefined",
-                "-o",
-                "${workspaceFolder}/out/test.out"
-            ],
-            "options": {
-                "cwd": "${workspaceFolder}"
-            },
-            "problemMatcher": [
-                "$gcc"
-            ],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "detail": "Task to run tests"
-        },
-        {
-            "type": "cppbuild",
-            "label": "C/C++ linux: parse file test",
-            "command": "/usr/bin/gcc",
-            "args": [
-                "-g",
-                "-Wall",    
-                "-Wno-missing-braces ",  
-                "${workspaceFolder}/test/parser_file_test.c",                
-                "${workspaceFolder}/src/parser_file.c",              
-                "${workspaceFolder}/src/parser_add.c",
-                "${workspaceFolder}/src/parser_and.c",
-                "${workspaceFolder}/src/parser_jmp.c",
-                "${workspaceFolder}/src/parser_jsr.c",
-                "${workspaceFolder}/src/parser_not.c",
-                "${workspaceFolder}/src/parser_ret.c",
-                "${workspaceFolder}/src/common.c",        
-                "${workspaceFolder}/src/lc3util.c",
-                "${workspaceFolder}/src/dict.c",
-                "${workspaceFolder}/src/directives.c",        
-                "-I/usr/include/glib-2.0",
-                "-I/usr/lib/x86_64-linux-gnu/glib-2.0/include",              
-                "-lcmocka",
-                "-lglib-2.0",
-                "-fno-common",
-                "-o",
-                "${workspaceFolder}/out/test.out"
-            ],
-            "options": {
-                "cwd": "${workspaceFolder}"
-            },
-            "problemMatcher": [
-                "$gcc"
-            ],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "detail": "Task to run tests"
-        },
+        }
     ],
     "version": "2.0.0"
 }
