@@ -54,17 +54,17 @@ static void run_assemble_test(char *asm_file_name, char *expected_obj_file_name,
 }
 
 static void test_symbol_table_t2(void  __attribute__((unused)) **state) {
-    assemble("./test/t2.asm");
+    assemble("./test/testfiles/t2.asm");
     assert_symbol_table("LABEL", 0x3003);
 }
 
 static void test_symbol_table_t3(void  __attribute__((unused)) **state) {
-    assemble("./test/t3.asm");
+    assemble("./test/testfiles/t3.asm");
     assert_symbol_table("LABEL", 0x3003);
 }
 
 static void test_symbol_table_t4(void  __attribute__((unused)) **state) {
-    assemble("./test/t4.asm");
+    assemble("./test/testfiles/t4.asm");
     assert_symbol_table("LABEL1", 0x3003);
     assert_symbol_table("LABEL2", 0x3001);
     assert_symbol_table("LABEL3", 0x3002);
@@ -73,77 +73,77 @@ static void test_symbol_table_t4(void  __attribute__((unused)) **state) {
 }
 
 static void test_two_labels_same_line_t5(void  __attribute__((unused)) **state) {
-    exit_t result = assemble("./test/t5.asm");
+    exit_t result = assemble("./test/testfiles/t5.asm");
     assert_int_equal(result.code, EXIT_FAILURE);
     assert_string_equal(result.desc, "ERROR (line 10): Invalid opcode ('LABEL2')");
     free(result.desc);
 }
 
 static void test_assemble_without_labels_t1(void  __attribute__((unused)) **state) {
-    run_assemble_test("./test/t1.asm", "./test/t1.expected.obj", "./test/t1.obj");
+    run_assemble_test("./test/testfiles/t1.asm", "./test/testfiles/t1.expected.obj", "./test/testfiles/t1.obj");
 }
 
 static void test_assemble_with_labels_t2(void  __attribute__((unused)) **state) {
-    run_assemble_test("./test/t2.asm", "./test/t2.expected.obj", "./test/t2.obj");
+    run_assemble_test("./test/testfiles/t2.asm", "./test/testfiles/t2.expected.obj", "./test/testfiles/t2.obj");
 }
 
 static void test_assemble_wrong_orig_address_t6(void  __attribute__((unused)) **state) {
-    exit_t result = assemble("./test/t6.asm");
+    exit_t result = assemble("./test/testfiles/t6.asm");
     assert_int_equal(result.code, 1);
     assert_string_equal(result.desc, "ERROR (line 4): Immediate operand (545677767) outside of range (0 to 65535)");
     free(result.desc);
 }
 
 static void test_assemble_missing_orig_t7(void  __attribute__((unused)) **state) {
-    exit_t result = assemble("./test/t7.asm");
+    exit_t result = assemble("./test/testfiles/t7.asm");
     assert_int_equal(result.code, 1);
     assert_string_equal(result.desc, "ERROR (line 4): Instruction not preceeded by a .orig directive");
     free(result.desc);
 }
 
 static void test_assemble_missing_orig_address_t8(void  __attribute__((unused)) **state) {
-    exit_t result = assemble("./test/t8.asm");
+    exit_t result = assemble("./test/testfiles/t8.asm");
     assert_int_equal(result.code, 1);
     assert_string_equal(result.desc, "ERROR (line 4): Immediate expected");
     free(result.desc);
 }
 
 static void test_assemble_stringz_t9(void  __attribute__((unused)) **state) {
-    run_assemble_test("./test/t9.asm", "./test/t9.expected.obj", "./test/t9.obj");
+    run_assemble_test("./test/testfiles/t9.asm", "./test/testfiles/t9.expected.obj", "./test/testfiles/t9.obj");
 }
 
 static void test_assemble_blkw_t10(void  __attribute__((unused)) **state) {
-    run_assemble_test("./test/t10.asm", "./test/t10.expected.obj", "./test/t10.obj");
+    run_assemble_test("./test/testfiles/t10.asm", "./test/testfiles/t10.expected.obj", "./test/testfiles/t10.obj");
 }
 
 static void test_assemble_with_labels_t11(void  __attribute__((unused)) **state) {
-    run_assemble_test("./test/t11.asm", "./test/t11.expected.obj", "./test/t11.obj");
+    run_assemble_test("./test/testfiles/t11.asm", "./test/testfiles/t11.expected.obj", "./test/testfiles/t11.obj");
 }
 
 static void test_missing_assembly_file(void  __attribute__((unused)) **state) {
-    exit_t result = assemble("./test/test/random.asm");
+    exit_t result = assemble("./test/testfiles/test/testfiles/random.asm");
     assert_int_equal(result.code, 1);
-    assert_string_equal(result.desc, "ERROR: Couldn't read file (./test/test/random.asm)");
+    assert_string_equal(result.desc, "ERROR: Couldn't read file (./test/testfiles/test/testfiles/random.asm)");
     free(result.desc);
 }
 
 static void test_wrong_assembly_file_extension(void  __attribute__((unused)) **state) {
-    exit_t result = assemble("./test/t2.copy");
+    exit_t result = assemble("./test/testfiles/t2.copy");
     assert_int_equal(result.code, 1);
-    assert_string_equal(result.desc, "ERROR: Input file must have .asm suffix ('./test/t2.copy')");
+    assert_string_equal(result.desc, "ERROR: Input file must have .asm suffix ('./test/testfiles/t2.copy')");
     free(result.desc);
 }
 
 static void test_symbol_table_serialization(void  __attribute__((unused)) **state) {
     add("LABEL", 4);
-    FILE *actual_sym_file = fopen("./test/t2.sym", "w");
+    FILE *actual_sym_file = fopen("./test/testfiles/t2.sym", "w");
     exit_t result = serialize_symbol_table(actual_sym_file, 0x3000);
     assert_int_equal(0, result.code);
     fclose(actual_sym_file);
 
     //test symbol table serialization
-    FILE *expected_sym_file = fopen("./test/t2.expected.sym", "r");
-    actual_sym_file = fopen("./test/t2.sym", "r");
+    FILE *expected_sym_file = fopen("./test/testfiles/t2.expected.sym", "r");
+    actual_sym_file = fopen("./test/testfiles/t2.sym", "r");
 
     size_t num_lines = 1;
     char *line_expected = NULL;
@@ -171,7 +171,7 @@ static void test_symbol_table_serialization(void  __attribute__((unused)) **stat
 
 static void test_symbol_table_serialization_failure(void  __attribute__((unused)) **state) {
     add("LABEL", 4);
-    FILE *actual_sym_file = fopen("./test/t2.sym", "r");
+    FILE *actual_sym_file = fopen("./test/testfiles/t2.sym", "r");
     exit_t result = serialize_symbol_table(actual_sym_file, 0x3000);
     fclose(actual_sym_file);
     assert_int_equal(result.code, 1);
@@ -181,23 +181,23 @@ static void test_symbol_table_serialization_failure(void  __attribute__((unused)
 
 
 static void test_assemble_or_asm(void  __attribute__((unused)) **state) {
-    run_assemble_test("./test/or.asm", "./test/or.expected.obj", "./test/or.obj");
+    run_assemble_test("./test/testfiles/or.asm", "./test/testfiles/or.expected.obj", "./test/testfiles/or.obj");
 }
 
 static void test_assemble_abs_asm(void  __attribute__((unused)) **state) {
-    run_assemble_test("./test/abs.asm", "./test/abs.expected.obj", "./test/abs.obj");
+    run_assemble_test("./test/testfiles/abs.asm", "./test/testfiles/abs.expected.obj", "./test/testfiles/abs.obj");
 }
 
 static void test_assemble_lcrng_asm(void  __attribute__((unused)) **state) {
-    run_assemble_test("./test/lcrng.asm", "./test/lcrng.expected.obj", "./test/lcrng.obj");
+    run_assemble_test("./test/testfiles/lcrng.asm", "./test/testfiles/lcrng.expected.obj", "./test/testfiles/lcrng.obj");
 }
 
 static void test_assemble_charcounter_asm(void  __attribute__((unused)) **state) {
-    run_assemble_test("./test/charcounter.asm", "./test/charcounter.expected.obj", "./test/charcounter.obj");
+    run_assemble_test("./test/testfiles/charcounter.asm", "./test/testfiles/charcounter.expected.obj", "./test/testfiles/charcounter.obj");
 }
 
 static void test_assemble_lc3os_asm(void  __attribute__((unused)) **state) {
-    run_assemble_test("./test/lc3os.asm", "./test/lc3os.expected.obj", "./test/lc3os.obj");
+    run_assemble_test("./test/testfiles/lc3os.asm", "./test/testfiles/lc3os.expected.obj", "./test/testfiles/lc3os.obj");
 }
 
 int main(int argc, char const *argv[]) {
