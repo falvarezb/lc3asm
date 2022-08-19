@@ -1,5 +1,6 @@
-int main(int argc, char const *argv[])
-{
-    /* code */
-    return 0;
+
+#ifdef FAB_MAIN
+int main(int argc, char const *argv[]) {
+    //second_pass_parse();
 }
+#endif
