@@ -5,6 +5,17 @@
 #include <stdbool.h>
 #include "../include/lc3.h"
 
+static int setup(void **state) {
+    clearerrdesc();
+    initialize();
+    return 0;
+}
+
+static int teardown(void **state) {
+    initialize();
+    return 0;
+}
+
 void test_jsr_right_no_hash_symbol(void __attribute__ ((unused)) **state) {    
     char *tokens[] = {"DOES NOT MATTER", "1"};
     linemetadata_t line_metadata = {.tokens = tokens, .num_tokens = 2};
@@ -42,10 +53,8 @@ void test_jsr_PCoffset11_too_small(void __attribute__ ((unused))  **state) {
 }
 
 
-void test_jsr_with_label(void __attribute__ ((unused))  **state) {
-    initialize();
+void test_jsr_with_label(void __attribute__ ((unused))  **state) {    
     add("LABEL", 3);    
-
     char *tokens[] = {"DOES NOT MATTER", "LABEL"};
     linemetadata_t line_metadata = {.tokens = tokens, .num_tokens = 2, .instruction_location = 1};
     parse_jsr(&line_metadata);
@@ -53,11 +62,9 @@ void test_jsr_with_label(void __attribute__ ((unused))  **state) {
     //assert order is flipped because of little-endian arch
     assert_int_equal(bytes[0], 1);
     assert_int_equal(bytes[1], 72);
-    initialize();
 }
 
-void test_jsr_non_existent_label(void __attribute__ ((unused))  **state) {
-    initialize();    
+void test_jsr_non_existent_label(void __attribute__ ((unused))  **state) {      
     char *tokens[] = {"DOES NOT MATTER", "NON_EXISTENT_LABEL"};
     linemetadata_t line_metadata = {.tokens = tokens, .num_tokens = 2, .line_number = 1};
     exit_t result = parse_jsr(&line_metadata);    
@@ -67,12 +74,12 @@ void test_jsr_non_existent_label(void __attribute__ ((unused))  **state) {
 
 int main(int __attribute__ ((unused)) argc, char const __attribute__ ((unused)) *argv[]) {
     const struct CMUnitTest tests[] = {
-        cmocka_unit_test(test_jsr_right_no_hash_symbol),
-        cmocka_unit_test(test_jsr_right_with_hash_symbol),
-        cmocka_unit_test(test_jsr_PCoffset11_too_big),
-        cmocka_unit_test(test_jsr_PCoffset11_too_small),             
-        cmocka_unit_test(test_jsr_with_label),
-        cmocka_unit_test(test_jsr_non_existent_label)
+        cmocka_unit_test_setup_teardown(test_jsr_right_no_hash_symbol, setup, teardown),
+        cmocka_unit_test_setup_teardown(test_jsr_right_with_hash_symbol, setup, teardown),
+        cmocka_unit_test_setup_teardown(test_jsr_PCoffset11_too_big, setup, teardown),
+        cmocka_unit_test_setup_teardown(test_jsr_PCoffset11_too_small, setup, teardown),             
+        cmocka_unit_test_setup_teardown(test_jsr_with_label, setup, teardown),
+        cmocka_unit_test_setup_teardown(test_jsr_non_existent_label, setup, teardown)
     };
     return cmocka_run_group_tests(tests, NULL, NULL);
 }

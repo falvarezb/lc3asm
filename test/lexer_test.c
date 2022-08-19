@@ -47,7 +47,7 @@ static void assert_symbol_table(const char *label, size_t num_instruction) {
 
 static void test_lexer_without_labels_t1(void  __attribute__((unused)) **state) {
     linemetadata_t **tokenized_lines = *state;
-    run_lexer_test("./test/t1.asm", tokenized_lines);
+    run_lexer_test("./test/testfiles/t1.asm", tokenized_lines);
 
     assert_null(next(true));
 
@@ -87,7 +87,7 @@ static void test_lexer_without_labels_t1(void  __attribute__((unused)) **state) 
 
 void test_lexer_t2(void  __attribute__((unused)) **state) {
     linemetadata_t **tokenized_lines = *state;
-    run_lexer_test("./test/t2.asm", tokenized_lines);
+    run_lexer_test("./test/testfiles/t2.asm", tokenized_lines);
 
     assert_symbol_table("LABEL", 4);
 
@@ -145,7 +145,7 @@ void test_lexer_t2(void  __attribute__((unused)) **state) {
 
 static void test_lexer_t3(void  __attribute__((unused)) **state) {
     linemetadata_t **tokenized_lines = *state;
-    run_lexer_test("./test/t3.asm", tokenized_lines);
+    run_lexer_test("./test/testfiles/t3.asm", tokenized_lines);
 
     assert_symbol_table("LABEL", 4);
 
@@ -164,7 +164,7 @@ static void test_lexer_t3(void  __attribute__((unused)) **state) {
 
 static void test_lexer_t4(void  __attribute__((unused)) **state) {
     linemetadata_t **tokenized_lines = *state;
-    run_lexer_test("./test/t4.asm", tokenized_lines);
+    run_lexer_test("./test/testfiles/t4.asm", tokenized_lines);
 
     assert_symbol_table("LABEL1", 4);
     assert_symbol_table("LABEL2", 2);
@@ -177,7 +177,7 @@ static void test_lexer_t4(void  __attribute__((unused)) **state) {
 
 static void test_lexer_t5(void  __attribute__((unused)) **state) {
     linemetadata_t **tokenized_lines = *state;
-    run_lexer_test("./test/t5.asm", tokenized_lines);
+    run_lexer_test("./test/testfiles/t5.asm", tokenized_lines);
 
     assert_symbol_table("LABEL1", 4);
 
