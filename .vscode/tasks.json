@@ -2,24 +2,24 @@
     "tasks": [
         {
             "type": "cppbuild",
-            "label": "C/C++ macos: gcc build",
+            "label": "C/C++ macos: gcc build app",
             "command": "/usr/bin/gcc",
             "args": [
                 "-g",
                 "-Wall",    
-                "-Wno-missing-braces ",    
-                "-c",  
-                "${file}",                            
-                // "./src/assembler.c", 
-                // "./src/lexer.c",                
-                // "./src/parser.c", 
-                // "./src/directives.c", 
-                // "./src/operate_instructions.c",
-                // "./src/control_instructions.c",
-                // "./src/data_movement_instructions.c",
-                // "./src/lc3util.c",
-                // "./src/util.c",
-                // "./src/dict.c",                             
+                "-Wno-missing-braces ",                
+                //"${file}",                            
+                "${workspaceFolder}/src/main.c", 
+                "${workspaceFolder}/src/assembler.c", 
+                "${workspaceFolder}/src/lexer.c",                
+                "${workspaceFolder}/src/parser.c", 
+                "${workspaceFolder}/src/directives.c", 
+                "${workspaceFolder}/src/operate_instructions.c",
+                "${workspaceFolder}/src/control_instructions.c",
+                "${workspaceFolder}/src/data_movement_instructions.c",
+                "${workspaceFolder}/src/lc3util.c",
+                "${workspaceFolder}/src/util.c",
+                "${workspaceFolder}/src/dict.c",                             
                 // "-I/usr/local/include/glib-2.0",
                 // "-I/usr/local/lib/glib-2.0/include",    
                 // "-lglib-2.0",                                                      
@@ -27,7 +27,7 @@
                 "-fsanitize=address",
                 "-fsanitize=undefined",  
                 "-o",                     
-                "${workspaceFolder}/out/${fileBasenameNoExtension}.o"
+                "${workspaceFolder}/out/assembler.out"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
