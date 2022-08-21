@@ -685,4 +685,4 @@ BAD_TRAP
 ;;; actually be any interrupts, so this will never actually get called.
 BAD_INT		RTI
 
-TRAP_IN_MSG	.STRINGZ "Input a character> "
+TRAP_IN_MSG	.STRINGZ "\nInput a character> "

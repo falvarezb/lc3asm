@@ -3,7 +3,7 @@
 ;          
     .ORIG x3000
     JSR LABEL
-    .STRINGZ "ab"
+    .STRINGZ "a\n'\\\t\eb"    
     ADD R0,R0,#1
     HALT
 
