@@ -43,7 +43,7 @@
         },
         {
             "type": "cppbuild",
-            "label": "C/C++ linux: gcc build",
+            "label": "C/C++ macos: gcc build",
             "command": "/usr/bin/gcc",
             "args": [
                 "-g",
