@@ -1,16 +1,18 @@
 # LC-3 Assembler
 
-This project is an assembler written in C for [Little Computer 3 (LC-3)](https://en.wikipedia.org/wiki/Little_Computer_3) as described by [Introduction to Computing Systems: From bits and gates to C and beyond](https://highered.mheducation.com/sites/0072467509/)
+This project is an assembler written in C for [Little Computer 3 (LC-3)](https://en.wikipedia.org/wiki/Little_Computer_3) as specified by [Introduction to Computing Systems: From bits and gates to C and beyond](https://highered.mheducation.com/sites/0072467509/)
 
-Here's the list of resources taken as reference for the implementation
+Here's some learning resources:
 
-- [GUI simulator](https://www.cis.upenn.edu/~milom/cse240-Fall05/handouts/lc3guide.html)
+- [GUI simulator](https://www.cis.upenn.edu/~milom/cse240-Fall05/handouts/lc3guide.html) to assemble and run LC-3 programs; that page also contains a link to download the [LC-3 OS](https://acg.cis.upenn.edu/milom/cse240-Fall05/handouts/code/lc3os.asm) necessary to run programs on the simulator
 
-- [simulator (Virtual Machine) implementation](https://justinmeiners.github.io/lc3-vm/)
+- [another simulator](https://justinmeiners.github.io/lc3-vm/) to run LC-3 programs
 
 - [learning resources](https://highered.mheducation.com/sites/0072467509/student_view0/index.html)
 
 - [LC-3 details](https://people.cs.georgetown.edu/~squier/Teaching/HardwareFundamentals/LC3-trunk/docs/)
+
+
 
 
 ## LC-3 Instruction Set Architecture (ISA)

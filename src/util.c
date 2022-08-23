@@ -110,6 +110,7 @@ bool strtolong(char *str, long *num, int base) {
 }
 
 char **split_tokens(char *str, int *num_tokens, const char *delimiters) {
+    //TODO 200 should be a constant
     const int max_num_tokens = 200;
     char **tokens = malloc(max_num_tokens * sizeof(char *));
     if(tokens == NULL) {
@@ -121,7 +122,9 @@ char **split_tokens(char *str, int *num_tokens, const char *delimiters) {
     char *pch = strtok(str, delimiters);
     while(pch != NULL) {
         if(strcmp(pch, ".STRINGZ") == 0) {
-            delimiters = "\""; // string is taken as a single token
+            tokens[(*num_tokens)++] = pch;
+            tokens[(*num_tokens)++] = (pch+strlen(".STRINGZ")+1);
+            break;
         }
         tokens[(*num_tokens)++] = pch;
         pch = strtok(NULL, delimiters);

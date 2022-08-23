@@ -103,65 +103,72 @@ exit_t parse_blkw(linemetadata_t *line_metadata) {
 }
 
 static exit_t interpret_escape_sequences(linemetadata_t *line_metadata) {
-    char *token = line_metadata->tokens[1];
-    bool escape_sequence = false;
+    char *token1 = line_metadata->tokens[1];
+    size_t token1_length = strlen(token1);    
+    bool escape_sequence_mode = false;
+    bool first_quotation_mark_found = false;
+    bool second_quotation_mark_found = false;
     size_t i = 0, j = 0;
     char ch;
-    while((ch = token[i]) != '\0') {
-        if(escape_sequence) {
+    while((ch = token1[i]) != '\0') {
+        if(ch == '"') {
+            if(first_quotation_mark_found) {
+                second_quotation_mark_found = true;
+                break;
+            }
+            first_quotation_mark_found = true;            
+        }
+        else if(escape_sequence_mode) {
             switch(ch) {
             case 'a':
-                token[j++] = '\a';
-                escape_sequence = false;
+                token1[j++] = '\a';
                 break;
             case 'b':
-                token[j++] = '\b';
-                escape_sequence = false;
+                token1[j++] = '\b';
                 break;
             case 'e':
-                token[j++] = '\e';
-                escape_sequence = false;
+                token1[j++] = '\e';
                 break;
             case 'f':
-                token[j++] = '\f';
-                escape_sequence = false;
+                token1[j++] = '\f';
                 break;
             case 'n':
-                token[j++] = '\n';
-                escape_sequence = false;
+                token1[j++] = '\n';
                 break;
             case 'r':
-                token[j++] = '\r';
-                escape_sequence = false;
+                token1[j++] = '\r';
                 break;
             case 't':
-                token[j++] = '\t';
-                escape_sequence = false;
+                token1[j++] = '\t';
                 break;
             case 'v':
-                token[j++] = '\v';
-                escape_sequence = false;
+                token1[j++] = '\v';
                 break;
             case '\\':
-                token[j++] = '\\';
-                escape_sequence = false;
+                token1[j++] = '\\';
                 break;
             default:
                 //unrecognised escape sequence
-                return do_exit(EXIT_FAILURE, "ERROR (line %d): Unrecognised escape sequence ('%s')", line_metadata->line_number, token);
+                return do_exit(EXIT_FAILURE, "ERROR (line %d): Unrecognised escape sequence ('%s')", line_metadata->line_number, token1);
                 break;
             }
+            escape_sequence_mode = false;
         }
         else if(ch == '\\') {
-            escape_sequence = true;
+            escape_sequence_mode = true;
         }
-        else {
-            token[j++] = ch;
+        else if(first_quotation_mark_found) {
+            token1[j++] = ch;
         }
         i++;
     }
-    if(j < i) {
-        token[j++] = '\0';
+
+    if(j < token1_length) {
+        token1[j] = '\0';
+    }
+
+    if(!first_quotation_mark_found || !second_quotation_mark_found) {
+        return do_exit(EXIT_FAILURE, "ERROR (line %d): Bad string ('%s')", line_metadata->line_number, line_metadata->line);
     }
     return success();
 }

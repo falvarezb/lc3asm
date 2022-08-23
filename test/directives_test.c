@@ -32,20 +32,6 @@ static void compare_chars(int ch, uint16_t instruction) {
     assert_int_equal(bytes[1], 0);
 }
 
-static void test_parse_stringz(void  __attribute__((unused)) **state) {
-    linemetadata_t **tokenized_lines = *state;
-    memaddr_t instruction_offset = 2;
-    char *tokens[] = { ".STRINGZ", "hey\ny" };
-    linemetadata_t line_metadata = { .tokens = tokens, .num_tokens = 2 };
-    parse_stringz(&line_metadata, tokenized_lines, &instruction_offset);
-
-    compare_chars('h', tokenized_lines[2]->machine_instruction);
-    compare_chars('e', tokenized_lines[3]->machine_instruction);
-    compare_chars('y', tokenized_lines[4]->machine_instruction);
-    compare_chars('\n', tokenized_lines[5]->machine_instruction);
-    compare_chars('y', tokenized_lines[6]->machine_instruction);
-}
-
 static void test_parse_fill_success(void  __attribute__((unused)) **state) {       
     memaddr_t address_origin = 1;
     char *tokens[] = { ".FILL", "10" };
@@ -86,7 +72,7 @@ static void test_parse_fill_immediate_too_small(void  __attribute__((unused)) **
 
 int main(int argc, char const *argv[]) {
     const struct CMUnitTest tests[] = {
-        cmocka_unit_test_setup_teardown(test_parse_stringz, setup, teardown),
+        //cmocka_unit_test_setup_teardown(test_parse_stringz, setup, teardown),
         cmocka_unit_test_setup_teardown(test_parse_fill_success, setup, teardown),
         cmocka_unit_test_setup_teardown(test_parse_fill_immediate_too_big, setup, teardown),
         cmocka_unit_test_setup_teardown(test_parse_fill_immediate_too_small, setup, teardown)

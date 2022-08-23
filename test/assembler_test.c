@@ -200,6 +200,10 @@ static void test_assemble_lc3os_asm(void  __attribute__((unused)) **state) {
     run_assemble_test("./test/testfiles/lc3os.asm", "./test/testfiles/lc3os.expected.obj", "./test/testfiles/lc3os.obj");
 }
 
+static void test_assemble_2048_asm(void  __attribute__((unused)) **state) {
+    run_assemble_test("./test/testfiles/2048.asm", "./test/testfiles/2048.expected.obj", "./test/testfiles/2048.obj");
+}
+
 int main(int argc, char const *argv[]) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test_setup_teardown(test_symbol_table_t2, setup, teardown),
@@ -222,7 +226,8 @@ int main(int argc, char const *argv[]) {
         cmocka_unit_test_setup_teardown(test_assemble_abs_asm, setup, teardown),
         cmocka_unit_test_setup_teardown(test_assemble_lcrng_asm, setup, teardown),
         cmocka_unit_test_setup_teardown(test_assemble_charcounter_asm, setup, teardown),
-        cmocka_unit_test_setup_teardown(test_assemble_lc3os_asm, setup, teardown)
+        cmocka_unit_test_setup_teardown(test_assemble_lc3os_asm, setup, teardown),
+        cmocka_unit_test_setup_teardown(test_assemble_2048_asm, setup, teardown)
     };
     return cmocka_run_group_tests(tests, NULL, NULL);
 }
