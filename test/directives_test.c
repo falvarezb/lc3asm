@@ -25,13 +25,6 @@ static int teardown(void **state) {
     return 0;
 }
 
-static void compare_chars(int ch, uint16_t instruction) {
-    unsigned char *bytes = (unsigned char *)&instruction;
-    //assert order is flipped because of little-endian arch
-    assert_int_equal(bytes[0], ch);
-    assert_int_equal(bytes[1], 0);
-}
-
 static void test_parse_fill_success(void  __attribute__((unused)) **state) {       
     memaddr_t address_origin = 1;
     char *tokens[] = { ".FILL", "10" };
@@ -71,8 +64,7 @@ static void test_parse_fill_immediate_too_small(void  __attribute__((unused)) **
 }
 
 int main(int argc, char const *argv[]) {
-    const struct CMUnitTest tests[] = {
-        //cmocka_unit_test_setup_teardown(test_parse_stringz, setup, teardown),
+    const struct CMUnitTest tests[] = {        
         cmocka_unit_test_setup_teardown(test_parse_fill_success, setup, teardown),
         cmocka_unit_test_setup_teardown(test_parse_fill_immediate_too_big, setup, teardown),
         cmocka_unit_test_setup_teardown(test_parse_fill_immediate_too_small, setup, teardown)

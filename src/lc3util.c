@@ -376,5 +376,6 @@ void free_tokenized_lines(linemetadata_t **tokenized_lines) {
     while((line_metadata = tokenized_lines[address_offset++])) {
         free_line_metadata(line_metadata);
     }
+    free(tokenized_lines);
 }
 
