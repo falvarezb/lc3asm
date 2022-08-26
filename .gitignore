@@ -66,3 +66,4 @@ LC3sim.jar
 .DS_Store
 valgrind.log
 docs/
+doxygen_log.txt

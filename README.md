@@ -178,31 +178,4 @@ An assembler directive is a message to help the assembler in the assembly proces
 
 
 
-## Implementation notes
-
-The assembly process consists of two phases: [lexical analysis](https://en.wikipedia.org/wiki/Lexical_analysis) and [parsing](https://en.wikipedia.org/wiki/Parsing#:~:text=Parsing%2C%20syntax%20analysis%2C%20or%20syntactic,meaning%20part%20(of%20speech).).
-
-In the case of directives, parsing is done during the lexical analysis as directives need to be expanded into the corresponding instructions. For instance, `.BLKW 2` is translated into two instructions to write `0`. This is necessary to ensure that the symbol table is correctly constructed.
-
-Ultimately, this is a consequence of instructions and data sharing the same address space and therefore being intermingled in memory.
-
-
-
-
-
-https://docs.gtk.org/glib/testing.html
-
-https://www.manpagez.com/html/glib/glib-2.42.2/glib-Testing.php
-
-
-
-
-
-
-
-another library for unit testing
-glib2.0
-sudo apt-get update
-sudo apt-get install libglib2.0-dev
-
 

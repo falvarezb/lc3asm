@@ -185,6 +185,14 @@ void initialize_dictionary(void** state){
 //     return cmocka_run_group_tests(tests, NULL, NULL);
 // }
 
+/*
+https://docs.gtk.org/glib/testing.html
+https://www.manpagez.com/html/glib/glib-2.42.2/glib-Testing.php
+glib2.0
+sudo apt-get update
+sudo apt-get install libglib2.0-dev
+*/
+
 int
 main (int argc, char *argv[])
 {
