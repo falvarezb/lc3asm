@@ -138,3 +138,16 @@ exit_t assemble(const char *assembly_file_name) {
     return success();
 }
 
+#ifdef FAB_MAIN
+int main(int argc, char const *argv[]) {
+    exit_t result = assemble(argv[1]);
+    if(result.code) {
+        printf("\n\n==========================================\n");
+        printf("%s\n", result.desc);
+        printf("==========================================\n\n");
+    }
+    return result.code;
+}
+#endif
+
+

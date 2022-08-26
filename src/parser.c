@@ -136,9 +136,3 @@ exit_t do_syntax_analysis(linemetadata_t *tokenized_lines[]) {
     return result;
 }
 
-
-#ifdef FAB_MAIN
-int main(int argc, char const *argv[]) {
-    //second_pass_parse();
-}
-#endif

@@ -149,9 +149,3 @@ exit_t parse_base_plus_offset_addressing_mode(linemetadata_t *line_metadata, opc
     return success();
 }
 
-
-#ifdef FAB_MAIN
-int main(int argc, char const *argv[]) {
-
-}
-#endif

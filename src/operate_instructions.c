@@ -118,9 +118,3 @@ exit_t parse_not(linemetadata_t *line_metadata) {
     return success();
 }
 
-
-#ifdef FAB_MAIN
-int main(int argc, char const *argv[]) {
-
-}
-#endif

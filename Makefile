@@ -11,6 +11,10 @@ LOG_DIR = logs
 OUTPUT_DIRS = ${BUILD_DIR} ${LOG_DIR} tools/${BUILD_DIR}
 
 CC = gcc
+# Usage of -fno-common to disable common symbols generation 
+# https://stackoverflow.com/questions/66044467/why-does-global-variable-definition-in-c-header-file-work
+# 
+# For more details about the different compilation flags, see the GNU's https://gcc.gnu.org/onlinedocs/gcc-10.1.0/gcc/Invoking-GCC.html#Invoking-GCC
 CFLAGS = -Og -Wall -Wno-missing-braces -Wextra -Wshadow -Wpedantic -std=c11 -fno-common --coverage
 LDFLAGS = 
 SOURCE_DIR := src
@@ -28,6 +32,7 @@ ifeq ($(shell uname), Linux)
 	CFLAGS += -D_POSIX_C_SOURCE=200809 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include
 else ifeq ($(shell uname), Darwin)
 	VALGRIND =
+	# https://developers.redhat.com/blog/2021/05/05/memory-error-checking-in-c-and-c-comparing-sanitizers-and-valgrind
 	CFLAGS += -I/usr/local/include/glib-2.0 -I/usr/local/lib/glib-2.0/include -fsanitize=address -fsanitize=undefined
 endif
 
@@ -51,10 +56,10 @@ compiletest: $(OBJS_PROD) $(OBJS_TEST)
 #######################
 
 #### run unit tests using cmocka library  ######
-addandtest: $(BUILD_DIR)/addandtest
+addandtest: $(BUILD_DIR)/addandtest	
 	$(VALGRIND) ./$^	
 
-$(BUILD_DIR)/addandtest: $(OBJS_PROD) $(BUILD_DIR)/parser_add_and_test.o
+$(BUILD_DIR)/addandtest: $(OBJS_PROD) $(BUILD_DIR)/parser_add_and_test.o		
 	$(LINK.c) $^ -o $@ $(LDLIBS) -lcmocka
 
 
@@ -153,10 +158,12 @@ dicttest: $(BUILD_DIR)/dicttest
 	$(VALGRIND) ./$^	
 
 $(BUILD_DIR)/dicttest: $(OBJS_PROD) $(BUILD_DIR)/dict_test.o
-	$(LINK.c) $^ -o $@ $(LDLIBS) -lcmocka
+	$(LINK.c) $^ -o $@ $(LDLIBS)
 
 #######################
 
+# https://gcc.gnu.org/onlinedocs/gcc-10.1.0/gcc/Gcov-Intro.html#Gcov-Intro
+# http://ltp.sourceforge.net/coverage/lcov.php
 coverage_report: unittest
 	gcov $(BUILD_DIR)/*.gcda > /dev/null
 	mv *.c.gcov $(BUILD_DIR)/
@@ -165,19 +172,14 @@ coverage_report: unittest
 	open $(BUILD_DIR)/index.html
 
 
-
-####################### 
-#### modules  #########
 #######################
 
-#### run individual module  ######
-# run main method of myfile.c
-# invoke with "make myfile CPPFLAGS=-DFAB_MAIN"
-myfile: $(BUILD_DIR)/myfile
-	$(VALGRIND) ./$^
-
-$(BUILD_DIR)/myfile: $(OBJS_PROD)
+# Program build
+# make lc3as CPPFLAGS=-DFAB_MAIN
+lc3as: $(OBJS_PROD)
 	$(LINK.c) $^ -o $@ $(LDLIBS)
+
+#######################
 
 
 ####################### 

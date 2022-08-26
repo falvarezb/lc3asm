@@ -176,9 +176,3 @@ exit_t parse_trap(linemetadata_t *line_metadata) {
     return do_exit(EXIT_SUCCESS, NULL);  
 }
 
-
-#ifdef FAB_MAIN
-int main(int argc, char const *argv[]) {
-
-}
-#endif
