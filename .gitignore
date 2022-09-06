@@ -68,3 +68,4 @@ valgrind.log
 docs/
 doxygen_log.txt
 lc3as
+lc3objdump

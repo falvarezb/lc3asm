@@ -186,6 +186,11 @@ lc3as: $(OBJS_PROD)
 #### tools   ##########
 #######################
 
+# Program build
+# make lc3objdump CPPFLAGS=-DFAB_MAIN
+lc3objdump: $(OBJS_TOOLS)
+	$(LINK.c) $^ -o $@ $(LDLIBS)
+
 # run lc3objdump.c
 # e.g. "make runobjdump CPPFLAGS=-DFAB_MAIN filename=./lc3examples/test.obj output_mode=hex"
 runobjdump: $(TOOLS_BUILD_DIR)/lc3objdump
