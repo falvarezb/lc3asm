@@ -118,16 +118,10 @@ exit_t do_lexical_analysis(FILE *assembly_file, linemetadata_t *tokenized_lines[
                 tokenized_lines[instruction_offset] = blkw_line_metadata;
                 instruction_offset++;
             }
-            free(line);
-            free_tokens(tokens, is_label_line);
-            free(line_metadata);
         }
         else if(line_type == STRINGZ_DIRECTIVE) {
             exit_t result = parse_stringz(line_metadata, tokenized_lines, &instruction_offset);
             if(result.code) {
-                free(line);
-                free_tokens(tokens, is_label_line);
-                free(line_metadata);
                 return result;
             }
         }

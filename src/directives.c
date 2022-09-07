@@ -111,6 +111,11 @@ static exit_t interpret_escape_sequences(linemetadata_t *line_metadata) {
     size_t i = 0, j = 0;
     char ch;
     while((ch = token1[i]) != '\0') {
+        if(ch != ' ' && ch != '\t' && ch != '"' && !first_quotation_mark_found) {
+            return do_exit(EXIT_FAILURE, "ERROR (line %d): Bad string ('%s')", line_metadata->line_number, token1);
+            break;
+        }
+
         if(ch == '"' && !escape_sequence_mode) {
             if(first_quotation_mark_found) {
                 second_quotation_mark_found = true;
@@ -203,6 +208,7 @@ exit_t parse_stringz(linemetadata_t *line_metadata, linemetadata_t *tokenized_li
         return do_exit(EXIT_FAILURE, "ERROR (line %d): Out of memory error", line_metadata->line_number);
     }
     stringz_line_metadata->tokens = NULL;
+    stringz_line_metadata->line = NULL;
     stringz_line_metadata->machine_instruction = 0;
     tokenized_lines[*instruction_offset] = stringz_line_metadata;
     (*instruction_offset)++;

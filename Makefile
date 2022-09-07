@@ -26,7 +26,7 @@ OBJS_TOOLS := $(addprefix $(TOOLS_BUILD_DIR)/, $(patsubst %.c,%.o,$(SRCS_TOOLS))
 LDLIBS = -lglib-2.0
 
 ifeq ($(shell uname), Linux)
-	VALGRIND = valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all
+	VALGRIND = valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all --track-origins=yes
 	VALGRIND += --verbose --log-file=${LOG_DIR}/valgrind.log
 	# _POSIX_C_SOURCE=200809 to expose strdup and getline in Linux
 	CFLAGS += -D_POSIX_C_SOURCE=200809 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include

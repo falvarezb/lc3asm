@@ -120,6 +120,13 @@ static void test_assemble_with_labels_t11(void  __attribute__((unused)) **state)
     run_assemble_test("./test/testfiles/t11.asm", "./test/testfiles/t11.expected.obj", "./test/testfiles/t11.obj");
 }
 
+static void test_assemble_with_wrong_stringz_t12(void  __attribute__((unused)) **state) {
+    exit_t result = assemble("./test/testfiles/t12.asm");
+    assert_int_equal(result.code, 1);
+    assert_string_equal(result.desc, "ERROR (line 6): Bad string ('    \\  \"a\\n'\\\\\\t\\e\\\"b\"    \n')");
+    free(result.desc);
+}
+
 static void test_missing_assembly_file(void  __attribute__((unused)) **state) {
     exit_t result = assemble("./test/testfiles/test/testfiles/random.asm");
     assert_int_equal(result.code, 1);
@@ -218,6 +225,7 @@ int main(int argc, char const *argv[]) {
         cmocka_unit_test_setup_teardown(test_assemble_stringz_t9, setup, teardown),
         cmocka_unit_test_setup_teardown(test_assemble_blkw_t10, setup, teardown),
         cmocka_unit_test_setup_teardown(test_assemble_with_labels_t11, setup, teardown),
+        cmocka_unit_test_setup_teardown(test_assemble_with_wrong_stringz_t12, setup, teardown),
         cmocka_unit_test_setup_teardown(test_missing_assembly_file, setup, teardown),
         cmocka_unit_test_setup_teardown(test_wrong_assembly_file_extension, setup, teardown),
         cmocka_unit_test_setup_teardown(test_symbol_table_serialization, setup, teardown),
