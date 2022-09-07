@@ -198,6 +198,18 @@ static exit_t interpret_escape_sequences(linemetadata_t *line_metadata) {
     return success();
 }
 
+/**
+ * @brief parse .STRINGZ directive
+ * 
+ * The numeric value of each character of the operand of .STRINGZ is added to the set of instructions.
+ * 
+ * Therefore the directive is expanded into n instructions, where n is the length of the corresponding string
+ * 
+ * @param line_metadata 
+ * @param tokenized_lines 
+ * @param instruction_offset 
+ * @return exit_t 
+ */
 exit_t parse_stringz(linemetadata_t *line_metadata, linemetadata_t *tokenized_lines[], memaddr_t *instruction_offset) {
     if(line_metadata->num_tokens < 2) {
         return do_exit(EXIT_FAILURE, "ERROR (line %d): Bad string", line_metadata->line_number);
