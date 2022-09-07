@@ -14,6 +14,7 @@
 #include <unistd.h>
 
 #define ERR_DESC_LENGTH 300
+#define MAX_NUM_TOKENS 200
 extern char errdesc[];
 
 typedef struct split_t {

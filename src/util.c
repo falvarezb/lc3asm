@@ -109,10 +109,26 @@ bool strtolong(char *str, long *num, int base) {
     }
 }
 
-char **split_tokens(char *str, int *num_tokens, const char *delimiters) {
-    //TODO 200 should be a constant
-    const int max_num_tokens = 200;
-    char **tokens = malloc(max_num_tokens * sizeof(char *));
+/**
+ * @brief Split the given string into tokens (up to a maximum of MAX_NUM_TOKENS) according to 
+ * the specified delimiters
+ * 
+ * The string passed as argument corresponds to a single line of the asm file.
+ * 
+ * If the line is a .STRINGZ directive, the line is split into 2 tokens (ignoring the specified delimiters):
+ * - one corresponding to the keyword .STRINGZ  
+ * - another corresponding to the rest of the line
+ * 
+ * The second token will later on be parsed in order to process the content of the characters in between the
+ * quotation marks
+ * 
+ * @param str 
+ * @param num_tokens 
+ * @param delimiters 
+ * @return char** 
+ */
+char **split_tokens(char *str, int *num_tokens, const char *delimiters) {    
+    char **tokens = malloc(MAX_NUM_TOKENS * sizeof(char *));
     if(tokens == NULL) {
         seterrdesc("out of memory\n");
         return NULL;

@@ -102,6 +102,23 @@ exit_t parse_blkw(linemetadata_t *line_metadata) {
     return success();
 }
 
+/**
+ * @brief Read characters of the operand of .STRNGZ, identifying sequences of characters 
+ * corresponding to escape sequences and replacing them with the corresponding escape character
+ * 
+ * When reading the content of the asm file and storing it in a string, special characters are escaped
+ * according to https://en.wikipedia.org/wiki/Escape_sequences_in_C.
+ * 
+ * As a result, escaped characters in the operand of the .STRINGZ directive lose their meaning and need
+ * to be re-interpreted, e.g.
+ * 
+ * .STRINGZ "hi\nbye" in the asm file --> ".STRINGZ \"hi\\nbye" in the program
+ * 
+ * So effectively, the escape sequence '\n' has become 2 different characters: '\' and 'n'
+ * 
+ * @param line_metadata 
+ * @return exit_t 
+ */
 static exit_t interpret_escape_sequences(linemetadata_t *line_metadata) {
     char *token1 = line_metadata->tokens[1];
     size_t token1_length = strlen(token1);    
