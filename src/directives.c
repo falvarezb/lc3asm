@@ -111,7 +111,7 @@ static exit_t interpret_escape_sequences(linemetadata_t *line_metadata) {
     size_t i = 0, j = 0;
     char ch;
     while((ch = token1[i]) != '\0') {
-        if(ch == '"') {
+        if(ch == '"' && !escape_sequence_mode) {
             if(first_quotation_mark_found) {
                 second_quotation_mark_found = true;
                 break;
@@ -146,6 +146,9 @@ static exit_t interpret_escape_sequences(linemetadata_t *line_metadata) {
                 break;
             case '\\':
                 token1[j++] = '\\';
+                break;
+            case '"':
+                token1[j++] = '"';
                 break;
             default:
                 //unrecognised escape sequence
