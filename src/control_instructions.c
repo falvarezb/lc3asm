@@ -8,6 +8,36 @@
 
 #include "../include/lc3.h"
 
+
+static exit_t parse_jump_instruction(linemetadata_t *line_metadata, opcode_t opcode) {
+    assert(opcode == JSRR || opcode == JMP || opcode == JMPT);
+
+    //VALIDATING OPERANDS
+    int BaseR;
+
+    if(line_metadata->num_tokens < 2) {
+        return do_exit(EXIT_FAILURE, "ERROR (line %d): missing operands", line_metadata->line_number);
+    }
+
+    if((BaseR = parse_register(line_metadata->tokens[1])) == -1) {
+        return do_exit(EXIT_FAILURE, "ERROR (line %d): Expected register but found %s", line_metadata->line_number, line_metadata->tokens[1]);
+    }
+
+    //CONVERTING TO BINARY REPRESENTATION
+
+    //ops code: 0100
+    line_metadata->machine_instruction = opcode == JSRR ? 4 << 12 : 12 << 12;
+
+    //BaseR
+    line_metadata->machine_instruction += (BaseR << 6);
+
+    if(opcode == JMPT) {
+        line_metadata->machine_instruction += 1;
+    }
+
+    return success();
+}
+
  /**
   * @brief Parse an assembly JSR instruction and returns the corresponding machine instruction
   *
@@ -58,27 +88,7 @@ exit_t parse_jsr(linemetadata_t *line_metadata) {
 }
 
 exit_t parse_jsrr(linemetadata_t *line_metadata) {
-
-    //VALIDATING OPERANDS
-    int BaseR;
-
-    if(line_metadata->num_tokens < 2) {
-        return do_exit(EXIT_FAILURE, "ERROR (line %d): missing operands", line_metadata->line_number);
-    }
-
-    if((BaseR = parse_register(line_metadata->tokens[1])) == -1) {
-        return do_exit(EXIT_FAILURE, "ERROR (line %d): Expected register but found %s", line_metadata->line_number, line_metadata->tokens[1]);
-    }
-
-    //CONVERTING TO BINARY REPRESENTATION
-
-    //ops code: 0100
-    line_metadata->machine_instruction = 4 << 12;
-
-    //BaseR
-    line_metadata->machine_instruction += (BaseR << 6);
-
-    return success();
+    return parse_jump_instruction(line_metadata, JSRR);
 }
 
 exit_t parse_br(linemetadata_t *line_metadata, int condition_codes) {
@@ -122,33 +132,12 @@ exit_t parse_br(linemetadata_t *line_metadata, int condition_codes) {
  * @param line_counter line number of the assembly file
  * @return exit_t
  */
-exit_t parse_jmp(linemetadata_t *line_metadata, opcode_t opcode) {
+exit_t parse_jmp(linemetadata_t *line_metadata) {
+    return parse_jump_instruction(line_metadata, JMP);
+}
 
-    //VALIDATING OPERAND
-
-    if(line_metadata->num_tokens < 2) {
-        return do_exit(EXIT_FAILURE, "ERROR (line %d): missing operands", line_metadata->line_number);
-    }
-    
-    int BaseR;
-    if((BaseR = parse_register(line_metadata->tokens[1])) == -1) {
-        return do_exit(EXIT_FAILURE,"ERROR (line %d): Expected register but found %s", line_metadata->line_number, line_metadata->tokens[1]);       
-    }
-
-    //CONVERTING TO BINARY REPRESENTATION
-
-    //ops code: 1100
-    line_metadata->machine_instruction = 12 << 12;
-
-    //BaseR
-    BaseR = BaseR << 6;
-    line_metadata->machine_instruction += BaseR;
-
-    if(opcode == JMPT) {
-        line_metadata->machine_instruction += 1;
-    }
-
-    return do_exit(EXIT_SUCCESS, NULL);  
+exit_t parse_jmpt(linemetadata_t *line_metadata) {
+    return parse_jump_instruction(line_metadata, JMPT);
 }
 
 exit_t parse_trap(linemetadata_t *line_metadata) {

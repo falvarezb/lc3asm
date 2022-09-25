@@ -45,8 +45,11 @@ exit_t do_syntax_analysis(linemetadata_t *tokenized_lines[]) {
             case JSRR:
                 result = parse_jsrr(line_metadata);
                 break;
-            case JMP: case JMPT:
-                result = parse_jmp(line_metadata, opcode_type);
+            case JMP:
+                result = parse_jmp(line_metadata);
+                break;
+            case JMPT:
+                result = parse_jmpt(line_metadata);
                 break;
             case BR: case BRnzp:
                 //condition codes: 111
