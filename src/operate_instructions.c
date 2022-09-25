@@ -12,6 +12,7 @@
 #include "../include/lc3.h"
 
 static exit_t parse_add_and(linemetadata_t *line_metadata, opcode_t opcode) {
+    assert(opcode == ADD || opcode == AND);
 
     int DR, SR1, SR2;
     long imm5;
@@ -31,15 +32,7 @@ static exit_t parse_add_and(linemetadata_t *line_metadata, opcode_t opcode) {
 
 
     //CONVERTING TO BINARY REPRESENTATION
-
-    if(opcode == ADD) {
-        //ops code: 0001
-        line_metadata->machine_instruction = 1 << 12;
-    }
-    else if(opcode == AND) {
-        //ops code: 0101
-        line_metadata->machine_instruction = 5 << 12;
-    }
+    line_metadata->machine_instruction = opcode == ADD ? 1 << 12 : 5 << 12;
 
     //DR    
     line_metadata->machine_instruction += (DR << 9);
