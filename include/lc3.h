@@ -24,7 +24,8 @@ typedef struct linemetadata {
     uint16_t machine_instruction; /**< binary representation of the instruction contained by the line */
 } linemetadata_t;
 
-exit_t parse_add_and(linemetadata_t *line_metadata, opcode_t opcode);
+exit_t parse_add(linemetadata_t *line_metadata);
+exit_t parse_and(linemetadata_t *line_metadata);
 exit_t parse_not(linemetadata_t *line_metadata);
 exit_t parse_jmp(linemetadata_t *line_metadata, opcode_t opcode);
 exit_t parse_jsr(linemetadata_t *line_metadata);

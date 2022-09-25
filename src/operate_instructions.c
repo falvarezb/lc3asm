@@ -11,7 +11,7 @@
 
 #include "../include/lc3.h"
 
-exit_t parse_add_and(linemetadata_t *line_metadata, opcode_t opcode) {
+static exit_t parse_add_and(linemetadata_t *line_metadata, opcode_t opcode) {
 
     int DR, SR1, SR2;
     long imm5;
@@ -64,6 +64,14 @@ exit_t parse_add_and(linemetadata_t *line_metadata, opcode_t opcode) {
     }
 
     return success();
+}
+
+exit_t parse_add(linemetadata_t *line_metadata) {
+    return parse_add_and(line_metadata, ADD);
+}
+
+exit_t parse_and(linemetadata_t *line_metadata) {
+    return parse_add_and(line_metadata, AND); 
 }
 
 /**

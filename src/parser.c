@@ -30,8 +30,11 @@ exit_t do_syntax_analysis(linemetadata_t *tokenized_lines[]) {
         else if(line_type == OPCODE) {
             opcode_t opcode_type = compute_opcode_type(line_metadata->tokens[0]);
             switch(opcode_type) {
-            case ADD: case AND:
-                result = parse_add_and(line_metadata, opcode_type);
+            case ADD:
+                result = parse_add(line_metadata);
+                break;
+            case AND:
+                result = parse_and(line_metadata);
                 break;
             case NOT:
                 result = parse_not(line_metadata);
