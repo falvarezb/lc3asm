@@ -1,3 +1,7 @@
+# EditorConfig: https://EditorConfig.org
+
+root = true
+
 [*]
 cpp_indent_braces=false
 cpp_indent_multi_line_relative_to=innermost_parenthesis
@@ -21,7 +25,7 @@ cpp_new_line_scope_braces_on_separate_lines=false
 cpp_new_line_close_brace_same_line_empty_type=false
 cpp_new_line_close_brace_same_line_empty_function=false
 cpp_new_line_before_catch=true
-cpp_new_line_before_else=true
+cpp_new_line_before_else=false
 cpp_new_line_before_while_in_do_while=false
 cpp_space_before_function_open_parenthesis=remove
 cpp_space_within_parameter_list_parentheses=false
@@ -57,3 +61,16 @@ cpp_space_around_assignment_operator=insert
 cpp_space_pointer_reference_alignment=right
 cpp_space_around_ternary_operator=insert
 cpp_wrap_preserve_blocks=one_liners
+# Unix-style newlines with a newline ending every file
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+# Set default charset
+charset = utf-8
+# 4 space indentation
+[*.{h,c}]
+indent_style = space
+indent_size = 4
+# Tab indentation (no size specified)
+[Makefile]
+indent_style = tab

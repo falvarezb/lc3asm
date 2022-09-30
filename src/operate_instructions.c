@@ -42,8 +42,7 @@ static exit_t parse_add_and(linemetadata_t *line_metadata, opcode_t opcode) {
 
     if((SR2 = parse_register(line_metadata->tokens[3])) > -1) {
         line_metadata->machine_instruction += SR2;
-    }
-    else {
+    } else {
         exit_t result = parse_imm5(line_metadata->tokens[3], &imm5, line_metadata->line_number);
         if(result.code) {
             return result;
@@ -64,7 +63,7 @@ exit_t parse_add(linemetadata_t *line_metadata) {
 }
 
 exit_t parse_and(linemetadata_t *line_metadata) {
-    return parse_add_and(line_metadata, AND); 
+    return parse_add_and(line_metadata, AND);
 }
 
 /**

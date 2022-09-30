@@ -164,8 +164,7 @@ static void test_symbol_table_serialization(void  __attribute__((unused)) **stat
         if((read_actual = getline(&line_actual, &len_actual, actual_sym_file)) != -1) {
             assert_true(strcmp(line_expected, line_actual) == 0);
             num_lines++;
-        }
-        else {
+        } else {
             //this will fail as read_actual == 1 != read_expected
             assert_int_equal(read_expected, read_actual);
         }

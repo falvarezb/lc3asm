@@ -6,12 +6,12 @@
  *
  * Implementation notes
  * ====================
- * 
+ *
  * The assembly process consists of two phases: [lexical analysis](https://en.wikipedia.org/wiki/Lexical_analysis) and [parsing](https://en.wikipedia.org/wiki/Parsing#:~:text=Parsing%2C%20syntax%20analysis%2C%20or%20syntactic,meaning%20part%20(of%20speech).).
- * 
- * In the case of directives, parsing is done during the lexical analysis as directives need to be expanded into the corresponding instructions. 
+ *
+ * In the case of directives, parsing is done during the lexical analysis as directives need to be expanded into the corresponding instructions.
  * For instance, `.BLKW 2` is translated into two instructions to write `0`. This is necessary to ensure that the symbol table is correctly constructed.
- * 
+ *
  * Ultimately, this is a consequence of instructions and data sharing the same address space and therefore being intermingled in memory.
  */
 
