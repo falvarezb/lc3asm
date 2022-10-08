@@ -5,7 +5,7 @@
 # Each line begins with an offset in decimal format and shows the 16-bit integer corresponding to an 
 # instruction as 2 hexadecimal bytes.
 # 
-# ./tools/hd.sh test/testfiles/t1.obj
+# ./tools/hdlc3.sh test/testfiles/t1.obj
 # 000000  30 00
 # 000002  10 21
 # 000004  f0 25
