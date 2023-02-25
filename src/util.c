@@ -55,9 +55,6 @@ exit_t do_exit(int exit_code, char *format, ...) {
             printf("error when formatting error description");
         }
     }
-    else {
-        err = NULL;
-    }
     return (exit_t) { .code = exit_code, .desc = err };
 }
 
