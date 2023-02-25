@@ -42,7 +42,7 @@ static void run_assemble_test(char *asm_file_name, char *expected_obj_file_name,
     size_t read;
     while((read = fread(buf_expected, 1, 2, expected_obj_file)) == 2) {
         read = fread(buf_actual, 1, 2, actual_obj_file);
-        printf("line checked: %zu\n", num_lines);
+        // printf("line checked: %zu\n", num_lines);
         assert_int_equal(read, 2);
         assert_true(buf_expected[0] == buf_actual[0] && buf_expected[1] == buf_actual[1]);
         num_lines++;
@@ -159,7 +159,7 @@ static void test_symbol_table_serialization(void  __attribute__((unused)) **stat
     size_t len_actual = 0;
     ssize_t read_expected;
     while((read_expected = getline(&line_expected, &len_expected, expected_sym_file)) != -1) {
-        printf("line checked: %zu\n", num_lines);
+        // printf("line checked: %zu\n", num_lines);
         ssize_t read_actual;
         if((read_actual = getline(&line_actual, &len_actual, actual_sym_file)) != -1) {
             assert_true(strcmp(line_expected, line_actual) == 0);

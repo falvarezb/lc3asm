@@ -17,15 +17,17 @@
 #define MAX_NUM_TOKENS 200
 extern char errdesc[];
 
-typedef struct split_t {
-    char *before;
-    char *after;
-} split_t;
+#define failure(exit_code, format, ...) do_exit(exit_code, format, __VA_ARGS__)
 
-typedef struct exit_t {
+typedef struct {
     int code;
     char *desc;
 } exit_t;
+
+typedef struct {
+    char *before;
+    char *after;
+} split_t;
 
 void error_exit(const char *format, ...);
 char *bin(unsigned int decimal);

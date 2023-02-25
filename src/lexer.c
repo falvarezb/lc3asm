@@ -46,7 +46,7 @@ exit_t do_lexical_analysis(FILE *assembly_file, linemetadata_t *tokenized_lines[
     errno = 0;
     ssize_t read;
     while((read = getline(&resusable_line, &len, assembly_file)) != -1) {
-        printf("%s", resusable_line);
+        // printf("%s", resusable_line);
         bool is_label_line = false;
         line_counter++;
 
@@ -133,7 +133,7 @@ exit_t do_lexical_analysis(FILE *assembly_file, linemetadata_t *tokenized_lines[
     free(resusable_line);
     //check if getline resulted in error
     if(read == -1 && errno) {
-        return do_exit(EXIT_FAILURE, "getLine error %d\n", errno);
+        return failure(EXIT_FAILURE, "getLine error %d\n", errno);
     }
 
     return success();

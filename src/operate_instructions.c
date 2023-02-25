@@ -19,15 +19,15 @@ static exit_t parse_add_and(linemetadata_t *line_metadata, opcode_t opcode) {
 
     //VALIDATING OPERANDS
     if(line_metadata->num_tokens < 4) {
-        return do_exit(EXIT_FAILURE, "ERROR (line %d): missing operands", line_metadata->line_number);
+        return failure(EXIT_FAILURE, "ERROR (line %d): missing operands", line_metadata->line_number);
     }
 
     if((DR = parse_register(line_metadata->tokens[1])) == -1) {
-        return do_exit(EXIT_FAILURE, "ERROR (line %d): Expected register but found %s", line_metadata->line_number, line_metadata->tokens[1]);
+        return failure(EXIT_FAILURE, "ERROR (line %d): Expected register but found %s", line_metadata->line_number, line_metadata->tokens[1]);
     }
 
     if((SR1 = parse_register(line_metadata->tokens[2])) == -1) {
-        return do_exit(EXIT_FAILURE, "ERROR (line %d): Expected register but found %s", line_metadata->line_number, line_metadata->tokens[2]);
+        return failure(EXIT_FAILURE, "ERROR (line %d): Expected register but found %s", line_metadata->line_number, line_metadata->tokens[2]);
     }
 
 
@@ -87,15 +87,15 @@ exit_t parse_not(linemetadata_t *line_metadata) {
 
     //VALIDATING OPERANDS
     if(line_metadata->num_tokens < 3) {
-        return do_exit(EXIT_FAILURE, "ERROR (line %d): missing operands", line_metadata->line_number);
+        return failure(EXIT_FAILURE, "ERROR (line %d): missing operands", line_metadata->line_number);
     }
 
     if((DR = parse_register(line_metadata->tokens[1])) == -1) {
-        return do_exit(EXIT_FAILURE, "ERROR (line %d): Expected register but found %s", line_metadata->line_number, line_metadata->tokens[1]);
+        return failure(EXIT_FAILURE, "ERROR (line %d): Expected register but found %s", line_metadata->line_number, line_metadata->tokens[1]);
     }
 
     if((SR = parse_register(line_metadata->tokens[2])) == -1) {
-        return do_exit(EXIT_FAILURE, "ERROR (line %d): Expected register but found %s", line_metadata->line_number, line_metadata->tokens[2]);
+        return failure(EXIT_FAILURE, "ERROR (line %d): Expected register but found %s", line_metadata->line_number, line_metadata->tokens[2]);
     }
 
 

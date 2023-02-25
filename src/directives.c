@@ -10,11 +10,11 @@
 
 exit_t parse_orig(linemetadata_t *line_metadata) {
     if(strcmp(line_metadata->tokens[0], ".ORIG")) {
-        return do_exit(EXIT_FAILURE, "ERROR (line %d): Instruction not preceeded by a .orig directive", line_metadata->line_number);
+        return failure(EXIT_FAILURE, "ERROR (line %d): Instruction not preceeded by a .orig directive", line_metadata->line_number);
     }
 
     if(line_metadata->num_tokens < 2) {
-        return do_exit(EXIT_FAILURE, "ERROR (line %d): Immediate expected", line_metadata->line_number);
+        return failure(EXIT_FAILURE, "ERROR (line %d): Immediate expected", line_metadata->line_number);
     }
 
     long origin_address;
@@ -44,7 +44,7 @@ exit_t parse_orig(linemetadata_t *line_metadata) {
  */
 exit_t parse_fill(linemetadata_t *line_metadata, memaddr_t address_origin) {
     if(line_metadata->num_tokens < 2) {
-        return do_exit(EXIT_FAILURE, "ERROR (line %d): Immediate expected", line_metadata->line_number);
+        return failure(EXIT_FAILURE, "ERROR (line %d): Immediate expected", line_metadata->line_number);
     }
 
     char *token = line_metadata->tokens[1];
@@ -69,7 +69,7 @@ exit_t parse_fill(linemetadata_t *line_metadata, memaddr_t address_origin) {
     if(!strtolong(value_to_check, &numeric_value, base)) {
         node_t *node = lookup(token);
         if(!node) {
-            return do_exit(EXIT_FAILURE, "ERROR (line %d): Symbol not found ('%s')", line_metadata->line_number, token);
+            return failure(EXIT_FAILURE, "ERROR (line %d): Symbol not found ('%s')", line_metadata->line_number, token);
         }
         numeric_value = node->val - 1 + address_origin;
     }
@@ -78,7 +78,7 @@ exit_t parse_fill(linemetadata_t *line_metadata, memaddr_t address_origin) {
     int min = -32768;
     int max = 65535;
     if(numeric_value < min || numeric_value > max) {
-        return do_exit(EXIT_FAILURE, "ERROR (line %d): Immediate operand (%s) out of range (%d to %d)", line_metadata->line_number, token, min, max);
+        return failure(EXIT_FAILURE, "ERROR (line %d): Immediate operand (%s) out of range (%d to %d)", line_metadata->line_number, token, min, max);
     }
 
     int16_t immediate = (int16_t)numeric_value;
@@ -89,7 +89,7 @@ exit_t parse_fill(linemetadata_t *line_metadata, memaddr_t address_origin) {
 
 exit_t parse_blkw(linemetadata_t *line_metadata) {
     if(line_metadata->num_tokens < 2) {
-        return do_exit(EXIT_FAILURE, "ERROR (line %d): Immediate expected", line_metadata->line_number);
+        return failure(EXIT_FAILURE, "ERROR (line %d): Immediate expected", line_metadata->line_number);
     }
 
     long immediate;
@@ -129,7 +129,7 @@ static exit_t interpret_escape_sequences(linemetadata_t *line_metadata) {
     char ch;
     while((ch = token1[i]) != '\0') {
         if(ch != ' ' && ch != '\t' && ch != '"' && !first_quotation_mark_found) {
-            return do_exit(EXIT_FAILURE, "ERROR (line %d): Bad string ('%s')", line_metadata->line_number, token1);
+            return failure(EXIT_FAILURE, "ERROR (line %d): Bad string ('%s')", line_metadata->line_number, token1);
             break;
         }
 
@@ -174,7 +174,7 @@ static exit_t interpret_escape_sequences(linemetadata_t *line_metadata) {
                 break;
             default:
                 //unrecognised escape sequence
-                return do_exit(EXIT_FAILURE, "ERROR (line %d): Unrecognised escape sequence ('%s')", line_metadata->line_number, token1);
+                return failure(EXIT_FAILURE, "ERROR (line %d): Unrecognised escape sequence ('%s')", line_metadata->line_number, token1);
                 break;
             }
             escape_sequence_mode = false;
@@ -193,7 +193,7 @@ static exit_t interpret_escape_sequences(linemetadata_t *line_metadata) {
     }
 
     if(!first_quotation_mark_found || !second_quotation_mark_found) {
-        return do_exit(EXIT_FAILURE, "ERROR (line %d): Bad string ('%s')", line_metadata->line_number, line_metadata->line);
+        return failure(EXIT_FAILURE, "ERROR (line %d): Bad string ('%s')", line_metadata->line_number, line_metadata->line);
     }
     return success();
 }
@@ -212,7 +212,7 @@ static exit_t interpret_escape_sequences(linemetadata_t *line_metadata) {
  */
 exit_t parse_stringz(linemetadata_t *line_metadata, linemetadata_t *tokenized_lines[], memaddr_t *instruction_offset) {
     if(line_metadata->num_tokens < 2) {
-        return do_exit(EXIT_FAILURE, "ERROR (line %d): Bad string", line_metadata->line_number);
+        return failure(EXIT_FAILURE, "ERROR (line %d): Bad string", line_metadata->line_number);
     }
 
     exit_t result = interpret_escape_sequences(line_metadata);
@@ -223,7 +223,7 @@ exit_t parse_stringz(linemetadata_t *line_metadata, linemetadata_t *tokenized_li
     for(size_t i = 0; i < strlen(str_literal); i++) {
         linemetadata_t *stringz_line_metadata = malloc(sizeof(linemetadata_t));
         if(!stringz_line_metadata) {
-            return do_exit(EXIT_FAILURE, "ERROR (line %d): Out of memory error", line_metadata->line_number);
+            return failure(EXIT_FAILURE, "ERROR (line %d): Out of memory error", line_metadata->line_number);
         }
         stringz_line_metadata->tokens = NULL;
         stringz_line_metadata->line = NULL;
@@ -234,7 +234,7 @@ exit_t parse_stringz(linemetadata_t *line_metadata, linemetadata_t *tokenized_li
     //final '\0'
     linemetadata_t *stringz_line_metadata = malloc(sizeof(linemetadata_t));
     if(!stringz_line_metadata) {
-        return do_exit(EXIT_FAILURE, "ERROR (line %d): Out of memory error", line_metadata->line_number);
+        return failure(EXIT_FAILURE, "ERROR (line %d): Out of memory error", line_metadata->line_number);
     }
     stringz_line_metadata->tokens = NULL;
     stringz_line_metadata->line = NULL;

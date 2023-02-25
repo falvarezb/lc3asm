@@ -61,7 +61,7 @@ static exit_t parse_numeric_value(char *token, long *imm, uint16_t line_counter)
     }
 
     if(!strtolong(value_to_check, imm, base)) {
-        return do_exit(EXIT_FAILURE, "ERROR (line %d): Immediate %s is not a numeric value", line_counter, token);
+        return failure(EXIT_FAILURE, "ERROR (line %d): Immediate %s is not a numeric value", line_counter, token);
     }
     return success();
 }
@@ -95,7 +95,7 @@ exit_t parse_imm5(char *str, long *imm5, uint16_t line_counter) {
     int min = -16;
     int max = 15;
     if(*imm5 < min || *imm5 > max) {
-        return do_exit(EXIT_FAILURE, "ERROR (line %d): Immediate operand (%s) outside of range (%d to %d)", line_counter, str + 1, min, max);
+        return failure(EXIT_FAILURE, "ERROR (line %d): Immediate operand (%s) outside of range (%d to %d)", line_counter, str + 1, min, max);
     }
     return success();
 }
@@ -109,7 +109,7 @@ exit_t parse_memory_address(char *str, long *n, uint16_t line_counter) {
     int min = 0;
     int max = 0xFFFF;
     if(*n < min || *n > max) {
-        return do_exit(EXIT_FAILURE, "ERROR (line %d): Immediate operand (%s) outside of range (%d to %d)", line_counter, str + 1, min, max);
+        return failure(EXIT_FAILURE, "ERROR (line %d): Immediate operand (%s) outside of range (%d to %d)", line_counter, str + 1, min, max);
     }
     return success();
 }
@@ -137,7 +137,7 @@ exit_t parse_offset(char *token, int lower_bound, int upper_bound, uint16_t inst
         //transform label into offset by retrieving the memory location corresponding to the label from symbol table
         node_t *node = lookup(token);
         if(!node) {
-            return do_exit(EXIT_FAILURE, "ERROR (line %d): Symbol not found ('%s')", line_counter, token);
+            return failure(EXIT_FAILURE, "ERROR (line %d): Symbol not found ('%s')", line_counter, token);
         }
         *offset = node->val - instruction_number - 1;
     }
@@ -145,7 +145,7 @@ exit_t parse_offset(char *token, int lower_bound, int upper_bound, uint16_t inst
 
     //validate offset numerical range
     if(*offset < lower_bound || *offset > upper_bound) {
-        return do_exit(EXIT_FAILURE, "ERROR (line %d): Value of offset %ld is outside the range [%d, %d]", line_counter, *offset, lower_bound, upper_bound);
+        return failure(EXIT_FAILURE, "ERROR (line %d): Value of offset %ld is outside the range [%d, %d]", line_counter, *offset, lower_bound, upper_bound);
     }
 
 
@@ -166,7 +166,7 @@ exit_t parse_trapvector(char *token, long *trapvector, uint16_t line_counter) {
 
     //validate trapvector numerical range
     if(*trapvector < 0 || *trapvector > 255) {
-        return do_exit(EXIT_FAILURE, "ERROR (line %d): Value of trapvector %ld is outside the range [0, 255]", line_counter, *trapvector);
+        return failure(EXIT_FAILURE, "ERROR (line %d): Value of trapvector %ld is outside the range [0, 255]", line_counter, *trapvector);
     }
 
     return success();

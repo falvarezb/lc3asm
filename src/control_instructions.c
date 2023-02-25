@@ -16,11 +16,11 @@ static exit_t parse_jump_instruction(linemetadata_t *line_metadata, opcode_t opc
     int BaseR;
 
     if(line_metadata->num_tokens < 2) {
-        return do_exit(EXIT_FAILURE, "ERROR (line %d): missing operands", line_metadata->line_number);
+        return failure(EXIT_FAILURE, "ERROR (line %d): missing operands", line_metadata->line_number);
     }
 
     if((BaseR = parse_register(line_metadata->tokens[1])) == -1) {
-        return do_exit(EXIT_FAILURE, "ERROR (line %d): Expected register but found %s", line_metadata->line_number, line_metadata->tokens[1]);
+        return failure(EXIT_FAILURE, "ERROR (line %d): Expected register but found %s", line_metadata->line_number, line_metadata->tokens[1]);
     }
 
     //CONVERTING TO BINARY REPRESENTATION
@@ -64,7 +64,7 @@ exit_t parse_jsr(linemetadata_t *line_metadata) {
     //VALIDATING OPERANDS
 
     if(line_metadata->num_tokens < 2) {
-        return do_exit(EXIT_FAILURE, "ERROR (line %d): missing operands", line_metadata->line_number);
+        return failure(EXIT_FAILURE, "ERROR (line %d): missing operands", line_metadata->line_number);
     }
 
     long offset;
@@ -96,7 +96,7 @@ exit_t parse_br(linemetadata_t *line_metadata, int condition_codes) {
     //VALIDATING OPERANDS
 
     if(line_metadata->num_tokens < 2) {
-        return do_exit(EXIT_FAILURE, "ERROR (line %d): missing operands", line_metadata->line_number);
+        return failure(EXIT_FAILURE, "ERROR (line %d): missing operands", line_metadata->line_number);
     }
 
     long offset;
@@ -145,7 +145,7 @@ exit_t parse_trap(linemetadata_t *line_metadata) {
     //VALIDATING OPERAND
 
     if(line_metadata->num_tokens < 2) {
-        return do_exit(EXIT_FAILURE, "ERROR (line %d): missing operands", line_metadata->line_number);
+        return failure(EXIT_FAILURE, "ERROR (line %d): missing operands", line_metadata->line_number);
     }
     
     long trapvector;    
@@ -162,6 +162,6 @@ exit_t parse_trap(linemetadata_t *line_metadata) {
     //trapvector    
     line_metadata->machine_instruction += trapvector;
 
-    return do_exit(EXIT_SUCCESS, NULL);  
+    return success();  
 }
 

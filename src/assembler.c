@@ -39,14 +39,14 @@ static int write_machine_instruction(uint16_t machine_instr, FILE *destination_f
 exit_t serialize_symbol_table(FILE *destination_file, memaddr_t address_origin) {
     int num_chars_written;
     if((num_chars_written = fprintf(destination_file, "// Symbol table\n// Scope level 0:\n//	Symbol Name       Page Address\n//	----------------  ------------\n")) < 0) {
-        return do_exit(EXIT_FAILURE, "error when writing serialized symbol table to file: %d", errno);
+        return failure(EXIT_FAILURE, "error when writing serialized symbol table to file: %d", errno);
     }
     node_t *node = next(true);
     while(node) {
         memaddr_t label_address = node->val - 1 + address_origin;
         add(node->key, label_address);
         if((num_chars_written = fprintf(destination_file, "//	%s             %hx\n", node->key, label_address) < 0)) {
-            return do_exit(EXIT_FAILURE, "error when writing serialized symbol table to file: %d", errno);
+            return failure(EXIT_FAILURE, "error when writing serialized symbol table to file: %d", errno);
         }
         node = next(false);
     }
@@ -58,7 +58,7 @@ static exit_t sym_obj_file_names(char *symbol_table_file_name, char *object_file
     char *file_extension = split_by_last_delimiter(assemby_file_name_dup, '.');
     if(strcmp(file_extension, "asm") != 0) {
         free(assemby_file_name_dup);
-        return do_exit(EXIT_FAILURE, "ERROR: Input file must have .asm suffix ('%s')", assembly_file_name);
+        return failure(EXIT_FAILURE, "ERROR: Input file must have .asm suffix ('%s')", assembly_file_name);
     }
 
     //.sym
@@ -93,7 +93,7 @@ exit_t assemble(const char *assembly_file_name) {
 
     FILE *assembly_file = fopen(assembly_file_name, "r");
     if(!assembly_file) {
-        return do_exit(EXIT_FAILURE, "ERROR: Couldn't read file (%s)", assembly_file_name);
+        return failure(EXIT_FAILURE, "ERROR: Couldn't read file (%s)", assembly_file_name);
     }
 
     result = do_lexical_analysis(assembly_file, tokenized_lines);
@@ -112,7 +112,7 @@ exit_t assemble(const char *assembly_file_name) {
     FILE *symbol_table_file = fopen(symbol_table_file_name, "w");
     if(!symbol_table_file) {
         free_tokenized_lines(tokenized_lines);
-        return do_exit(EXIT_FAILURE, "ERROR: Couldn't open file (%s)", symbol_table_file_name);
+        return failure(EXIT_FAILURE, "ERROR: Couldn't open file (%s)", symbol_table_file_name);
     }
 
     result = serialize_symbol_table(symbol_table_file, tokenized_lines[0]->machine_instruction);
@@ -126,7 +126,7 @@ exit_t assemble(const char *assembly_file_name) {
     FILE *object_file = fopen(object_file_name, "w");
     if(!object_file) {
         free_tokenized_lines(tokenized_lines);
-        return do_exit(EXIT_FAILURE, "ERROR: Couldn't open file (%s)", object_file_name);
+        return failure(EXIT_FAILURE, "ERROR: Couldn't open file (%s)", object_file_name);
     }
 
     linemetadata_t *line_metadata;
@@ -134,7 +134,7 @@ exit_t assemble(const char *assembly_file_name) {
     while((line_metadata = tokenized_lines[address_offset])) {
         if(write_machine_instruction(line_metadata->machine_instruction, object_file)) {
             fclose(object_file);
-            return do_exit(EXIT_FAILURE, "ERROR: Couldn't write file (%s)", object_file_name);
+            return failure(EXIT_FAILURE, "ERROR: Couldn't write file (%s)", object_file_name);
         }
         free_line_metadata(line_metadata);
         address_offset++;

@@ -41,13 +41,13 @@ exit_t parse_pc_relative_addressing_mode(linemetadata_t *line_metadata, opcode_t
     //VALIDATING OPERANDS
 
     if(line_metadata->num_tokens < 3) {
-        return do_exit(EXIT_FAILURE, "ERROR (line %d): missing operands", line_metadata->line_number);
+        return failure(EXIT_FAILURE, "ERROR (line %d): missing operands", line_metadata->line_number);
     }
 
     int SR_DR;
 
     if((SR_DR = parse_register(line_metadata->tokens[1])) == -1) {
-        return do_exit(EXIT_FAILURE, "ERROR (line %d): Expected register but found %s", line_metadata->line_number, line_metadata->tokens[1]);
+        return failure(EXIT_FAILURE, "ERROR (line %d): Expected register but found %s", line_metadata->line_number, line_metadata->tokens[1]);
     }
 
     long offset;
@@ -100,17 +100,17 @@ exit_t parse_base_plus_offset_addressing_mode(linemetadata_t *line_metadata, opc
     //VALIDATING OPERANDS
 
     if(line_metadata->num_tokens < 4) {
-        return do_exit(EXIT_FAILURE, "ERROR (line %d): missing operands", line_metadata->line_number);
+        return failure(EXIT_FAILURE, "ERROR (line %d): missing operands", line_metadata->line_number);
     }
 
     int SR_DR, BaseR;
 
     if((SR_DR = parse_register(line_metadata->tokens[1])) == -1) {
-        return do_exit(EXIT_FAILURE, "ERROR (line %d): Expected register but found %s", line_metadata->line_number, line_metadata->tokens[1]);
+        return failure(EXIT_FAILURE, "ERROR (line %d): Expected register but found %s", line_metadata->line_number, line_metadata->tokens[1]);
     }
 
     if((BaseR = parse_register(line_metadata->tokens[2])) == -1) {
-        return do_exit(EXIT_FAILURE, "ERROR (line %d): Expected register but found %s", line_metadata->line_number, line_metadata->tokens[2]);
+        return failure(EXIT_FAILURE, "ERROR (line %d): Expected register but found %s", line_metadata->line_number, line_metadata->tokens[2]);
     }
 
     long offset;
